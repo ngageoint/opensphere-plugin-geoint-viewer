@@ -1,0 +1,9 @@
+{
+  "admin": {
+    "banner": {
+      "before": "div.tr",
+      "after": "div.tr",
+      "markup": "<div class=\"tr banner\" style=\"background:#0F0;color:#FF0;height:50px;\">UNCLASSIFIED</div>"
+    }
+  }
+}
