@@ -78,12 +78,13 @@ node('sl62') {
 
   // Add Planet Labs plugin
   dir('opensphere-plugin-planetlabs') {
-    stage('install plugins') {
+    stage('install planetlabs') {
       try{
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-planetlabs.git')
-        sh 'mkdir -p node_modules'
-        sh 'ln -s ../../opensphere node_modules/opensphere'
-        npmInstall(true)
+        // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
+        //sh 'mkdir -p node_modules'
+        //sh 'ln -s ../../opensphere node_modules/opensphere'
+        //npmInstall(true)
       } catch (NoSuchMethodError){
         error 'Error installing extra plugins'
       }
@@ -94,12 +95,13 @@ node('sl62') {
 
   // Add Overpass plugin
   dir('opensphere-plugin-overpass') {
-    stage('install plugins') {
+    stage('install overpass') {
       try{
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-overpass.git')
-        sh 'mkdir -p node_modules'
-        sh 'ln -s ../../opensphere node_modules/opensphere'
-        npmInstall(true);
+        // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
+        //sh 'mkdir -p node_modules'
+        //sh 'ln -s ../../opensphere node_modules/opensphere'
+        //npmInstall(true);
       } catch (NoSuchMethodError) {
         error 'Error installing extra plugins'
       }
@@ -135,9 +137,9 @@ node('sl62') {
         }
         sleep 10
       }
-      sh "${zapHome}/zap.sh -cmd -quickout '${workspace}/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
-      sh "cat gv-dev-zapreport.xml"
-      uploadToThreadfix('gv-dev-zapreport.xml')
+      sh "${zapHome}/zap.sh -cmd -quickout '${workspace}/dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
+      sh "cat dist/gv-dev-zapreport.xml"
+      uploadToThreadfix('dist/gv-dev-zapreport.xml')
     }
 
     stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
