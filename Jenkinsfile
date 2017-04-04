@@ -12,52 +12,68 @@ def err = null
 node('sl62') {
   try {
   dir('opensphere-plugin-geoint-viewer') {
-    stage 'scm'
-      try {
-        beforeCheckout()
-      } catch (NoSuchMethodError e) {
-      }
+    stage('scm')
+    try {
+      beforeCheckout()
+    } catch (NoSuchMethodError e) {
+    }
 
-      sh "echo 'checking out scm'"
+    sh "echo 'checking out scm'"
 
-      // don't do this on first run
-      sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
-      checkout scm
+    // don't do this on first run
+    sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
+    checkout scm
 
-      sh "echo 'after checkout'"
-      try {
-        // eh... no?
-        //afterCheckout()
-      } catch (NoSuchMethodError e) {
-      }
+    sh "echo 'after checkout'"
+    try {
+      // eh... no?
+      //afterCheckout()
+    } catch (NoSuchMethodError e) {
+    }
 
-      def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-      GIT_COMMIT = commitid.trim()
-      stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
-      sh "pwd"
-      sh "ls -al"
+    def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+    GIT_COMMIT = commitid.trim()
+    stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
+    sh "pwd"
+    sh "ls -al"
+  }
 
-      // gotta run npm to run tests, otherwise
-      stage('npm')
-      sh 'mkdir -p node_modules'
-      sh 'ln -s ../opensphere node_modules/opensphere'
-      npmInstall()
-
-      // run tests
-      stage('unit test')
-      try {
-        test()
+  // get main opensphere project
+  dir('opensphere') {
+    stage('install opensphere') {
+      try{
+        installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/core-ui.git')
+        npmInstall()
       } catch (NoSuchMethodError) {
+        error 'Error installing extra plugins'
       }
+    }
+    sh "pwd"
+    sh "ls -al"
+  }
 
-      // gen docs
-      /*stage('docs')
-      sh 'npm run compile:dossier'
+  dir('opensphere-plugin-geoint-viewer') {
+    // gotta run npm to run tests
+    stage('npm')
+    sh 'mkdir -p node_modules'
+    sh 'ln -s ../opensphere node_modules/opensphere'
+    npmInstall()
 
-      try {
-        deployDocs()
-      } catch (NoSuchMethodError e) {
-      }*/
+    // run tests
+    stage('unit test')
+    try {
+      test()
+    } catch (NoSuchMethodError) {
+    }
+
+    // gen docs
+    /*stage('docs')
+    sh 'npm run compile:dossier'
+
+    try {
+      deployDocs()
+    } catch (NoSuchMethodError e) {
+    }*/
   }
 
   // Add Planet Labs plugin
@@ -92,21 +108,8 @@ node('sl62') {
     sh "ls -al"
   }
 
-  // get main opensphere project
+  // build it
   dir('opensphere') {
-    stage('install plugins') {
-      try{
-        installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/core-ui.git')
-      } catch (NoSuchMethodError) {
-        error 'Error installing extra plugins'
-      }
-    }
-    sh "pwd"
-    sh "ls -al"
-
-    stage('os npm')
-    npmInstall()
-
     stage('build')
     sh 'npm run build'
     sh 'mv dist/opensphere dist/gv'
