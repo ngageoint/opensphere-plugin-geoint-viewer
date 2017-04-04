@@ -15,23 +15,25 @@ node('sl62') {
     stage 'scm'
       try {
         beforeCheckout()
-        // don't do this on first run
-        sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
       } catch (NoSuchMethodError e) {
       }
 
       sh "echo 'checking out scm'"
 
+      // don't do this on first run
+      sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
       checkout scm
 
       sh "echo 'after checkout'"
       try {
-        afterCheckout()
-        def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-        GIT_COMMIT = commitid.trim()
-        stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
+        // eh... no?
+        //afterCheckout()
       } catch (NoSuchMethodError e) {
       }
+
+      def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+      GIT_COMMIT = commitid.trim()
+      stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
       sh "pwd"
       sh "ls -al"
 
