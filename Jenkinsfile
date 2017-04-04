@@ -9,14 +9,6 @@ this_version = '0.0.0' // reset by getVersion(), below
 
 def err = null
 
-def doNpm(prod) {
-  def flag = prod ? ' --production' : ''
-  sh 'npm config list'
-  sh "npm install $flag"
-  sh 'npm prune'
-  sh 'npm update'
-}
-
 node('sl62') {
   try {
   dir('opensphere-plugin-geoint-viewer') {
@@ -45,7 +37,7 @@ node('sl62') {
 
       // gotta run npm to run tests, otherwise
       stage('npm')
-      doNpm()
+      npmInstall()
 
       // run tests
       stage('unit test')
@@ -69,7 +61,7 @@ node('sl62') {
     stage('install plugins') {
       try{
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-planetlabs.git')
-        doNpm(true)
+        npmInstall(true)
       } catch (NoSuchMethodError){
         error 'Error installing extra plugins'
       }
@@ -83,7 +75,7 @@ node('sl62') {
     stage('install plugins') {
       try{
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-overpass.git')
-        doNpm(true);
+        npmInstall(true);
       } catch (NoSuchMethodError) {
         error 'Error installing extra plugins'
       }
@@ -105,7 +97,7 @@ node('sl62') {
     sh "ls -al"
 
     stage('os npm')
-    doNpm()
+    npmInstall()
 
     stage('build')
     sh 'npm run build'
