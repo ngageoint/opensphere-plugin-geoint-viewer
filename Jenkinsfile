@@ -25,9 +25,6 @@ node('sl62') {
         beforeCheckout()
         // don't do this on first run
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
-        def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-        GIT_COMMIT = commitid.trim()
-        stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
       } catch (NoSuchMethodError e) {
       }
 
@@ -38,6 +35,9 @@ node('sl62') {
       sh "echo 'after checkout'"
       try {
         afterCheckout()
+        def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+        GIT_COMMIT = commitid.trim()
+        stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
       } catch (NoSuchMethodError e) {
       }
       sh "pwd"
