@@ -23,7 +23,8 @@ node('sl62') {
     stage 'scm'
       try {
         beforeCheckout()
-        sh 'git clean -ffdx'
+        // don't do this on first run
+        sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         def commitid = sh returnStdout: true, script: 'git rev-parse --short HEAD'
         GIT_COMMIT = commitid.trim()
         stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
