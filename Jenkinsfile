@@ -56,7 +56,7 @@ node('sl62') {
     // gotta run npm to run tests
     stage('npm')
     sh 'mkdir -p node_modules'
-    sh 'ln -s ../opensphere node_modules/opensphere'
+    sh 'ln -s ../../opensphere node_modules/opensphere'
     npmInstall()
 
     // run tests
@@ -82,7 +82,7 @@ node('sl62') {
       try{
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-planetlabs.git')
         sh 'mkdir -p node_modules'
-        sh 'ln -s ../opensphere node_modules/opensphere'
+        sh 'ln -s ../../opensphere node_modules/opensphere'
         npmInstall(true)
       } catch (NoSuchMethodError){
         error 'Error installing extra plugins'
@@ -98,7 +98,7 @@ node('sl62') {
       try{
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-overpass.git')
         sh 'mkdir -p node_modules'
-        sh 'ln -s ../opensphere node_modules/opensphere'
+        sh 'ln -s ../../opensphere node_modules/opensphere'
         npmInstall(true);
       } catch (NoSuchMethodError) {
         error 'Error installing extra plugins'
