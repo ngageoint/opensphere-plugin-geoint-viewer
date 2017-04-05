@@ -3,7 +3,7 @@
     "banner": {
       "before": "div.tr",
       "after": "div.tr",
-      "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\">UNCLASSIFIED</div>"
+      "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     }
   }
 }

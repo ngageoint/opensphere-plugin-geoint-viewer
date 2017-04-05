@@ -1,4 +1,10 @@
 .banner {
+  font-size: 0.8em;
   min-height: 0 !important;
+  line-height: 1.0em;
   text-align: center;
+
+  div {
+    padding: 2px 0;
+  }
 }
