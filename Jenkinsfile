@@ -5,7 +5,7 @@ this_version = '0.0.0' // reset by getVersion(), below
 
 def err = null
 
-node('linux') {
+node('sl62') {
   try {
     dir('opensphere-plugin-geoint-viewer') {
       stage('scm')
