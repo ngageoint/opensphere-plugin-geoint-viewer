@@ -103,7 +103,6 @@ node('sl62') {
       // Mark the artifact ZAP 'stage'....
       stage('ZAP Scan') {
         def zapHome = tool name: 'ZAProxy_v2_5_0'
-        def workspace = pwd()
         for (int i=0; i<10; i++) {
           def http = sh script: "curl -skL -o /dev/null -w \"%{http_code}\" https://oauth.geointservices.io || true", returnStdout: true
           echo "got ${http} response"
@@ -112,9 +111,9 @@ node('sl62') {
           }
           sleep 10
         }
-        sh "${zapHome}/zap.sh -cmd -quickout '${workspace}/dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
+        sh "${zapHome}/zap.sh -cmd -quickout 'dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
         sh "cat dist/gv-dev-zapreport.xml"
-        uploadToThreadfix('opensphere/dist/gv-dev-zapreport.xml')
+        uploadToThreadfix('dist/gv-dev-zapreport.xml')
       }
 
       stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
