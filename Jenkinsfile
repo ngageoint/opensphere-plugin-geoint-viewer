@@ -112,7 +112,7 @@ node('sl62') {
           }
           sleep 10
         }
-        sh "${zapHome}/zap.sh -cmd -quickout '${dir}dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
+        sh "${zapHome}/zap.sh -cmd -quickout '${dir}/dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
         sh "cat dist/gv-dev-zapreport.xml"
         uploadToThreadfix('dist/gv-dev-zapreport.xml')
       }
