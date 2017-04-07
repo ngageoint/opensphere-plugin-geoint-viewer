@@ -169,8 +169,8 @@ ls -lrt
                   // Fortify Scan
                   // Clean up Fortify residue:
                   sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -Xmx3000M **/*.js"
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -Xmx3000M -f fortifyResults-${this_version}.fpr"
+                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -Xmx4000M **/*.js"
+                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -Xmx4000M -f fortifyResults-${this_version}.fpr"
                   // archive includes: '*.fpr'
                   uploadToThreadfix("fortifyResults-${this_version}.fpr")
                   // Clean up Fortify residue:
