@@ -163,19 +163,19 @@ ls -lrt
               unstash 'code'
               parallel(
                 // Fortify
-                fortify: {
-                  sh 'ls -altr'
-                  echo "scanning"
-                  // Fortify Scan
-                  // Clean up Fortify residue:
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} **/*.js"
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
-                  // archive includes: '*.fpr'
-                  uploadToThreadfix("fortifyResults-${this_version}.fpr")
-                  // Clean up Fortify residue:
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                },
+                // fortify: {
+                //   sh 'ls -altr'
+                //   echo "scanning"
+                //   // Fortify Scan
+                //   // Clean up Fortify residue:
+                //   sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                //   sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} **/*.js"
+                //   sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
+                //   // archive includes: '*.fpr'
+                //   uploadToThreadfix("fortifyResults-${this_version}.fpr")
+                //   // Clean up Fortify residue:
+                //   sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                // },
                 // OWASP Dependency Check
                 depcheck: {
                   echo "dependency-check"
