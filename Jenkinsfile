@@ -31,9 +31,9 @@ node('sl62') {
       GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
 
       try {
-        this_version = sh(script: 'git describe HEAD', returnStdout: true).trim()
+        this_version = sh(script: 'git describe --exact-match HEAD', returnStdout: true).trim()
       } catch (e) {
-        this_version = GIT_COMMIT
+        this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
       }
     }
 
