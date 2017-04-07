@@ -5,5 +5,8 @@
       "after": "div.tr",
       "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     }
+  },
+  "user": {
+    "baseProjection": "EPSG:4326"
   }
 }
