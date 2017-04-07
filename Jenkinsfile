@@ -167,12 +167,14 @@ ls -lrt
                   sh 'ls -altr'
                   echo "scanning"
                   // Fortify Scan
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -b gv-${this_version} **/*.js"
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -b gv-${this_version} -scan -f fortifyResults-${this_version}.fpr"
+                  // Clean up Fortify residue:
+                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -Xmx3000M **/*.js"
+                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -Xmx3000M -f fortifyResults-${this_version}.fpr"
                   // archive includes: '*.fpr'
                   uploadToThreadfix("fortifyResults-${this_version}.fpr")
                   // Clean up Fortify residue:
-                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${this_version} -clean"
+                  sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
                 },
                 // OWASP Dependency Check
                 depcheck: {
