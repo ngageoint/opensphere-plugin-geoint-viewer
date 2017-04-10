@@ -1,5 +1,22 @@
 {
   "admin": {
+    "about": {
+      "application": "GEOINT Viewer",
+      "appVendors": [
+        {
+          "logoPath": "images/opensphere.png",
+          "name": "Open Sphere"
+        },
+        {
+          "logoPath": "images/vendor/ol3.png",
+          "name": "OpenLayers3"
+        },
+        {
+          "logoPath": "images/vendor/cesium.png",
+          "name": "Cesium"
+        }
+      ]
+    },
     "banner": {
       "before": "div.tr",
       "after": "div.tr",
