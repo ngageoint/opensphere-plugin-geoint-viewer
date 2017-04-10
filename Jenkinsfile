@@ -234,6 +234,9 @@ ls -lrt
       stage('publish')
       sh './publish.sh'
     }
+
+    // kick off deploy build
+    build job: "GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test", quietPeriod: 5, wait: false
   } catch (e) {
     currentBuild.result = 'FAILURE'
     err = e
