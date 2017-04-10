@@ -4,6 +4,14 @@
       "before": "div.tr",
       "after": "div.tr",
       "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
+    },
+    "providers": {
+      "gs-hiperlook": {
+        "type": "ogc",
+        "label": "GEOINT Services Hiperlook",
+        "wms": "http://hiperlook.geointservices.io/wmsserver/",
+        "wmsParams": "version=1.1.1&map=default.map"
+      }
     }
   },
   "user": {
