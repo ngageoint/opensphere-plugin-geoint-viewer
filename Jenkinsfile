@@ -91,6 +91,13 @@ node('sl62') {
       }
     }
 
+    // add gbdx plugin
+    dir('opensphere-plugin-gbdx') {
+      stage('install gbdx') {
+        installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/opensphere-plugin-gbdx.git')
+      }
+    }
+
     // build it
     dir('opensphere') {
       stage('build')
