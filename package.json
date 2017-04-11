@@ -13,7 +13,8 @@
     "scss": "scss/gv.scss",
     "gcc": {
       "entry_point": [
-        "goog:plugin.banner.BannerPlugin"
+        "goog:plugin.banner.BannerPlugin",
+        "goog:plugin.oauth.OAuthPlugin"
       ]
     }
   },
