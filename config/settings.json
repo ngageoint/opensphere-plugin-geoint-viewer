@@ -38,6 +38,10 @@
       "after": "div.tr",
       "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     },
+    "crossOrigin": [{
+      "pattern": "^https?://hiperlook.geointservices.io/",
+      "crossOrigin": "use-credentials"
+    }],
     "providers": {
       "gs-hiperlook": {
         "type": "ogc",
