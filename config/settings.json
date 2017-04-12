@@ -14,6 +14,22 @@
         {
           "logoPath": "images/vendor/cesium.png",
           "name": "Cesium"
+        },
+        {
+          "name": "AngularJS",
+          "logoPath": "images/vendor/angular.png"
+        },
+        {
+          "name": "Closure",
+          "logoPath": "images/vendor/closure.png"
+        },
+        {
+          "name": "Bootstrap",
+          "logoPath": "images/vendor/bootstrap.png"
+        },
+        {
+          "name": "jQuery",
+          "logoPath": "images/vendor/jquery.png"
         }
       ]
     },
