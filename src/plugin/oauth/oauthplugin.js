@@ -47,7 +47,7 @@ plugin.oauth.OAuthPlugin.prototype.errorMessage = null;
 plugin.oauth.OAuthPlugin.prototype.init = function() {
   os.net.RequestHandlerFactory.addHandler(plugin.oauth.OAuthHandler);
 
-  this.request = new os.net.Request('https://sif.dev.geointservices.io');
+  this.request = new os.net.Request('https://gv-geoaxis.dev.geointservices.io/config/settings.json');
   this.request.load();
 
   // all done
