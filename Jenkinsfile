@@ -146,7 +146,7 @@ ls -lrt
               fi
               """
 //              sh 'ls -altr'
-              withCredentials([string(credentialsId: 'sonar-publish', variable: 'sonar_login')]) {
+              withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
                 sh """mvn sonar:sonar \\
                   -Dsonar.host.url=https://sonar.geointservices.io \\
                   -Dsonar.login=${sonar_login} \\
