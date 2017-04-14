@@ -7,6 +7,7 @@ goog.require('os.net.Request');
 goog.require('os.plugin.IPlugin');
 goog.require('os.plugin.PluginManager');
 goog.require('plugin.oauth.OAuthHandler');
+goog.require('plugin.oauth.PopupManager');
 
 
 
@@ -50,8 +51,20 @@ plugin.oauth.OAuthPlugin.prototype.init = function() {
   this.request = new os.net.Request('https://gv-geoaxis.dev.geointservices.io/config/settings.json');
   this.request.load();
 
+  os.dispatcher.listen(plugin.oauth.EventType.ADD_AUTH_HANDLER, this.handleAdd_);
+
   // all done
   this.dispatchEvent(new goog.events.Event(goog.events.EventType.LOAD));
+};
+
+
+/**
+ * Handle auth adds
+ * @param {goog.events.Event} evt The event
+ */
+plugin.oauth.OAuthPlugin.prototype.handleAdd_ = function(evt) {
+  var handler = /** @type {!plugin.oauth.OAuthHandler} */ (evt.target);
+  plugin.oauth.PopupManager.getInstance().add(handler);
 };
 
 

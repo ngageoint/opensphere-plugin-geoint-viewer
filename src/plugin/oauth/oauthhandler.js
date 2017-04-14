@@ -1,9 +1,18 @@
+goog.provide('plugin.oauth.EventType');
 goog.provide('plugin.oauth.OAuthHandler');
 goog.require('goog.Uri');
+goog.require('goog.events.Event');
 goog.require('goog.log');
 goog.require('goog.log.Logger');
 goog.require('os.net.ExtDomainHandler');
-goog.require('plugin.oauth.loginDirective');
+
+
+/**
+ * @enum {string}
+ */
+plugin.oauth.EventType = {
+  ADD_AUTH_HANDLER: 'addAuthHandler'
+};
 
 
 /**
@@ -51,7 +60,7 @@ plugin.oauth.OAuthHandler.prototype.execute = function(
  */
 plugin.oauth.OAuthHandler.prototype.onXhrComplete = function(opt_evt) {
   // see if we got redirected to something authy
-  var isHtml = /<(html|body)>/i;
+  var isHtml = /<(html|body)(\s+|>)/i;
   var isSignin = /(sign|log)\s*in/i;
   var resp = this.getResponse();
 
@@ -60,7 +69,9 @@ plugin.oauth.OAuthHandler.prototype.onXhrComplete = function(opt_evt) {
     if (this.addCrossOrigin()) {
       this.retry();
     } else {
-      plugin.oauth.LoginWindowCtrl.launch(this);
+      var evt = new goog.events.Event(plugin.oauth.EventType.ADD_AUTH_HANDLER);
+      evt.target = this;
+      os.dispatcher.dispatchEvent(evt);
     }
   } else {
     plugin.oauth.OAuthHandler.base(this, 'onXhrComplete', opt_evt);
@@ -90,7 +101,7 @@ plugin.oauth.OAuthHandler.prototype.addCrossOrigin = function() {
     var url = this.getLoginUri();
 
     // this URL is going to require credentials
-    var regex = new RegExp('^' + url.getScheme() + '://' + url.getDomain().replace(/\./g, '\\.'));
+    var regex = new RegExp('^' + url.getScheme() + '://' + url.getDomain().replace(/\./g, '\\.') + '/');
 
     // add it for the session
     os.net.registerCrossOrigin(regex, os.net.CrossOrigin.USE_CREDENTIALS);

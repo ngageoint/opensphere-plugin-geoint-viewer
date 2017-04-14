@@ -50,6 +50,14 @@ plugin.oauth.LoginWindowCtrl = function($scope, $element) {
   this.scope_.$on('$destroy', this.destroy_.bind(this));
 };
 
+
+/**
+ * @type {string}
+ * @const
+ */
+plugin.oauth.LoginWindowCtrl.WINDOW_ID = 'oauth-login';
+
+
 /**
  * clean up
  * @private
@@ -75,11 +83,10 @@ goog.exportProperty(plugin.oauth.LoginWindowCtrl.prototype, 'close', plugin.oaut
  */
 plugin.oauth.LoginWindowCtrl.prototype.finish = function() {
   var handler = /** @type {plugin.oauth.OAuthHandler} */ (this.scope_['handler']);
-  handler.addCrossOrigin();
-  handler.retry();
-  os.ui.window.close(this.element_);
+  plugin.oauth.PopupManager.getInstance().resolve(handler);
 };
 goog.exportProperty(plugin.oauth.LoginWindowCtrl.prototype, 'finish', plugin.oauth.LoginWindowCtrl.prototype.finish);
+
 
 /**
  * @param {plugin.oauth.OAuthHandler} handler The request handler
@@ -87,6 +94,7 @@ goog.exportProperty(plugin.oauth.LoginWindowCtrl.prototype, 'finish', plugin.oau
 plugin.oauth.LoginWindowCtrl.launch = function(handler) {
   var url = handler.getLoginUri();
   os.ui.window.create({
+    'id': plugin.oauth.LoginWindowCtrl.WINDOW_ID,
     'label': 'Login to ' + url.getDomain(),
     'icon': 'fa fa-sign-in',
     'no-scroll': 'true',
