@@ -46,7 +46,15 @@ plugin.oauth.LoginWindowCtrl = function($scope, $element) {
    */
   this.element_ = $element;
 
-  this.element_.find('iframe').attr('src', this.scope_['url']);
+  /**
+   * @type {number}
+   * @private
+   */
+  this.frameLoads_ = 0;
+
+  var iframe = this.element_.find('iframe');
+  iframe.on('load', this.onFrameLoad_.bind(this));
+  iframe.attr('src', this.scope_['url']);
   this.scope_.$on('$destroy', this.destroy_.bind(this));
 };
 
@@ -69,23 +77,16 @@ plugin.oauth.LoginWindowCtrl.prototype.destroy_ = function() {
 
 
 /**
- * Close the window
+ * Count the frame loads and retry the request
+ * @private
  */
-plugin.oauth.LoginWindowCtrl.prototype.close = function() {
-  // TODO: cancel/abort?
-  os.ui.window.close(this.element_);
-};
-goog.exportProperty(plugin.oauth.LoginWindowCtrl.prototype, 'close', plugin.oauth.LoginWindowCtrl.prototype.close);
+plugin.oauth.LoginWindowCtrl.prototype.onFrameLoad_ = function() {
+  this.frameLoads_++;
 
-
-/**
- * On user says finished
- */
-plugin.oauth.LoginWindowCtrl.prototype.finish = function() {
-  var handler = /** @type {plugin.oauth.OAuthHandler} */ (this.scope_['handler']);
-  plugin.oauth.PopupManager.getInstance().resolve(handler);
+  if (this.frameLoads_ > 1) {
+    /** @type {plugin.oauth.OAuthHandler} */ (this.scope_['handler']).retry();
+  }
 };
-goog.exportProperty(plugin.oauth.LoginWindowCtrl.prototype, 'finish', plugin.oauth.LoginWindowCtrl.prototype.finish);
 
 
 /**

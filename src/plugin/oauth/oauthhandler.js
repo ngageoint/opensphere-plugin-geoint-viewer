@@ -60,11 +60,16 @@ plugin.oauth.OAuthHandler.prototype.execute = function(
  */
 plugin.oauth.OAuthHandler.prototype.onXhrComplete = function(opt_evt) {
   // see if we got redirected to something authy
-  var isHtml = /<(html|body)(\s+|>)/i;
-  var isSignin = /(sign|log)\s*in/i;
   var resp = this.getResponse();
+  var regexSources = /** @type {Array<string>} */ (os.settings.get('plugin.oauth.regexes',
+      ['<(html|body)(\\s+|>)', '(sign|log)\\s*in']));
 
-  if (isHtml.test(resp) && isSignin.test(resp)) {
+  var isLogin = true;
+  for (var i = 0, n = regexSources.length; isLogin && i < n; i++) {
+    isLogin = new RegExp(regexSources[i], 'i').test(resp);
+  }
+
+  if (isLogin) {
     // see if we are just missing a credentials entry and try again
     if (this.addCrossOrigin()) {
       this.retry();
@@ -87,6 +92,8 @@ plugin.oauth.OAuthHandler.prototype.retry = function() {
   var self = this;
 
   setTimeout(function() {
+    // add cache defeater
+    self.lastArgs_[4] = true;
     self.execute.apply(self, self.lastArgs_);
   }, 1);
 };

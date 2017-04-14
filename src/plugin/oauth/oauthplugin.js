@@ -49,9 +49,11 @@ plugin.oauth.OAuthPlugin.prototype.init = function() {
   os.net.RequestHandlerFactory.addHandler(plugin.oauth.OAuthHandler);
 
   this.request = new os.net.Request('https://gv-geoaxis.dev.geointservices.io/config/settings.json');
+
   this.request.load();
 
   os.dispatcher.listen(plugin.oauth.EventType.ADD_AUTH_HANDLER, this.handleAdd_);
+
 
   // all done
   this.dispatchEvent(new goog.events.Event(goog.events.EventType.LOAD));

@@ -77,7 +77,18 @@ plugin.oauth.PopupManager.prototype.popup = function(handler) {
   // only open a popup if one is not already open
   if (!os.ui.window.exists(plugin.oauth.LoginWindowCtrl.WINDOW_ID)) {
     plugin.oauth.LoginWindowCtrl.launch(handler);
+    handler.listen(goog.net.EventType.SUCCESS, this.onSuccess_, true, this);
   }
+};
+
+
+/**
+ * Handle request success
+ * @param {goog.events.Event} evt The event
+ */
+plugin.oauth.PopupManager.prototype.onSuccess_ = function(evt) {
+  var handler = /** @type {plugin.oauth.OAuthHandler} */ (evt.target);
+  this.resolve(handler);
 };
 
 
@@ -89,6 +100,7 @@ plugin.oauth.PopupManager.prototype.close = function(handler) {
   if (win) {
     var scope = win.find('iframe').scope();
     if (scope && scope['handler'] === handler) {
+      handler.unlisten(goog.net.EventType.SUCCESS, this.onSuccess_, true, this);
       os.ui.window.close(win);
     }
   }
