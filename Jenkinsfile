@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-ANALYZE = false
+ANALYZE = true
 THREADFIX_ID = 58
 FORTIFY_ENABLED = false
 this_version = '0.0.0' // reset below
@@ -99,15 +99,13 @@ node('sl62') {
       }
     }
 
+    stash name: 'code', include: 'opensphere-plugin-geoint-viewer/src/**.js,opensphere-plugin-gbdx/src/**.js,opensphere-plugin-planetlabs/src/**.js,opensphere-plugin-overpass/src/**.js', useDefaultExcludes: false
+
     // build it
     dir('opensphere') {
       stage('build')
       sh 'npm run build'
       sh 'mv dist/opensphere dist/gv'
-
-      dir('dist') {
-        stash name: 'code', exclude: '.bundle/,.librarian/,modules/,tmp/,vendor/,spec/fixtures', useDefaultExcludes: false
-      }
 
       // Mark the artifact ZAP 'stage'....
       stage('ZAP Scan') {
