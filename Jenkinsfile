@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-ANALYZE = true
+ANALYZE = false
 THREADFIX_ID = 58
 FORTIFY_ENABLED = false
 this_version = '0.0.0' // reset below
@@ -121,7 +121,7 @@ node('sl62') {
       }
     }
 
-    stash name: 'code', include: sources.join(', '), useDefaultExcludes: false
+    stash name: 'geoint-viewer-source', include: sources.join(', '), useDefaultExcludes: false
 
     // build it
     dir('opensphere') {
@@ -153,11 +153,12 @@ node('sl62') {
         parallel (
           "sonarqube" : {
             node {
-              step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
-              unstash 'code'
-              sh """#!/bin/bash
-              if [[ ! -e pom.xml ]] ; then
-              cat > pom.xml <<'EOF'
+              dir('scans') {
+                step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
+                unstash 'geoint-viewer-source'
+                sh """#!/bin/bash
+                if [[ ! -e pom.xml ]] ; then
+                cat > pom.xml <<'EOF'
 <project>
 <modelVersion>4.0.0</modelVersion>
 <groupId>groupId</groupId>
@@ -166,23 +167,24 @@ node('sl62') {
 </project>
 EOF
 ls -lrt
-              fi
-              """
-//              sh 'ls -altr'
-              withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
-                sh """mvn sonar:sonar \\
-                  -Dsonar.host.url=https://sonar.geointservices.io \\
-                  -Dsonar.login=${sonar_login} \\
-                  -Dsonar.projectBaseDir=. \\
-                  -Dsonar.projectKey=fade:gv \\
-                  -Dsonar.projectName=gv \\
-                  -Dsonar.projectVersion=${this_version}\\
-                  -Dsonar.sources=.\\
-                  -Dsonar.tests=''\\
-                  -Dsonar.exclusions=node_modules/**/*\\
-                  -Dsonar.test.exclusions=node_modules/**/*\\
-                  -Dsonar.sourceEncoding=UTF-8\\
-                  """
+                fi
+                """
+  //              sh 'ls -altr'
+                withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
+                  sh """mvn sonar:sonar \\
+                    -Dsonar.host.url=https://sonar.geointservices.io \\
+                    -Dsonar.login=${sonar_login} \\
+                    -Dsonar.projectBaseDir=. \\
+                    -Dsonar.projectKey=fade:gv \\
+                    -Dsonar.projectName=gv \\
+                    -Dsonar.projectVersion=${this_version}\\
+                    -Dsonar.sources=.\\
+                    -Dsonar.tests=''\\
+                    -Dsonar.exclusions=node_modules/**/*\\
+                    -Dsonar.test.exclusions=node_modules/**/*\\
+                    -Dsonar.sourceEncoding=UTF-8\\
+                    """
+                }
               }
             }
           },
@@ -191,36 +193,38 @@ ls -lrt
               // ---------------------------------------------
               // Perform Static Security Scans
               step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
-              unstash 'code'
-              parallel(
-                // Fortify
-                fortify: {
-                  if (FORTIFY_ENABLED) {
-                    sh 'ls -altr'
-                    echo "scanning"
-                    // Fortify Scan
-                    // Clean up Fortify residue:
-                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} gv/*/opensphere.min.js"
-                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
-                    // archive includes: '*.fpr'
-                    uploadToThreadfix("fortifyResults-${this_version}.fpr")
-                    // Clean up Fortify residue:
-                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                  } else {
-                    echo 'Fortify is disabled'
+              unstash 'geoint-viewer-source'
+              dir('scans') {
+                parallel(
+                  // Fortify
+                  fortify: {
+                    if (FORTIFY_ENABLED) {
+                      sh 'ls -altr'
+                      echo "scanning"
+                      // Fortify Scan
+                      // Clean up Fortify residue:
+                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} '.'"
+                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
+                      // archive includes: '*.fpr'
+                      uploadToThreadfix("fortifyResults-${this_version}.fpr")
+                      // Clean up Fortify residue:
+                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                    } else {
+                      echo 'Fortify is disabled'
+                    }
+                  },
+                  // OWASP Dependency Check
+                  depcheck: {
+                    echo "dependency-check"
+                    // Dependency-Check Scan
+                    sh "pwd && ls -al"
+                    sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
+                    fileExists 'dependency-check-report.xml'
+                    uploadToThreadfix('dependency-check-report.xml')
                   }
-                },
-                // OWASP Dependency Check
-                depcheck: {
-                  echo "dependency-check"
-                  // Dependency-Check Scan
-                  sh "pwd && ls -al"
-                  sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
-                  fileExists 'dependency-check-report.xml'
-                  uploadToThreadfix('dependency-check-report.xml')
-                }
-              )
+                )
+              }
             }
           }
         )
