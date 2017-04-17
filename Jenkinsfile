@@ -123,18 +123,19 @@ node('sl62') {
         sh "cat dist/gv-dev-zapreport.xml"
         uploadToThreadfix('dist/gv-dev-zapreport.xml')
       }
+    }
 
-      stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
-        if (ANALYZE) {
-          // ---------------------------------------------
-          parallel (
-            "sonarqube" : {
-              node {
-                step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
-                unstash 'code'
-                sh """#!/bin/bash
-                if [[ ! -e pom.xml ]] ; then
-                cat > pom.xml <<'EOF'
+    stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
+      if (ANALYZE) {
+        // ---------------------------------------------
+        parallel (
+          "sonarqube" : {
+            node {
+              step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
+              unstash 'code'
+              sh """#!/bin/bash
+              if [[ ! -e pom.xml ]] ; then
+              cat > pom.xml <<'EOF'
 <project>
 <modelVersion>4.0.0</modelVersion>
 <groupId>groupId</groupId>
@@ -143,79 +144,81 @@ node('sl62') {
 </project>
 EOF
 ls -lrt
-                fi
-                """
-  //              sh 'ls -altr'
-                withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
-                  sh """mvn sonar:sonar \\
-                    -Dsonar.host.url=https://sonar.geointservices.io \\
-                    -Dsonar.login=${sonar_login} \\
-                    -Dsonar.projectBaseDir=. \\
-                    -Dsonar.projectKey=fade:gv \\
-                    -Dsonar.projectName=gv \\
-                    -Dsonar.projectVersion=${this_version}\\
-                    -Dsonar.sources=.\\
-                    -Dsonar.tests=''\\
-                    -Dsonar.exclusions=node_modules/**/*\\
-                    -Dsonar.test.exclusions=node_modules/**/*\\
-                    -Dsonar.sourceEncoding=UTF-8\\
-                    """
-                }
-              }
-            },
-            "stream 2" : {
-              node('sl62') {
-                // ---------------------------------------------
-                // Perform Static Security Scans
-                step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
-                unstash 'code'
-                parallel(
-                  // Fortify
-                  fortify: {
-                    if (FORTIFY_ENABLED) {
-                      sh 'ls -altr'
-                      echo "scanning"
-                      // Fortify Scan
-                      // Clean up Fortify residue:
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} gv/*/opensphere.min.js"
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
-                      // archive includes: '*.fpr'
-                      uploadToThreadfix("fortifyResults-${this_version}.fpr")
-                      // Clean up Fortify residue:
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                    } else {
-                      echo 'Fortify is disabled'
-                    }
-                  },
-                  // OWASP Dependency Check
-                  depcheck: {
-                    echo "dependency-check"
-                    // Dependency-Check Scan
-                    sh "pwd && ls -al"
-                    sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
-                    fileExists 'dependency-check-report.xml'
-                    uploadToThreadfix('dependency-check-report.xml')
-                  }
-                )
+              fi
+              """
+//              sh 'ls -altr'
+              withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
+                sh """mvn sonar:sonar \\
+                  -Dsonar.host.url=https://sonar.geointservices.io \\
+                  -Dsonar.login=${sonar_login} \\
+                  -Dsonar.projectBaseDir=. \\
+                  -Dsonar.projectKey=fade:gv \\
+                  -Dsonar.projectName=gv \\
+                  -Dsonar.projectVersion=${this_version}\\
+                  -Dsonar.sources=.\\
+                  -Dsonar.tests=''\\
+                  -Dsonar.exclusions=node_modules/**/*\\
+                  -Dsonar.test.exclusions=node_modules/**/*\\
+                  -Dsonar.sourceEncoding=UTF-8\\
+                  """
               }
             }
-          )
+          },
+          "stream 2" : {
+            node('sl62') {
+              // ---------------------------------------------
+              // Perform Static Security Scans
+              step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
+              unstash 'code'
+              parallel(
+                // Fortify
+                fortify: {
+                  if (FORTIFY_ENABLED) {
+                    sh 'ls -altr'
+                    echo "scanning"
+                    // Fortify Scan
+                    // Clean up Fortify residue:
+                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} gv/*/opensphere.min.js"
+                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
+                    // archive includes: '*.fpr'
+                    uploadToThreadfix("fortifyResults-${this_version}.fpr")
+                    // Clean up Fortify residue:
+                    sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                  } else {
+                    echo 'Fortify is disabled'
+                  }
+                },
+                // OWASP Dependency Check
+                depcheck: {
+                  echo "dependency-check"
+                  // Dependency-Check Scan
+                  sh "pwd && ls -al"
+                  sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
+                  fileExists 'dependency-check-report.xml'
+                  uploadToThreadfix('dependency-check-report.xml')
+                }
+              )
+            }
+          }
+        )
+      }
+    }
+
+    dir('opensphere') {
+      stage('package') {
+        dir('dist') {
+          sh "zip -q -r gv-${this_version}.zip gv"
+          sh "ls -l gv-${this_version}.zip"
         }
-      }
 
-      stage('package')
-      dir('dist') {
-        sh "zip -q -r gv-${this_version}.zip gv"
-        sh "ls -l gv-${this_version}.zip"
-      }
-
-      try {
-        // newer Jenkins
-        archiveArtifacts 'dist/*.zip'
-      } catch (NoSuchMethodError e) {
-        // older Jenkins
-        archive 'dist/*.zip'
+        try {
+          // newer Jenkins
+          archiveArtifacts 'dist/*.zip'
+        } catch (NoSuchMethodError e) {
+          // older Jenkins
+          archive 'dist/*.zip'
+        }
       }
     }
 
