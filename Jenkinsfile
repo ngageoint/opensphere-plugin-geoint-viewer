@@ -38,11 +38,17 @@ node('sl62') {
       }
     }
 
+    def sources = []
+
     // get main opensphere project
     dir('opensphere') {
       stage('install opensphere') {
         try{
           installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/core-ui.git')
+          sources = sources.plus([
+            'opensphere/src',
+            'opensphere/package.json'
+          ])
           npmInstall()
         } catch (NoSuchMethodError) {
           error 'Error installing extra plugins'
@@ -53,6 +59,10 @@ node('sl62') {
     dir('opensphere-plugin-geoint-viewer') {
       // gotta run npm to run tests and docs
       stage('npm')
+      sources = sources.plus([
+        'opensphere-plugin-geoint-viewer/src',
+        'opensphere-plugin-geoint-viewer/package.json'
+      ])
       // except that there are currently no tests because GV is just a branding wrapper
       //sh 'mkdir -p node_modules'
       //sh 'ln -s ../../opensphere node_modules/opensphere'
@@ -74,6 +84,10 @@ node('sl62') {
     dir('opensphere-plugin-planetlabs') {
       stage('install planetlabs') {
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-planetlabs.git')
+        sources = sources.plus([
+          'opensphere-plugin-planetlabs/src',
+          'opensphere-plugin-planetlabs/package.json'
+        ])
         // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
         //sh 'mkdir -p node_modules'
         //sh 'ln -s ../../opensphere node_modules/opensphere'
@@ -85,6 +99,10 @@ node('sl62') {
     dir('opensphere-plugin-overpass') {
       stage('install overpass') {
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-overpass.git')
+        sources = sources.plus([
+          'opensphere-plugin-overpass/src',
+          'opensphere-plugin-overpass/package.json'
+        ])
         // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
         //sh 'mkdir -p node_modules'
         //sh 'ln -s ../../opensphere node_modules/opensphere'
@@ -96,10 +114,14 @@ node('sl62') {
     dir('opensphere-plugin-gbdx') {
       stage('install gbdx') {
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/opensphere-plugin-gbdx.git')
+        sources = sources.plus([
+          'opensphere-plugin-gbdx/src',
+          'opensphere-plugin-gbdx/package.json'
+        ])
       }
     }
 
-    stash name: 'code', include: 'opensphere-plugin-geoint-viewer/src/**.js,opensphere-plugin-gbdx/src/**.js,opensphere-plugin-planetlabs/src/**.js,opensphere-plugin-overpass/src/**.js', useDefaultExcludes: false
+    stash name: 'code', include: sources.join(', '), useDefaultExcludes: false
 
     // build it
     dir('opensphere') {
