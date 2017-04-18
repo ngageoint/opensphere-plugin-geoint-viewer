@@ -193,9 +193,9 @@ ls -lrt
             node('sl62') {
               // ---------------------------------------------
               // Perform Static Security Scans
-              step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
-              unstash 'geoint-viewer-source'
               dir('scans') {
+                sh "rm -rf *"
+                unstash 'geoint-viewer-source'
                 parallel(
                   // Fortify
                   fortify: {
