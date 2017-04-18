@@ -2,7 +2,7 @@
 
 ANALYZE = true
 THREADFIX_ID = 58
-FORTIFY_ENABLED = true
+FORTIFY_ENABLED = false
 this_version = '0.0.0' // reset below
 
 def err = null
@@ -205,7 +205,7 @@ ls -lrt
                       // Fortify Scan
                       // Clean up Fortify residue:
                       sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} '.'"
+                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -debug"
                       sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
                       // archive includes: '*.fpr'
                       uploadToThreadfix("fortifyResults-${this_version}.fpr")
