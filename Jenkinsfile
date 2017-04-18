@@ -46,7 +46,7 @@ node('sl62') {
         try{
           installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/core-ui.git')
           sources = sources.plus([
-            'opensphere/src/**.js',
+            'opensphere/src/**',
             'opensphere/package.json'
           ])
           npmInstall()
@@ -60,7 +60,7 @@ node('sl62') {
       // gotta run npm to run tests and docs
       stage('npm')
       sources = sources.plus([
-        'opensphere-plugin-geoint-viewer/src/**.js',
+        'opensphere-plugin-geoint-viewer/src/**',
         'opensphere-plugin-geoint-viewer/package.json'
       ])
       // except that there are currently no tests because GV is just a branding wrapper
@@ -85,7 +85,7 @@ node('sl62') {
       stage('install planetlabs') {
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-planetlabs.git')
         sources = sources.plus([
-          'opensphere-plugin-planetlabs/src/**.js',
+          'opensphere-plugin-planetlabs/src/**',
           'opensphere-plugin-planetlabs/package.json'
         ])
         // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
@@ -100,7 +100,7 @@ node('sl62') {
       stage('install overpass') {
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-overpass.git')
         sources = sources.plus([
-          'opensphere-plugin-overpass/src/**.js',
+          'opensphere-plugin-overpass/src/**',
           'opensphere-plugin-overpass/package.json'
         ])
         // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
@@ -115,7 +115,7 @@ node('sl62') {
       stage('install gbdx') {
         installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/opensphere-plugin-gbdx.git')
         sources = sources.plus([
-          'opensphere-plugin-gbdx/src/**.js',
+          'opensphere-plugin-gbdx/src/**',
           'opensphere-plugin-gbdx/package.json'
         ])
       }
