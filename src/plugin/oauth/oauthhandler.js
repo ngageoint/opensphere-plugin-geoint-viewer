@@ -92,9 +92,11 @@ plugin.oauth.OAuthHandler.prototype.retry = function() {
   var self = this;
 
   setTimeout(function() {
-    // add cache defeater
-    self.lastArgs_[4] = true;
-    self.execute.apply(self, self.lastArgs_);
+    if (!self.isDisposed()) {
+      // add cache defeater
+      self.lastArgs_[4] = true;
+      self.execute.apply(self, self.lastArgs_);
+    }
   }, 1);
 };
 
