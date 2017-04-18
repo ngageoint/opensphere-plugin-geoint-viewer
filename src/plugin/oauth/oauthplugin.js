@@ -46,6 +46,7 @@ plugin.oauth.OAuthPlugin.prototype.errorMessage = null;
  * @inheritDoc
  */
 plugin.oauth.OAuthPlugin.prototype.init = function() {
+  os.net.RequestHandlerFactory.removeHandler(os.net.ExtDomainHandler);
   os.net.RequestHandlerFactory.addHandler(plugin.oauth.OAuthHandler);
 
   this.request = new os.net.Request('https://gv-geoaxis.dev.geointservices.io/config/settings.json');
