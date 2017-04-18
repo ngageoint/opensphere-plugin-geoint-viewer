@@ -45,10 +45,6 @@ node('sl62') {
       stage('install opensphere') {
         try{
           installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/core-ui.git')
-          sources = sources.plus([
-            'opensphere/src/**',
-            'opensphere/package.json'
-          ])
           npmInstall()
         } catch (NoSuchMethodError) {
           error 'Error installing extra plugins'
