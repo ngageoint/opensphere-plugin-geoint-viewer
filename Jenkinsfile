@@ -2,7 +2,7 @@
 
 ANALYZE = true
 THREADFIX_ID = 58
-FORTIFY_ENABLED = false
+FORTIFY_ENABLED = true
 this_version = '0.0.0' // reset below
 
 def err = null
