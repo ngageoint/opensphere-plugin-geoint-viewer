@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-ANALYZE = false
+ANALYZE = true
 THREADFIX_ID = 58
 FORTIFY_ENABLED = false
 this_version = '0.0.0' // reset below
@@ -156,6 +156,7 @@ node('sl62') {
               dir('scans') {
                 step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
                 unstash 'geoint-viewer-source'
+                sh "pwd && ls -al *"
                 sh """#!/bin/bash
                 if [[ ! -e pom.xml ]] ; then
                 cat > pom.xml <<'EOF'
