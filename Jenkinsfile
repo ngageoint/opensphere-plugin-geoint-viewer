@@ -121,7 +121,7 @@ node('sl62') {
       }
     }
 
-    stash name: 'geoint-viewer-source', include: sources.join(', '), useDefaultExcludes: false
+    stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
 
     // build it
     dir('opensphere') {
@@ -154,7 +154,7 @@ node('sl62') {
           "sonarqube" : {
             node {
               dir('scans') {
-                step([$class: 'WsCleanup', cleanWhenFailure: false, notFailBuild: true])
+                sh "rm -rf *"
                 unstash 'geoint-viewer-source'
                 sh "pwd && ls -al *"
                 sh """#!/bin/bash
