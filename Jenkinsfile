@@ -148,7 +148,7 @@ node('sl62') {
     }
 
     stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
-      if (ANALYZE) {
+      if (env.BRANCH_NAME == 'master' && ANALYZE) {
         // ---------------------------------------------
         parallel (
           "sonarqube" : {
@@ -238,35 +238,42 @@ ls -lrt
           sh "ls -l gv-${this_version}.zip"
         }
 
-        try {
-          // newer Jenkins
-          archiveArtifacts 'dist/*.zip'
-        } catch (NoSuchMethodError e) {
-          // older Jenkins
-          archive 'dist/*.zip'
+        if (env.BRANCH_NAME == 'master') {
+          try {
+            // newer Jenkins
+            archiveArtifacts 'dist/*.zip'
+          } catch (NoSuchMethodError e) {
+            // older Jenkins
+            archive 'dist/*.zip'
+          }
         }
       }
     }
 
     dir('gv.config') {
-      stage('package networks')
-      installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv.config.git')
-      sh './package.sh ../opensphere/dist/gv-*.zip'
+      stage('package networks') {
+        if (env.BRANCH_NAME == 'master') {
+          installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv.config.git')
+          sh './package.sh ../opensphere/dist/gv-*.zip'
 
-      try {
-        // newer Jenkins
-        archiveArtifacts 'dist/*.zip'
-      } catch (NoSuchMethodError e) {
-        // older Jenkins
-        archive 'dist/*.zip'
+          try {
+            // newer Jenkins
+            archiveArtifacts 'dist/*.zip'
+          } catch (NoSuchMethodError e) {
+            // older Jenkins
+            archive 'dist/*.zip'
+          }
+        
+          stage('publish')
+          sh './publish.sh'
+        }
       }
-    
-      stage('publish')
-      sh './publish.sh'
     }
 
-    // kick off deploy build
-    build job: "GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test", quietPeriod: 5, wait: false
+    if (env.BRANCH_NAME == 'master') {
+      // kick off deploy build
+      build job: "GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test", quietPeriod: 5, wait: false
+    }
   } catch (e) {
     currentBuild.result = 'FAILURE'
     err = e
