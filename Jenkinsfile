@@ -7,7 +7,7 @@ this_version = '0.0.0' // reset below
 
 def err = null
 
-node('sl62') {
+node('linux') {
   try {
     dir('opensphere-plugin-geoint-viewer') {
       stage('scm')
@@ -44,7 +44,7 @@ node('sl62') {
     dir('opensphere') {
       stage('install opensphere') {
         try{
-          installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/core-ui.git')
+          installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/core-ui.git')
           npmInstall()
         } catch (NoSuchMethodError) {
           error 'Error installing extra plugins'
@@ -79,7 +79,7 @@ node('sl62') {
     // Add Planet Labs plugin
     dir('opensphere-plugin-planetlabs') {
       stage('install planetlabs') {
-        installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-planetlabs.git')
+        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv-plugin-planetlabs.git')
         sources = sources.plus([
           'opensphere-plugin-planetlabs/src/**',
           'opensphere-plugin-planetlabs/package.json'
@@ -94,7 +94,7 @@ node('sl62') {
     // Add Overpass plugin
     dir('opensphere-plugin-overpass') {
       stage('install overpass') {
-        installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv-plugin-overpass.git')
+        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv-plugin-overpass.git')
         sources = sources.plus([
           'opensphere-plugin-overpass/src/**',
           'opensphere-plugin-overpass/package.json'
@@ -109,7 +109,7 @@ node('sl62') {
     // add gbdx plugin
     dir('opensphere-plugin-gbdx') {
       stage('install gbdx') {
-        installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/opensphere-plugin-gbdx.git')
+        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/opensphere-plugin-gbdx.git')
         sources = sources.plus([
           'opensphere-plugin-gbdx/src/**',
           'opensphere-plugin-gbdx/package.json'
@@ -121,9 +121,10 @@ node('sl62') {
 
     // build it
     dir('opensphere') {
-      stage('build')
-      sh 'npm run build'
-      sh 'mv dist/opensphere dist/gv'
+      stage('build') {
+        sh 'npm run build'
+        sh 'mv dist/opensphere dist/gv'
+      }
 
       // Mark the artifact ZAP 'stage'....
       stage('ZAP Scan') {
@@ -152,7 +153,7 @@ node('sl62') {
               dir('scans') {
                 sh "rm -rf *"
                 unstash 'geoint-viewer-source'
-                sh "pwd && ls -al *"
+                //sh "pwd && ls -al *"
                 sh """#!/bin/bash
                 if [[ ! -e pom.xml ]] ; then
                 cat > pom.xml <<'EOF'
