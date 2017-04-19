@@ -9,32 +9,33 @@ def err = null
 
 node('linux') {
   try {
+    try {
+      beforeCheckout()
+    } catch (NoSuchMethodError e) {
+    }
+
     dir('opensphere-plugin-geoint-viewer') {
-      stage('scm')
-      try {
-        beforeCheckout()
-      } catch (NoSuchMethodError e) {
-      }
+      stage('scm') {
+        sh "echo 'checking out scm'"
 
-      sh "echo 'checking out scm'"
+        // don't do this on first run
+        sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
+        checkout scm
 
-      // don't do this on first run
-      sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
-      checkout scm
+        sh "echo 'after checkout'"
+        try {
+          // eh... no?
+          //afterCheckout()
+        } catch (NoSuchMethodError e) {
+        }
 
-      sh "echo 'after checkout'"
-      try {
-        // eh... no?
-        //afterCheckout()
-      } catch (NoSuchMethodError e) {
-      }
+        GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
 
-      GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-
-      try {
-        this_version = sh(script: 'git describe --exact-match HEAD', returnStdout: true).trim()
-      } catch (e) {
-        this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+        try {
+          this_version = sh(script: 'git describe --exact-match HEAD', returnStdout: true).trim()
+        } catch (e) {
+          this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+        }
       }
     }
 
