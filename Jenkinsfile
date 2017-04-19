@@ -251,7 +251,7 @@ ls -lrt
     dir('gv.config') {
       stage('package networks') {
         if (env.BRANCH_NAME == 'master') {
-          installPlugins('master', 'https://gitlab.devops.geointservices.io/uncanny-cougar/gv.config.git')
+          installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
           sh './package.sh ../opensphere/dist/gv-*.zip'
 
           try {
