@@ -7,7 +7,7 @@ this_version = '0.0.0' // reset below
 
 def err = null
 
-node('linux') {
+node('sl62') {
   try {
     try {
       beforeCheckout()
@@ -55,26 +55,27 @@ node('linux') {
 
     dir('opensphere-plugin-geoint-viewer') {
       // gotta run npm to run tests and docs
-      stage('npm')
-      sources = sources.plus([
-        'opensphere-plugin-geoint-viewer/src/**',
-        'opensphere-plugin-geoint-viewer/package.json'
-      ])
-      // except that there are currently no tests because GV is just a branding wrapper
-      //sh 'mkdir -p node_modules'
-      //sh 'ln -s ../../opensphere node_modules/opensphere'
-      //npmInstall()
+      stage('npm') {
+        sources = sources.plus([
+          'opensphere-plugin-geoint-viewer/src/**',
+          'opensphere-plugin-geoint-viewer/package.json'
+        ])
+        // except that there are currently no tests because GV is just a branding wrapper
+        //sh 'mkdir -p node_modules'
+        //sh 'ln -s ../../opensphere node_modules/opensphere'
+        //npmInstall()
 
-      // run tests
+        // run tests
 
-      // gen docs
-      /*stage('docs')
-      sh 'npm run compile:dossier'
+        // gen docs
+        /*stage('docs')
+        sh 'npm run compile:dossier'
 
-      try {
-        deployDocs()
-      } catch (NoSuchMethodError e) {
-      }*/
+        try {
+          deployDocs()
+        } catch (NoSuchMethodError e) {
+        }*/
+      }
     }
 
     // Add Planet Labs plugin
