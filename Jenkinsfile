@@ -44,12 +44,12 @@ node('linux') {
     // get main opensphere project
     dir('opensphere') {
       stage('install opensphere') {
-        try{
+        //try{
           installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/core-ui.git')
           npmInstall()
-        } catch (NoSuchMethodError) {
+        /*} catch (NoSuchMethodError) {
           error 'Error installing extra plugins'
-        }
+        }*/
       }
     }
 
