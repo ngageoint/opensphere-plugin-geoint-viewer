@@ -212,14 +212,16 @@ ls -lrt
           }
         },
         "depcheck": {
-          node {
-            dir('scans') {
-              sh 'rm -rf *'
-              unstash 'geoint-viewer-source'
-              def depHome = tool 'owasp_dependency_check'
-              sh "${depHome}/bin/dependency-check.sh --project 'GV' --scan './' --format 'ALL' --enableExperimental --disableBundleAudit"
-              fileExists 'dependency-check-report.xml'
-              uploadToThreadfix('dependency-check-report.xml')
+          if (env.BRANCH_NAME == 'master' && ANALYZE) {
+            // the jenkins tool installation version takes forever to run because it has to download and set up its database
+            node('sl62') {
+              dir('scans') {
+                sh 'rm -rf *'
+                unstash 'geoint-viewer-source'
+                sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
+                fileExists 'dependency-check-report.xml'
+                uploadToThreadfix('dependency-check-report.xml')
+              }
             }
           }
         }
