@@ -127,29 +127,32 @@ node('sl62') {
         sh 'npm run build'
         sh 'mv dist/opensphere dist/gv'
       }
-
-      // Mark the artifact ZAP 'stage'....
-      stage('ZAP Scan') {
-        def zapHome = tool name: 'ZAProxy_v2_5_0'
-        def dir = pwd()
-        for (int i=0; i<10; i++) {
-          def http = sh script: "curl -skL -o /dev/null -w \"%{http_code}\" https://oauth.geointservices.io || true", returnStdout: true
-          echo "got ${http} response"
-          if(http.trim() == '200') {
-            break;
-          }
-          sleep 10
-        }
-        sh "${zapHome}/zap.sh -cmd -quickout '${dir}/dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
-        sh "cat dist/gv-dev-zapreport.xml"
-        uploadToThreadfix('dist/gv-dev-zapreport.xml')
-      }
     }
 
     stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
       if (env.BRANCH_NAME == 'master' && ANALYZE) {
         // ---------------------------------------------
         parallel (
+          "zap": {
+            node {
+              // Mark the artifact ZAP 'stage'....
+              stage('ZAP Scan') {
+                def zapHome = tool name: 'ZAProxy_v2_5_0'
+                def dir = pwd()
+                for (int i=0; i<10; i++) {
+                  def http = sh script: "curl -skL -o /dev/null -w \"%{http_code}\" https://oauth.geointservices.io || true", returnStdout: true
+                  echo "got ${http} response"
+                  if(http.trim() == '200') {
+                    break;
+                  }
+                  sleep 10
+                }
+                sh "${zapHome}/zap.sh -cmd -quickout '${dir}/dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
+                sh "cat dist/gv-dev-zapreport.xml"
+                uploadToThreadfix('dist/gv-dev-zapreport.xml')
+              }
+            }
+          },
           "sonarqube" : {
             node {
               dir('scans') {
