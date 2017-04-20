@@ -129,14 +129,14 @@ node('sl62') {
       }
     }
 
-    stage('Static Code Analysis - SonarQube, Fortify, OWASP Dependecy Checker') {
+    stage('Scans - ZAP, SonarQube, Fortify, OWASP Dependecy Checker') {
       if (env.BRANCH_NAME == 'master' && ANALYZE) {
         // ---------------------------------------------
         parallel (
           "zap": {
             node {
-              // Mark the artifact ZAP 'stage'....
-              stage('ZAP Scan') {
+              dir('scans') {
+                // Mark the artifact ZAP 'stage'....
                 def zapHome = tool name: 'ZAProxy_v2_5_0'
                 def dir = pwd()
                 for (int i=0; i<10; i++) {
@@ -147,9 +147,9 @@ node('sl62') {
                   }
                   sleep 10
                 }
-                sh "${zapHome}/zap.sh -cmd -quickout '${dir}/dist/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
-                sh "cat dist/gv-dev-zapreport.xml"
-                uploadToThreadfix('dist/gv-dev-zapreport.xml')
+                sh "${zapHome}/zap.sh -cmd -quickout '${dir}/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
+                sh "cat gv-dev-zapreport.xml"
+                uploadToThreadfix('gv-dev-zapreport.xml')
               }
             }
           },
