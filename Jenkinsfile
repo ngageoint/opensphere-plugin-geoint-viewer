@@ -121,19 +121,16 @@ node('sl62') {
 
     stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
 
-    // build it
-    dir('opensphere') {
-      stage('build') {
-        sh 'npm run build'
-        sh 'mv dist/opensphere dist/gv'
-      }
-    }
-
-    stage('Scans - ZAP, SonarQube, Fortify, OWASP Dependecy Checker') {
-      if (env.BRANCH_NAME == 'master' && ANALYZE) {
-        // ---------------------------------------------
-        parallel (
-          "zap": {
+    stage('Build and Scans - ZAP, SonarQube, Fortify, OWASP Dependecy Checker') {
+      parallel (
+        "build": {
+          dir('opensphere') {
+            sh 'npm run build'
+            sh 'mv dist/opensphere dist/gv'
+          }
+        },
+        "zap": {
+          if (env.BRANCH_NAME == 'master' && ANALYZE) {
             node {
               dir('scans') {
                 // Mark the artifact ZAP 'stage'....
@@ -152,8 +149,10 @@ node('sl62') {
                 uploadToThreadfix('gv-dev-zapreport.xml')
               }
             }
-          },
-          "sonarqube" : {
+          }
+        },
+        "sonarqube" : {
+          if (env.BRANCH_NAME == 'master' && ANALYZE) {
             node {
               dir('scans') {
                 sh "rm -rf *"
@@ -172,7 +171,6 @@ EOF
 ls -lrt
                 fi
                 """
-  //              sh 'ls -altr'
                 withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
                   sh """mvn sonar:sonar \\
                     -Dsonar.host.url=https://sonar.geointservices.io \\
@@ -190,55 +188,47 @@ ls -lrt
                 }
               }
             }
-          },
-          "stream 2" : {
+          }
+        },
+        "fortify" : {
+          if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED) {
             node('sl62') {
               // ---------------------------------------------
               // Perform Static Security Scans
               dir('scans') {
                 sh "rm -rf *"
                 unstash 'geoint-viewer-source'
-                parallel(
-                  // Fortify
-                  fortify: {
-                    if (FORTIFY_ENABLED) {
-                      sh 'ls -altr'
-                      echo "scanning"
-                      // Fortify Scan
-                      // Clean up Fortify residue:
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} '.'"
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
-                      // archive includes: '*.fpr'
-                      uploadToThreadfix("fortifyResults-${this_version}.fpr")
-                      // Clean up Fortify residue:
-                      sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
-                    } else {
-                      echo 'Fortify is disabled'
-                    }
-                  },
-                  // OWASP Dependency Check
-                  depcheck: {
-                    echo "dependency-check"
-                    // Dependency-Check Scan
-                    sh "pwd && ls -al"
-                    sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
-                    fileExists 'dependency-check-report.xml'
-                    uploadToThreadfix('dependency-check-report.xml')
-                  }
-                )
+                // Fortify Scan
+                // Clean up Fortify residue:
+                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
+                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} '.'"
+                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -scan -f fortifyResults-${this_version}.fpr"
+                // archive includes: '*.fpr'
+                uploadToThreadfix("fortifyResults-${this_version}.fpr")
+                // Clean up Fortify residue:
+                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b ${env.JOB_NAME} -clean"
               }
             }
           }
-        )
-      }
+        },
+        "depcheck": {
+          node {
+            dir('scans') {
+            sh 'rm -rf *'
+            unstash 'geoint-viewer-source'
+            def depHome = tool name: "owasp_depedency_check"
+            sh "${depHome}/dependency-check.sh --project 'GV' --scan './' --format 'ALL' --enableExperimental --disableBundleAudit"
+            fileExists 'dependency-check-report.xml'
+            uploadToThreadfix('dependency-check-report.xml')
+          }
+        }
+      )
     }
 
     dir('opensphere') {
       stage('package') {
         dir('dist') {
           sh "zip -q -r gv-${this_version}.zip gv"
-          sh "ls -l gv-${this_version}.zip"
         }
 
         if (env.BRANCH_NAME == 'master') {
