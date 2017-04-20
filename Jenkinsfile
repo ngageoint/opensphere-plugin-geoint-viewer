@@ -214,12 +214,13 @@ ls -lrt
         "depcheck": {
           node {
             dir('scans') {
-            sh 'rm -rf *'
-            unstash 'geoint-viewer-source'
-            def depHome = tool name: "owasp_depedency_check"
-            sh "${depHome}/dependency-check.sh --project 'GV' --scan './' --format 'ALL' --enableExperimental --disableBundleAudit"
-            fileExists 'dependency-check-report.xml'
-            uploadToThreadfix('dependency-check-report.xml')
+              sh 'rm -rf *'
+              unstash 'geoint-viewer-source'
+              def depHome = tool name: "owasp_depedency_check"
+              sh "${depHome}/dependency-check.sh --project 'GV' --scan './' --format 'ALL' --enableExperimental --disableBundleAudit"
+              fileExists 'dependency-check-report.xml'
+              uploadToThreadfix('dependency-check-report.xml')
+            }
           }
         }
       )
