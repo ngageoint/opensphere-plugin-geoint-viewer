@@ -39,7 +39,7 @@
       "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     },
     "crossOrigin": [{
-      "pattern": "^https?://hiperlook.geointservices.io/",
+      "pattern": "^https?://hiperlook.geointservices.io(:\\d+)?/",
       "crossOrigin": "use-credentials"
     }],
     "providers": {
