@@ -7,7 +7,7 @@ this_version = '0.0.0' // reset below
 
 def err = null
 
-node('sl62') {
+node('sl61') {
   try {
     try {
       beforeCheckout()
@@ -190,7 +190,7 @@ ls -lrt
         },
         "fortify" : {
           if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED) {
-            node('sl62') {
+            node('sl61') {
               // ---------------------------------------------
               // Perform Static Security Scans
               dir('scans') {
@@ -212,7 +212,7 @@ ls -lrt
         "depcheck": {
           if (env.BRANCH_NAME == 'master' && ANALYZE) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
-            node('sl62') {
+            node('sl61') {
               dir('scans') {
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
