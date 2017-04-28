@@ -190,7 +190,7 @@ ls -lrt
         },
         "fortify" : {
           if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED) {
-            node('sl61') {
+            node('sl62') {
               // ---------------------------------------------
               // Perform Static Security Scans
               dir('scans') {
@@ -212,7 +212,7 @@ ls -lrt
         "depcheck": {
           if (env.BRANCH_NAME == 'master' && ANALYZE) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
-            node('sl61') {
+            node('sl62') {
               dir('scans') {
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
@@ -257,7 +257,10 @@ ls -lrt
             // older Jenkins
             archive 'dist/*.zip'
           }
-        
+
+          def maven = tool name: 'Maven3', type: 'hudson.tasks.Maven$MavenInstallation' 
+          env.PATH = "${maven}/bin:${env.PATH}"
+
           stage('publish')
           sh './publish.sh'
         }
