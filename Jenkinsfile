@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-ANALYZE = true
+ANALYZE = false
 THREADFIX_ID = 58
 FORTIFY_ENABLED = true
 this_version = '0.0.0' // reset below
