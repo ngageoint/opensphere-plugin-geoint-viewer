@@ -22,9 +22,9 @@ node('sl62') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         checkout scm
 
-        sh "echo 'after checkout'"
         try {
           // eh... no?
+          //sh "echo 'after checkout'"
           //afterCheckout()
         } catch (NoSuchMethodError e) {
         }
