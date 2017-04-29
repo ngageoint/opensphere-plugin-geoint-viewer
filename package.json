@@ -38,7 +38,7 @@
     "compile:gcc": "java -jar node_modules/google-closure-compiler/compiler.jar $(< .build/gcc-java-args)",
     "compile": "npm run compile:resolve && npm run compile:gcc && npm run compile:css",
     "build": "npm run init && npm run lint && npm run modernizr && npm run compile",
-    "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then npm update && npm install; fi",
+    "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then npm install && npm update; fi",
     "perms": "chmod -R u+rwX,go+rX,go-w ."
   },
   "keywords": [
