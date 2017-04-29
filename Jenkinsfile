@@ -42,6 +42,8 @@ node('sl61') {
     def sources = []
 
     // get main opensphere project
+    // do to some errors in some previous checkouts, this needs to be there until it runs on all the slaves
+    sh 'rm -rf opensphere'
     dir('opensphere') {
       stage('install opensphere') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
@@ -244,26 +246,28 @@ ls -lrt
       }
     }
 
-    dir('gv.config') {
-      stage('package networks') {
-        if (env.BRANCH_NAME == 'master') {
-          installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
-          sh './package.sh ../opensphere/dist/gv-*.zip'
+    sh 'mkdir -p .m2'
+    sh 'cat ${HOME}/.m2/settings.xml > .m2/settings.xml'
 
-          try {
-            // newer Jenkins
-            archiveArtifacts 'dist/*.zip'
-          } catch (NoSuchMethodError e) {
-            // older Jenkins
-            archive 'dist/*.zip'
-          }
+    withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
+      dir('gv.config') {
+	stage('package networks') {
+	  if (env.BRANCH_NAME == 'master') {
+	    installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
+	    sh './package.sh ../opensphere/dist/gv-*.zip'
 
-          def maven = tool name: 'Maven3', type: 'hudson.tasks.Maven$MavenInstallation' 
-          env.PATH = "${maven}/bin:${env.PATH}"
+	    try {
+	      // newer Jenkins
+	      archiveArtifacts 'dist/*.zip'
+	    } catch (NoSuchMethodError e) {
+	      // older Jenkins
+	      archive 'dist/*.zip'
+	    }
 
-          stage('publish')
-          sh './publish.sh'
-        }
+	    stage('publish')
+	    sh './publish.sh'
+	  }
+	}
       }
     }
 
