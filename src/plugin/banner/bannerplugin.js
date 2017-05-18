@@ -1,29 +1,24 @@
 goog.provide('plugin.banner.BannerPlugin');
 
-goog.require('goog.events.EventTarget');
-goog.require('goog.events.EventType');
-goog.require('os.plugin.IPlugin');
+goog.require('os.plugin.AbstractPlugin');
 
 
 /**
  * @constructor
- * @implements {os.plugin.IPlugin}
- * @extends {goog.events.EventTarget}
+ * @extends {os.plugin.AbstractPlugin}
  */
 plugin.banner.BannerPlugin = function() {
   plugin.banner.BannerPlugin.base(this, 'constructor');
   this.id = 'banner';
   this.errorMessage = null;
 };
-goog.inherits(plugin.banner.BannerPlugin, goog.events.EventTarget);
+goog.inherits(plugin.banner.BannerPlugin, os.plugin.AbstractPlugin);
 
 
 /**
  * @inheritDoc
  */
 plugin.banner.BannerPlugin.prototype.init = function() {
-  this.dispatchEvent(goog.events.EventType.LOAD);
-
   var conf = os.settings.get('banner');
   if (conf && conf['markup']) {
     var targets = ['before', 'after'];
