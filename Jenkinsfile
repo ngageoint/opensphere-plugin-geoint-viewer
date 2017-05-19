@@ -8,8 +8,7 @@ this_version = '0.0.0' // reset below
 def err = null
 
 node('sl61') {
-  def originalHome = sh(script: 'echo $HOME', returnStdout: true);
-  echo "original home is ${originalHome}"
+  def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
     try {
@@ -250,7 +249,6 @@ ls -lrt
     }
 
     sh 'mkdir -p .m2'
-    echo "original home is ${originalHome}"
     sh "cat ${originalHome}/.m2/settings.xml > .m2/settings.xml"
 
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
