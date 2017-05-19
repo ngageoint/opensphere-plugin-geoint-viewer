@@ -250,7 +250,8 @@ ls -lrt
     }
 
     sh 'mkdir -p .m2'
-    sh 'cat ${originalHome}/.m2/settings.xml > .m2/settings.xml'
+    echo "original home is ${originalHome}"
+    sh "cat ${originalHome}/.m2/settings.xml > .m2/settings.xml"
 
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
