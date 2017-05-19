@@ -8,6 +8,8 @@ this_version = '0.0.0' // reset below
 def err = null
 
 node('sl61') {
+  def originalHome = env.HOME;
+
   try {
     try {
       beforeCheckout()
@@ -247,7 +249,7 @@ ls -lrt
     }
 
     sh 'mkdir -p .m2'
-    sh 'cat ${HOME}/.m2/settings.xml > .m2/settings.xml'
+    sh 'cat ${originalHome}/.m2/settings.xml > .m2/settings.xml'
 
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
