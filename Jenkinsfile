@@ -8,7 +8,8 @@ this_version = '0.0.0' // reset below
 def err = null
 
 node('sl61') {
-  def originalHome = env.HOME;
+  def originalHome = sh(script 'echo $HOME', returnStdout: true);
+  echo "original home is ${originalHome}"
 
   try {
     try {
