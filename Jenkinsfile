@@ -121,6 +121,31 @@ node('sl61') {
       }
     }
 
+    // add analyze plugin
+    stage('install analyze') {
+      dir('opensphere-plugin-analyze') {
+        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/opensphere-plugin-analyze.git')
+      }
+
+      // these two are dependencies for analyze that must be cloned as siblings
+      dir('bits-internal') {
+        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/bits-internal.git')
+
+        sh 'mkdir -p node_modules'
+        sh 'ln -s ../../opensphere node_modules/opensphere'
+        npmInstall(true);
+      }
+
+      dir('mist') {
+        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/mist.git')
+
+        sh 'mkdir -p node_modules'
+        sh 'ln -s ../../opensphere node_modules/opensphere'
+        sh 'ln -s ../../bits-internal node_modules/bits-internal'
+        npmInstall(true);
+      }
+    }
+
     stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
 
     stage('Build and Scans - ZAP, SonarQube, Fortify, OWASP Dependecy Checker') {
