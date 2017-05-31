@@ -127,6 +127,8 @@ node('sl61') {
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/opensphere-plugin-analyze.git')
       }
 
+      sh 'rm -rf bits-internal mist'
+
       // these two are dependencies for analyze that must be cloned as siblings
       dir('bits-internal') {
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/bits-internal.git')
