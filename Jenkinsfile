@@ -7,7 +7,7 @@ this_version = '0.0.0' // reset below
 
 def err = null
 
-node('sl61') {
+node('Linux') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
@@ -127,14 +127,12 @@ node('sl61') {
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/opensphere-plugin-analyze.git')
       }
 
-      sh 'rm -rf bits-internal mist'
-
       // these two are dependencies for analyze that must be cloned as siblings
       dir('bits-internal') {
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/bits-internal.git')
 
         sh 'mkdir -p node_modules'
-        sh 'ln -s ../../opensphere node_modules/opensphere'
+        sh 'ln -fs ../../opensphere node_modules/opensphere'
         npmInstall(true);
       }
 
@@ -142,8 +140,8 @@ node('sl61') {
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/mist.git')
 
         sh 'mkdir -p node_modules'
-        sh 'ln -s ../../opensphere node_modules/opensphere'
-        sh 'ln -s ../../bits-internal node_modules/bits-internal'
+        sh 'ln -fs ../../opensphere node_modules/opensphere'
+        sh 'ln -fs ../../bits-internal node_modules/bits-internal'
         npmInstall(true);
       }
     }
