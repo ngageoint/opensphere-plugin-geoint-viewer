@@ -41,6 +41,9 @@
     "crossOrigin": [{
       "pattern": "^https?://hiperlook.geointservices.io(:\\d+)?/",
       "crossOrigin": "use-credentials"
+    }, {
+      "pattern": "^https?://earth.gvslabs.com/terrain/",
+      "crossOrigin": "use-credentials"
     }],
     "providers": {
       "gs-hiperlook": {
