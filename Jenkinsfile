@@ -44,8 +44,6 @@ node('Linux') {
     def sources = []
 
     // get main opensphere project
-    // do to some errors in some previous checkouts, this needs to be there until it runs on all the slaves
-    sh 'rm -rf opensphere'
     dir('opensphere') {
       stage('install opensphere') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
