@@ -55,8 +55,7 @@ node('Linux') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         sh 'echo $PATH'
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/core-ui.git')
-        sh 'mkdir -p node_modules'
-        sh 'ln -fs ../../closure-util node_modules/closure-util'
+        sh 'npm link ../closure-util'
         try {
           npmInstall()
         } catch (e) {
@@ -144,7 +143,7 @@ node('Linux') {
 
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
-        sh 'ln -fs ../../closure-util node_modules/closure-util'
+        sh 'npm link ../closure-util'
         npmInstall(true);
       }
 
@@ -154,7 +153,7 @@ node('Linux') {
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
         sh 'ln -fs ../../bits-internal node_modules/bits-internal'
-        sh 'ln -fs ../../closure-util node_modules/closure-util'
+        sh 'npm link ../closure-util'
         npmInstall(true);
       }
     }
