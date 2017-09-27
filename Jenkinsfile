@@ -45,7 +45,8 @@ node('Linux') {
 
     // closure-util can go pound sand
     dir('closure-util') {
-      sh "echo '{\"version\":\"1.18.0\",\"name\":\"closure-util\"}' > package.json"
+      sh "echo '{\"version\":\"1.18.0\",\"name\":\"closure-util\",\"bin\":{\"closure-util\":\"./no.js\"}' > package.json"
+      sh "echo 'console.log(\"openlayers/closure-util can bite me\");' > no.js"
     }
 
     // get main opensphere project
