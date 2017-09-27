@@ -56,7 +56,12 @@ node('Linux') {
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/core-ui.git')
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../closure-util node_modules/closure-util'
-        npmInstall()
+        try {
+          npmInstall()
+        } catch (e) {
+          sh 'cat npm-debug.log'
+          throw e
+        }
       }
     }
 
