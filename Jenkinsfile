@@ -44,6 +44,7 @@ node('Linux') {
     def sources = []
 
     // closure-util can go pound sand
+    sh 'rm -rf */node_modules/closure-util'
     dir('closure-util') {
       sh /echo '{"version":"1.18.0","name":"closure-util","bin":{"closure-util":"no.js"}}' > package.json/
       sh /echo 'console.log("openlayers and closure-util can bite me");' > no.js/
