@@ -144,7 +144,7 @@ node('Linux') {
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
         sh 'npm link ../closure-util'
-        npmInstall(true);
+        npmInstall(true, false);
       }
 
       dir('mist') {
@@ -154,7 +154,7 @@ node('Linux') {
         sh 'ln -fs ../../opensphere node_modules/opensphere'
         sh 'ln -fs ../../bits-internal node_modules/bits-internal'
         sh 'npm link ../closure-util'
-        npmInstall(true);
+        npmInstall(true, false);
       }
     }
 
