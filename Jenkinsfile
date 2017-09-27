@@ -43,13 +43,19 @@ node('Linux') {
 
     def sources = []
 
+    // closure-util can go pound sand
+    dir('closure-util') {
+      sh "echo '{\"version\":\"1.18.0",\"name\":\"closure-util\"}' > package.json"
+    }
+
     // get main opensphere project
     dir('opensphere') {
       stage('install opensphere') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         sh 'echo $PATH'
         installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/core-ui.git')
-        sh 'npm cache clean'
+        sh 'mkdir -p node_modules'
+        sh 'ln -fs ../../closure-util node_modules/closure-util'
         npmInstall()
       }
     }
@@ -132,6 +138,7 @@ node('Linux') {
 
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
+        sh 'ln -fs ../../closure-util node_modules/closure-util'
         npmInstall(true);
       }
 
@@ -141,6 +148,7 @@ node('Linux') {
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
         sh 'ln -fs ../../bits-internal node_modules/bits-internal'
+        sh 'ln -fs ../../closure-util node_modules/closure-util'
         npmInstall(true);
       }
     }
