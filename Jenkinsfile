@@ -45,7 +45,7 @@ node('Linux') {
 
     // closure-util can go pound sand
     dir('closure-util') {
-      sh "echo '{\"version\":\"1.18.0",\"name\":\"closure-util\"}' > package.json"
+      sh "echo '{\"version\":\"1.18.0\",\"name\":\"closure-util\"}' > package.json"
     }
 
     // get main opensphere project
