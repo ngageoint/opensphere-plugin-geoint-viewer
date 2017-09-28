@@ -305,8 +305,16 @@ ls -lrt
 	      archive 'dist/*.zip'
 	    }
 
-	    stage('publish')
-	    sh './publish.sh'
+	    stage('publish') {
+              def nexusUrl = 'https://nexus.devops.geointservices.io/content/repositories/FADE-Snapshots/'
+
+              // see if we are in UC
+              if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
+                nexusUrl = 'https://nexus.gs.mil/content/repositories/FADE_Capabilities-snapshot/'
+              }
+
+              sh "./publish.sh '${nexusUrl}'"
+            }
 	  }
 	}
       }
