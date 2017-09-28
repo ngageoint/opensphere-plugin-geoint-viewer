@@ -1,9 +1,23 @@
 #!/usr/bin/env groovy
 
+
 ANALYZE = false
 THREADFIX_ID = 58
 FORTIFY_ENABLED = true
 this_version = '0.0.0' // reset below
+NEXUS_URL = 'https://nexus.devops.geointservices.io/content/repositories/FADE-Snapshots/'
+SONAR_URL = 'https://sonar.geointservices.io'
+SONAR_CRED = 'sonar-push'
+DEPLOY_JOB_NAME = 'GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test'
+
+// change values for .mil build
+if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
+  ANALYZE = true
+  NEXUS_URL = 'https://nexus.gs.mil/content/repositories/FADE_Capabilities-snapshot/'
+  SONAR_CRED = 'sonar-prod-publish-token'
+  SONAR_URL = 'https://sonar.gs.mil'
+  DEPLOY_JOB_NAME = 'FADE_Capabilities/GEOINT Viewer Web/gv-dev-deployer'
+}
 
 def err = null
 
@@ -171,7 +185,7 @@ node('Linux') {
           }
         },
         "zap": {
-          if (env.BRANCH_NAME == 'master' && ANALYZE) {
+          if (env.BRANCH_NAME == 'master' && ANALYZE && false) {
             node {
               dir('scans') {
                 // Mark the artifact ZAP 'stage'....
@@ -212,9 +226,9 @@ EOF
 ls -lrt
                 fi
                 """
-                withCredentials([string(credentialsId: 'sonar-push', variable: 'sonar_login')]) {
+                withCredentials([string(credentialsId: "${SONAR_CRED}", variable: 'sonar_login')]) {
                   sh """mvn sonar:sonar \\
-                    -Dsonar.host.url=https://sonar.geointservices.io \\
+                    -Dsonar.host.url=${SONAR_URL} \\
                     -Dsonar.login=${sonar_login} \\
                     -Dsonar.projectBaseDir=. \\
                     -Dsonar.projectKey=fade:gv \\
@@ -232,7 +246,7 @@ ls -lrt
           }
         },
         "fortify" : {
-          if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED) {
+          if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED && false) {
             node('sl62') {
               // ---------------------------------------------
               // Perform Static Security Scans
@@ -255,7 +269,7 @@ ls -lrt
         "depcheck": {
           if (env.BRANCH_NAME == 'master' && ANALYZE) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
-            node('sl62') {
+            node {
               dir('scans') {
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
@@ -306,14 +320,7 @@ ls -lrt
 	    }
 
 	    stage('publish') {
-              def nexusUrl = 'https://nexus.devops.geointservices.io/content/repositories/FADE-Snapshots/'
-
-              // see if we are in UC
-              if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
-                nexusUrl = 'https://nexus.gs.mil/content/repositories/FADE_Capabilities-snapshot/'
-              }
-
-              sh "./publish.sh '${nexusUrl}'"
+              sh "./publish.sh '${NEXUS_URL}'"
             }
 	  }
 	}
@@ -322,11 +329,7 @@ ls -lrt
 
     if (env.BRANCH_NAME == 'master') {
       // kick off deploy build
-      if (env.JOB_URL =~ /^https:\/\/jenkins.devops.geointservices.io\//) {
-        build job: "GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test", quietPeriod: 5, wait: false
-      } else if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
-        build job: "FADE_Capabilities/GEOINT Viewer Web/gv-dev-deployer", quietPeriod: 5, wait: false
-      }
+      build job: "${DEPLOY_JOB_NAME}", quietPeriod: 5, wait: false
     }
   } catch (e) {
     currentBuild.result = 'FAILURE'
