@@ -322,7 +322,11 @@ ls -lrt
 
     if (env.BRANCH_NAME == 'master') {
       // kick off deploy build
-      build job: "GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test", quietPeriod: 5, wait: false
+      if (env.JOB_URL =~ /^https:\/\/jenkins.devops.geointservices.io\//) {
+        build job: "GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test", quietPeriod: 5, wait: false
+      } else if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
+        build job: "FADE_Capabilities/GEOINT Viewer Web/gv-dev-deployer", quietPeriod: 5, wait: false
+      }
     }
   } catch (e) {
     currentBuild.result = 'FAILURE'
@@ -342,10 +346,7 @@ ls -lrt
 
 def uploadToThreadfix(file) {
   fileExists file
-  if(THREADFIX_ID == null) {
-    throw new Exception("THREADFIX_ID not set. Cannot upload ${file} to threadfix server")
-  }
-  withCredentials([string(credentialsId: 'threadfix-api-key-2', variable: 'THREADFIX_KEY')]) {
-    sh "/bin/curl -v --insecure -H 'Accept: application/json' -X POST --form file=@${file} https://threadfix.devops.geointservices.io/rest/applications/${THREADFIX_ID}/upload?apiKey=${THREADFIX_KEY}"
+  withCredentials([string(credentialsId: 'threadfix-full-url', variable: 'THREADFIX_URL')]) {
+    sh "/bin/curl -v -H 'Accept: application/json' -X POST --form file=@${file} ${THREADFIX_URL}"
   }
 }
