@@ -176,34 +176,13 @@ node('Linux') {
 
     stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
 
-    stage('Build and Scans - ZAP, SonarQube, Fortify, OWASP Dependecy Checker') {
+    stage('Build and Scans - SonarQube, Fortify, OWASP Dependecy Checker') {
+      // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
           dir('opensphere') {
             sh 'npm run build'
             sh 'mv dist/opensphere dist/gv'
-          }
-        },
-        "zap": {
-          if (env.BRANCH_NAME == 'master' && ANALYZE && false) {
-            node {
-              dir('scans') {
-                // Mark the artifact ZAP 'stage'....
-                def zapHome = tool name: 'ZAProxy_v2_5_0'
-                def dir = pwd()
-                for (int i=0; i<10; i++) {
-                  def http = sh script: "curl -skL -o /dev/null -w \"%{http_code}\" https://oauth.geointservices.io || true", returnStdout: true
-                  echo "got ${http} response"
-                  if(http.trim() == '200') {
-                    break;
-                  }
-                  sleep 10
-                }
-                sh "${zapHome}/zap.sh -cmd -quickout '${dir}/gv-dev-zapreport.xml' -quickurl https://oauth.geointservices.io/"
-                sh "cat gv-dev-zapreport.xml"
-                uploadToThreadfix('gv-dev-zapreport.xml')
-              }
-            }
           }
         },
         "sonarqube" : {
@@ -246,8 +225,8 @@ ls -lrt
           }
         },
         "fortify" : {
-          if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED && false) {
-            node('sl62') {
+          if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED) {
+            node {
               // ---------------------------------------------
               // Perform Static Security Scans
               dir('scans') {
@@ -348,8 +327,9 @@ ls -lrt
 }
 
 def uploadToThreadfix(file) {
-  fileExists file
+  echo "pretend to upload to ThreadFix"
+  /*fileExists file
   withCredentials([string(credentialsId: 'threadfix-full-url', variable: 'THREADFIX_URL')]) {
     sh "/bin/curl -v -H 'Accept: application/json' -X POST --form file=@${file} ${THREADFIX_URL}"
-  }
+  }*/
 }
