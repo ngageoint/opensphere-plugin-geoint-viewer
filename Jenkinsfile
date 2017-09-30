@@ -16,7 +16,7 @@ if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
   NEXUS_URL = 'https://nexus.gs.mil/content/repositories/FADE_Capabilities-snapshot/'
   SONAR_CRED = 'sonar-prod-publish-token'
   SONAR_URL = 'https://sonar.gs.mil'
-  DEPLOY_JOB_NAME = 'FADE_Capabilities/GEOINT Viewer Web/gv-dev-deployer'
+  DEPLOY_JOB_NAME = 'FADE_Capabilities/GEOINT Viewer Web/gv-deploy-uc-dev'
 }
 
 def err = null
