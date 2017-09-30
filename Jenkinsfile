@@ -327,9 +327,8 @@ ls -lrt
 }
 
 def uploadToThreadfix(file) {
-  echo "pretend to upload to ThreadFix"
-  /*fileExists file
+  fileExists file
   withCredentials([string(credentialsId: 'threadfix-full-url', variable: 'THREADFIX_URL')]) {
     sh "/bin/curl -v -H 'Accept: application/json' -X POST --form file=@${file} ${THREADFIX_URL}"
-  }*/
+  }
 }
