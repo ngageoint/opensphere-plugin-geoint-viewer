@@ -285,12 +285,10 @@ ls -lrt
 
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
-	stage('package networks') {
+        stage('publish') {
 	  if (env.BRANCH_NAME == 'master') {
 	    installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
-	    stage('publish') {
-              sh "./publish.sh '${NEXUS_URL}'"
-            }
+            sh "./publish.sh '${NEXUS_URL}'"
 	  }
 	}
       }
