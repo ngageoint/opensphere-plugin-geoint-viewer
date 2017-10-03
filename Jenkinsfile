@@ -288,16 +288,6 @@ ls -lrt
 	stage('package networks') {
 	  if (env.BRANCH_NAME == 'master') {
 	    installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
-	    sh './package.sh ../opensphere/dist/gv-*.zip'
-
-	    try {
-	      // newer Jenkins
-	      archiveArtifacts 'dist/*.zip'
-	    } catch (NoSuchMethodError e) {
-	      // older Jenkins
-	      archive 'dist/*.zip'
-	    }
-
 	    stage('publish') {
               sh "./publish.sh '${NEXUS_URL}'"
             }
