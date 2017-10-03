@@ -288,7 +288,7 @@ ls -lrt
         stage('publish') {
 	  if (env.BRANCH_NAME == 'master') {
 	    installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
-            sh "./publish.sh '${NEXUS_URL}'"
+            sh "./publish.sh '${NEXUS_URL}' ../opensphere/dist"
 	  }
 	}
       }
