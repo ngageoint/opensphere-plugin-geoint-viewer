@@ -172,7 +172,7 @@ node('Linux') {
           }
         },
         "sonarqube" : {
-          if (env.BRANCH_NAME == 'master' && ANALYZE) {
+          if (env.BRANCH_NAME == 'master') {
             node {
               dir('scans') {
                 sh "rm -rf *"
@@ -211,7 +211,7 @@ ls -lrt
           }
         },
         "fortify" : {
-          if (env.BRANCH_NAME == 'master' && ANALYZE && FORTIFY_ENABLED) {
+          if (env.BRANCH_NAME == 'master') {
             node {
               // ---------------------------------------------
               // Perform Static Security Scans
@@ -232,7 +232,7 @@ ls -lrt
           }
         },
         "depcheck": {
-          if (env.BRANCH_NAME == 'master' && ANALYZE) {
+          if (env.BRANCH_NAME == 'master') {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
             node {
               dir('scans') {
