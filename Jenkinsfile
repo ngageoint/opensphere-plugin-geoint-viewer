@@ -17,11 +17,7 @@ node('Linux') {
 
     dir('opensphere-plugin-geoint-viewer') {
       stage('scm') {
-
         sh "echo 'checking out scm'"
-
-        // don't do this on first run
-        sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         checkout scm
 
         try {
