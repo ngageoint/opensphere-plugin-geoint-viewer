@@ -1,30 +1,15 @@
 #!/usr/bin/env groovy
 
-
-ANALYZE = false
-THREADFIX_ID = 58
-FORTIFY_ENABLED = true
 this_version = '0.0.0' // reset below
-NEXUS_URL = 'https://nexus.devops.geointservices.io/content/repositories/FADE-Snapshots/'
-SONAR_URL = 'https://sonar.geointservices.io'
-SONAR_CRED = 'sonar-push'
-DEPLOY_JOB_NAME = 'GEOINTServices-BITS/gvweb-io-pcf/Deploy to Test'
-
-// change values for .mil build
-if (env.JOB_URL =~ /^https:\/\/jenkins.gs.mil\//) {
-  ANALYZE = true
-  NEXUS_URL = 'https://nexus.gs.mil/content/repositories/FADE_Capabilities-snapshot/'
-  SONAR_CRED = 'sonar-prod-publish-token'
-  SONAR_URL = 'https://sonar.gs.mil'
-  DEPLOY_JOB_NAME = 'FADE_Capabilities/GEOINT Viewer Web/gv-deploy-uc-dev'
-}
-
 def err = null
 
 node('Linux') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
+    initEnvironment()
+    initGV()
+
     try {
       beforeCheckout()
     } catch (NoSuchMethodError e) {
@@ -32,6 +17,7 @@ node('Linux') {
 
     dir('opensphere-plugin-geoint-viewer') {
       stage('scm') {
+
         sh "echo 'checking out scm'"
 
         // don't do this on first run
@@ -70,7 +56,7 @@ node('Linux') {
       stage('install opensphere') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         sh 'echo $PATH'
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/core-ui.git')
+        installPlugins('master', 'core-ui')
         sh 'npm link ../closure-util'
         try {
           npmInstall()
@@ -109,7 +95,7 @@ node('Linux') {
     // Add Planet Labs plugin
     dir('opensphere-plugin-planetlabs') {
       stage('install planetlabs') {
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv-plugin-planetlabs.git')
+        installPlugins('master', 'gv-plugin-planetlabs')
         sources = sources.plus([
           'opensphere-plugin-planetlabs/src/**',
           'opensphere-plugin-planetlabs/package.json'
@@ -124,7 +110,7 @@ node('Linux') {
     // Add Overpass plugin
     dir('opensphere-plugin-overpass') {
       stage('install overpass') {
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv-plugin-overpass.git')
+        installPlugins('master', 'gv-plugin-overpass')
         sources = sources.plus([
           'opensphere-plugin-overpass/src/**',
           'opensphere-plugin-overpass/package.json'
@@ -139,7 +125,7 @@ node('Linux') {
     // add gbdx plugin
     dir('opensphere-plugin-gbdx') {
       stage('install gbdx') {
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/opensphere-plugin-gbdx.git')
+        installPlugins('master', 'opensphere-plugin-gbdx')
         sources = sources.plus([
           'opensphere-plugin-gbdx/src/**',
           'opensphere-plugin-gbdx/package.json'
@@ -150,12 +136,12 @@ node('Linux') {
     // add analyze plugin
     stage('install analyze') {
       dir('opensphere-plugin-analyze') {
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/opensphere-plugin-analyze.git')
+        installPlugins('master', 'opensphere-plugin-analyze')
       }
 
       // these two are dependencies for analyze that must be cloned as siblings
       dir('bits-internal') {
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/bits-internal.git')
+        installPlugins('master', 'bits-internal')
 
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
@@ -164,7 +150,7 @@ node('Linux') {
       }
 
       dir('mist') {
-        installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/mist.git')
+        installPlugins('master', 'mist')
 
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
@@ -287,8 +273,8 @@ ls -lrt
       dir('gv.config') {
         stage('publish') {
 	  if (env.BRANCH_NAME == 'master') {
-	    installPlugins('master', 'git@gitlab.devops.geointservices.io:uncanny-cougar/gv.config.git')
-            sh "./publish.sh '${NEXUS_URL}' ../opensphere/dist/gv-${this_version}.zip ${this_version}"
+	    installPlugins('master', 'gv.config')
+            sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../opensphere/dist/gv-${this_version}.zip ${this_version}"
 	  }
 	}
       }
@@ -296,7 +282,7 @@ ls -lrt
 
     if (env.BRANCH_NAME == 'master') {
       // kick off deploy build
-      build job: "${DEPLOY_JOB_NAME}", quietPeriod: 5, wait: false
+      build job: "${env.DEPLOY_JOB}", quietPeriod: 5, wait: false
     }
   } catch (e) {
     currentBuild.result = 'FAILURE'
