@@ -187,9 +187,9 @@ EOF
 ls -lrt
                 fi
                 """
-                withCredentials([string(credentialsId: "${SONAR_CRED}", variable: 'sonar_login')]) {
+                withCredentials([string(credentialsId: "${env.SONAR_CREDENTIAL}", variable: 'sonar_login')]) {
                   sh """mvn sonar:sonar \\
-                    -Dsonar.host.url=${SONAR_URL} \\
+                    -Dsonar.host.url=${env.SONAR_URL} \\
                     -Dsonar.login=${sonar_login} \\
                     -Dsonar.projectBaseDir=. \\
                     -Dsonar.projectKey=fade:gv \\
