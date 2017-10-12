@@ -4,6 +4,7 @@ goog.require('goog.Uri');
 goog.require('goog.events.Event');
 goog.require('goog.log');
 goog.require('goog.log.Logger');
+goog.require('os.arraybuf');
 goog.require('os.net.ExtDomainHandler');
 
 
@@ -61,26 +62,34 @@ plugin.oauth.OAuthHandler.prototype.execute = function(
 plugin.oauth.OAuthHandler.prototype.onXhrComplete = function(opt_evt) {
   // see if we got redirected to something authy
   var resp = this.getResponse();
-  var regexSources = /** @type {Array<string>} */ (os.settings.get('plugin.oauth.regexes',
-      ['<(html|body)(\\s+|>)', '(sign|log)\\s*in']));
 
-  var isLogin = true;
-  for (var i = 0, n = regexSources.length; isLogin && i < n; i++) {
-    isLogin = new RegExp(regexSources[i], 'i').test(resp);
+  // the response could be binary, so check for text first
+  if (resp instanceof ArrayBuffer && os.arraybuf.isText(resp)) {
+    resp = os.arraybuf.toString(resp);
   }
 
-  if (isLogin) {
-    // see if we are just missing a credentials entry and try again
-    if (this.addCrossOrigin()) {
-      this.retry();
-    } else {
-      var evt = new goog.events.Event(plugin.oauth.EventType.ADD_AUTH_HANDLER);
-      evt.target = this;
-      os.dispatcher.dispatchEvent(evt);
+  if (goog.isString(resp)) {
+    var regexSources = /** @type {Array<string>} */ (os.settings.get('plugin.oauth.regexes',
+        ['<(html|body)(\\s+|>)', '(sign|log)\\s*in']));
+
+    var isLogin = true;
+    for (var i = 0, n = regexSources.length; isLogin && i < n; i++) {
+      isLogin = new RegExp(regexSources[i], 'i').test(resp);
     }
-  } else {
-    plugin.oauth.OAuthHandler.base(this, 'onXhrComplete', opt_evt);
-    this.lastArgs_ = null;
+
+    if (isLogin) {
+      // see if we are just missing a credentials entry and try again
+      if (this.addCrossOrigin()) {
+        this.retry();
+      } else {
+        var evt = new goog.events.Event(plugin.oauth.EventType.ADD_AUTH_HANDLER);
+        evt.target = this;
+        os.dispatcher.dispatchEvent(evt);
+      }
+    } else {
+      plugin.oauth.OAuthHandler.base(this, 'onXhrComplete', opt_evt);
+      this.lastArgs_ = null;
+    }
   }
 };
 
