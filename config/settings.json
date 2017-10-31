@@ -2,6 +2,7 @@
   "admin": {
     "about": {
       "application": "GEOINT Viewer",
+      "logoPath": "images/logo.svg",
       "appVendors": [
         {
           "logoPath": "images/opensphere.png",
@@ -39,7 +40,7 @@
       "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     },
     "crossOrigin": [{
-      "pattern": "^https?://hiperlook.geointservices.io(:\\d+)?/",
+      "pattern": "^https?://pixia.geointservices.io(:\\d+)?/",
       "crossOrigin": "use-credentials"
     }, {
       "pattern": "^https?://earth.gvslabs.com/terrain/",
@@ -49,7 +50,7 @@
       "gs-hiperlook": {
         "type": "ogc",
         "label": "GEOINT Services Hiperlook",
-        "wms": "https://hiperlook.geointservices.io/wmsserver/",
+        "wms": "https://pixia.geointservices.io/wmsserver/",
         "wmsParams": "version=1.1.1&map=default.map"
       }
     },
