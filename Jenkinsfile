@@ -167,45 +167,45 @@ node('Linux') {
             sh 'mv dist/opensphere dist/gv'
           }
         },
-        "sonarqube" : {
-          if (env.BRANCH_NAME == 'master') {
-            node {
-              dir('scans') {
-                sh "rm -rf *"
-                unstash 'geoint-viewer-source'
-                //sh "pwd && ls -al *"
-                sh """#!/bin/bash
-                if [[ ! -e pom.xml ]] ; then
-                cat > pom.xml <<'EOF'
-<project>
-<modelVersion>4.0.0</modelVersion>
-<groupId>groupId</groupId>
-<artifactId>GV</artifactId>
-<version>${this_version}</version>
-</project>
-EOF
-ls -lrt
-                fi
-                """
-                withCredentials([string(credentialsId: "${env.SONAR_CREDENTIAL}", variable: 'sonar_login')]) {
-                  sh """mvn sonar:sonar \\
-                    -Dsonar.host.url=${env.SONAR_URL} \\
-                    -Dsonar.login=${sonar_login} \\
-                    -Dsonar.projectBaseDir=. \\
-                    -Dsonar.projectKey=fade:gv \\
-                    -Dsonar.projectName=gv \\
-                    -Dsonar.projectVersion=${this_version}\\
-                    -Dsonar.sources=.\\
-                    -Dsonar.tests=''\\
-                    -Dsonar.exclusions=node_modules/**/*\\
-                    -Dsonar.test.exclusions=node_modules/**/*\\
-                    -Dsonar.sourceEncoding=UTF-8\\
-                    """
-                }
-              }
-            }
-          }
-        },
+//        "sonarqube" : {
+//          if (env.BRANCH_NAME == 'master') {
+//            node {
+//              dir('scans') {
+//                sh "rm -rf *"
+//                unstash 'geoint-viewer-source'
+//                //sh "pwd && ls -al *"
+//                sh """#!/bin/bash
+//                if [[ ! -e pom.xml ]] ; then
+//                cat > pom.xml <<'EOF'
+//<project>
+//<modelVersion>4.0.0</modelVersion>
+//<groupId>groupId</groupId>
+//<artifactId>GV</artifactId>
+//<version>${this_version}</version>
+//</project>
+//EOF
+//ls -lrt
+//                fi
+//                """
+//                withCredentials([string(credentialsId: "${env.SONAR_CREDENTIAL}", variable: 'sonar_login')]) {
+//                  sh """mvn sonar:sonar \\
+//                    -Dsonar.host.url=${env.SONAR_URL} \\
+//                    -Dsonar.login=${sonar_login} \\
+//                    -Dsonar.projectBaseDir=. \\
+//                    -Dsonar.projectKey=fade:gv \\
+//                    -Dsonar.projectName=gv \\
+//                    -Dsonar.projectVersion=${this_version}\\
+//                    -Dsonar.sources=.\\
+//                    -Dsonar.tests=''\\
+//                    -Dsonar.exclusions=node_modules/**/*\\
+//                    -Dsonar.test.exclusions=node_modules/**/*\\
+//                    -Dsonar.sourceEncoding=UTF-8\\
+//                    """
+//                }
+//              }
+//            }
+//          }
+//        },
         "fortify" : {
           if (env.BRANCH_NAME == 'master') {
             node {
