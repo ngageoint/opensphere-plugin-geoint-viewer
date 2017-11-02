@@ -34,9 +34,9 @@
       ]
     },
     "banner": {
-      "before": "div.tr",
-      "after": "div.tr",
-      "markup": "<div class=\"tr banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
+      "before": ".navbar",
+      "after": ".navbar",
+      "markup": "<div class=\"banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     },
     "crossOrigin": [{
       "pattern": "^https?://hiperlook.geointservices.io(:\\d+)?/",
