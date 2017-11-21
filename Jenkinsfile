@@ -3,7 +3,7 @@
 this_version = '0.0.0' // reset below
 def err = null
 
-node('Linux') {
+node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
