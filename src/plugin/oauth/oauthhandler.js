@@ -70,7 +70,7 @@ plugin.oauth.OAuthHandler.prototype.onXhrComplete = function(opt_evt) {
 
   if (goog.isString(resp)) {
     var regexSources = /** @type {Array<string>} */ (os.settings.get('plugin.oauth.regexes',
-        ['<(html|body)(\\s+|>)', '(sign|log)\\s*in']));
+        ['<(html|body)(\\s+|>)', '(sign|log)\\s*in with']));
 
     var isLogin = true;
     for (var i = 0, n = regexSources.length; isLogin && i < n; i++) {
