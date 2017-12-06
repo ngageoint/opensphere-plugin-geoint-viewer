@@ -51,6 +51,7 @@ node('Linux&&!gpu') {
     dir('opensphere') {
       stage('install opensphere') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
+        sh 'if [ -d "node_modules"]; then npm cache clean fi'
         sh 'echo $PATH'
         installPlugins('master', 'core-ui')
         sh 'npm link ../closure-util'
