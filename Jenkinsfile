@@ -59,7 +59,7 @@ node('Linux&&!gpu') {
         try {
           npmInstall()
         } catch (e) {
-          sh 'cat npm-debug.log'
+          sh 'cat node_modules/openlayers/package.json'
           throw e
         }
       }
