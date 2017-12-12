@@ -307,6 +307,7 @@ def useNpmJsVersions() {
   sh 'perl -p -i -e \'s%"(opensphere-build-[^"]*)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
   sh 'perl -p -i -e \'s%"(eslint-(config|plugin)-opensphere)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
   sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
+  sh 'perl -ni -e \'print unless /bits-protractor/\' package.json'
 }
 
 def uploadToThreadfix(file) {
