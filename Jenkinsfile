@@ -144,6 +144,8 @@ node('Linux&&!gpu') {
         sh 'mkdir -p node_modules'
         sh 'ln -fs ../../opensphere node_modules/opensphere'
         sh 'npm link ../closure-util'
+
+        useNpmJsVersions()
         npmInstall(true, false);
       }
 
