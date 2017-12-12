@@ -55,11 +55,7 @@ node('Linux&&!gpu') {
         installPlugins('master', 'core-ui')
         sh 'npm link ../closure-util'
 
-        // use npmjs.org build project versions
-        sh 'perl -p -i -e \'s%"(opensphere-build-[^"]*)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
-        sh 'perl -p -i -e \'s%"(eslint-(config|plugin)-opensphere)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
-        sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
-        
+        useNpmJsVersions()
         try {
           npmInstall()
         } catch (e) {
@@ -158,6 +154,8 @@ node('Linux&&!gpu') {
         sh 'ln -fs ../../opensphere node_modules/opensphere'
         sh 'ln -fs ../../bits-internal node_modules/bits-internal'
         sh 'npm link ../closure-util'
+
+        useNpmJsVersions()
         npmInstall(true, false);
       }
     }
@@ -300,6 +298,13 @@ node('Linux&&!gpu') {
       throw err
     }
   }
+}
+
+def useNpmJsVersions() {
+  // use npmjs.org build project versions
+  sh 'perl -p -i -e \'s%"(opensphere-build-[^"]*)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
+  sh 'perl -p -i -e \'s%"(eslint-(config|plugin)-opensphere)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
+  sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
 }
 
 def uploadToThreadfix(file) {
