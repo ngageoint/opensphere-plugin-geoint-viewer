@@ -52,6 +52,7 @@ node('Linux&&!gpu') {
       stage('install opensphere') {
         sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
         sh 'npm cache clean'
+        sh 'npm cache clean openlayers'
         sh 'rm -rf node_modules || true'
         sh 'echo $PATH'
         installPlugins('master', 'core-ui')
@@ -59,7 +60,7 @@ node('Linux&&!gpu') {
         try {
           npmInstall()
         } catch (e) {
-          sh 'cat node_modules/openlayers/package.json'
+          sh 'find node_modules/openlayers'
           throw e
         }
       }
