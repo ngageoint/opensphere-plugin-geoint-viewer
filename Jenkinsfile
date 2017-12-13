@@ -43,8 +43,8 @@ node('Linux&&!gpu') {
     sh 'rm -rf */node_modules/closure-util'
     dir('closure-util') {
       sh 'rm -rf *'
-      sh 'echo \'{"version":"1.18.0","name":"closure-util","bin":{"closure-util":"no.js"}}\' > package.json'
-      sh 'touch no.js'
+      sh 'echo \'{"version":"1.18.0","name":"closure-util","bin":{"closure-util":"closure-util.js"}}\' > package.json'
+      sh 'touch closure-util.js'
     }
 
     // get main opensphere project
