@@ -41,6 +41,7 @@ node('Linux&&!gpu') {
 
     // closure-util can go pound sand
     sh 'rm -rf */node_modules/closure-util'
+    sh 'npm rm -g closure-util'
     dir('closure-util') {
       sh 'rm -rf *'
       sh 'echo \'{"version":"1.18.0","name":"closure-util","bin":{"closure-util":"closure-util.js"}}\' > package.json'
