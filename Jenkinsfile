@@ -41,7 +41,7 @@ node('Linux&&!gpu') {
 
     // closure-util can go pound sand
     sh 'rm -rf */node_modules/closure-util || true'
-    sh 'rm -rf $(npm root -g)/bin/closure-util $(npm root -g)/lib/closure-util || true'
+    sh 'rm -rf $(npm root -g)/../../bin/closure-util $(npm root -g)/closure-util || true'
     sh 'npm rm -g closure-util || true'
     dir('closure-util') {
       sh 'rm -rf *'
