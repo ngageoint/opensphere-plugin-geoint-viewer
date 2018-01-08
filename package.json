@@ -19,29 +19,16 @@
     }
   },
   "scripts": {
-    "apidoc": "npm run compile:resolve && npm run compile:gcc && npm run compile:dossier",
-    "modernizr": "modernizr -c modernizr.config.json -u -d .build/modernizr.js",
-    "test:gcc": "java -jar node_modules/google-closure-compiler/compiler.jar $(< .build/gcc-test-args)",
-    "test:init": "npm run modernizr && npm run compile:resolve && npm run test:gcc",
-    "test:run": "karma start --single-run",
-    "test": "npm run test:init && npm run test:run",
-    "test:debug": "karma start --browsers Chrome --reporters dots",
-    "init:apidoc": "rimraf .build/*.conf.json dist/apidoc && mkdirp .build dist/apidoc",
     "init": "rimraf .build dist && mkdirp .build dist",
     "lint:css": "sass-lint -v -s scss -i 'scss/nolint/**/*.scss' 'scss/**/*.scss'",
     "lint:js": "eslint --cache 'src/**/*.js'",
     "lint": "npm run lint:js && npm run lint:css",
-    "compile:jsdoc": "npm run init:apidoc && os-docs-gen-config jsdoc.conf.json .build/jsdoc.conf.json && jsdoc -c .build/jsdoc.conf.json",
-    "compile:dossier": "npm run init:apidoc && os-docs-gen-config dossier.conf.json .build/dossier.conf.json && java -jar node_modules/js-dossier/dossier.jar -c .build/dossier.conf.json",
     "compile:resolve": "os-resolve .build",
-    "compile:css": "node-sass $(< .build/node-sass-args) > .build/test.min.css",
-    "compile:gcc": "java -jar node_modules/google-closure-compiler/compiler.jar $(< .build/gcc-java-args)",
+    "compile:css": "node-sass $(cat .build/node-sass-args) > .build/test.min.css",
+    "compile:gcc": "os-compile $(cat .build/gcc-java-args)",
     "compile": "npm run compile:resolve && npm run compile:gcc && npm run compile:css",
-    "build": "npm run init && npm run lint && npm run modernizr && npm run compile",
-    "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then npm install && npm update; fi",
+    "build": "npm run init && npm run lint && npm run compile",
     "perms": "chmod -R u+rwX,go+rX,go-w .",
-    "postmerge":"npm run package:update",
-    "postrewrite":"npm run package:update",
     "commitmsg": "validate-commit-msg"
   },
   "keywords": [
@@ -54,38 +41,28 @@
   "license": "ISC",
   "config": {
     "commitizen": {
-      "path": "node_modules/cz-conventional-changelog"
+      "path": "cz-conventional-changelog"
     },
     "validate-commit-msg": {
       "helpMessage": "\nPlease fix your commit message (consider using 'npm i -g commitizen'). Well-formatted commit messages allow us to automate our changelog.\n\nExamples:\n\"fix(states): Fixed bug when parsing opacity from state files\"\n\"feat(timeline): Added support for an arbitrary number of ranges\"\n\nIf you have installed commitizen, try running 'git cz'."
     }
   },
   "devDependencies": {
-    "angular-mocks": "~1.5.x",
     "conventional-changelog-cli": "^1.2.0",
     "conventional-recommended-bump": "^0.3.0",
     "cz-conventional-changelog": "^1.2.0",
-    "eslint": "^3.5.0",
+    "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.0",
-    "eslint-config-opensphere": "^0.2.0",
+    "eslint-config-opensphere": "^1.0.0",
     "eslint-plugin-google-camelcase": "^0.0.2",
-    "google-closure-compiler": "^20161201.0.0",
+    "eslint-plugin-opensphere": "^1.0.0",
+    "google-closure-compiler": "^20171203.0.0",
     "husky": "^0.13.3",
-    "jasmine-core": "^2.5.2",
-    "js-dossier": "^0.10.0",
-    "jsdoc": "^3.4.2",
-    "karma": "^1.3.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-coverage": "^1.1.1",
-    "karma-jasmine": "^0.1.0",
-    "karma-junit-reporter": "^1.1.0",
     "mkdirp": "^0.5.1",
     "node-sass": "=4.7.2",
-    "opensphere-build-closure-helper": "^0.2.0",
-    "opensphere-build-docs": "^0.1.0",
-    "opensphere-build-index": "^0.3.0",
-    "opensphere-build-resolver": "^0.2.0",
-    "opensphere-state-schema": "^1.0.1",
+    "opensphere-build-closure-helper": "^1.0.0",
+    "opensphere-build-index": "^1.0.0",
+    "opensphere-build-resolver": "^2.1.0",
     "replace": "^0.3.0",
     "rimraf": "^2.5.4",
     "sass-lint": "^1.9.1",
@@ -93,6 +70,6 @@
     "xmllint": "^0.1.1"
   },
   "dependencies": {
-    "opensphere": "^0.5.0"
+    "opensphere": "^1.0.0"
   }
 }
