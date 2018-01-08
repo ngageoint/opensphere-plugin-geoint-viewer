@@ -1,6 +1,7 @@
 goog.provide('plugin.banner.BannerPlugin');
 
 goog.require('os.plugin.AbstractPlugin');
+goog.require('os.plugin.PluginManager');
 
 
 /**
