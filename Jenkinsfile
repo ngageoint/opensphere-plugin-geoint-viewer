@@ -15,163 +15,69 @@ node('Linux&&!gpu') {
     } catch (NoSuchMethodError e) {
     }
 
-    dir('opensphere-plugin-geoint-viewer') {
-      stage('scm') {
-        sh "echo 'checking out scm'"
-        checkout scm
+    sh 'npm i -g yarn'
 
-        try {
-          // eh... no?
-          //sh "echo 'after checkout'"
-          //afterCheckout()
-        } catch (NoSuchMethodError e) {
+    stage('scm') {
+      installPlugins('master', 'opensphere-yarn-workspace')
+
+      dir('workspace') {
+        dir('opensphere-plugin-geoint-viewer') {
+          sh "echo 'checking out scm'"
+          checkout scm
+
+          GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+
+          try {
+            this_version = sh(script: 'git describe --exact-match HEAD', returnStdout: true).trim()
+          } catch (e) {
+            this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+          }
         }
 
-        GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        def projects = [
+          'closure-util',
+          'opensphere',
+          'opensphere-plugin-analyze',
+          'opensphere-plugin-gbdx',
+          'opensphere-plugin-planetlabs',
+          'opensphere-plugin-overpass',
+          'bits-internal',
+          'mist']
 
-        try {
-          this_version = sh(script: 'git describe --exact-match HEAD', returnStdout: true).trim()
-        } catch (e) {
-          this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+        for (def project in projects) {
+          dir(project) {
+            installPlugins('master', project)
+            useNpmJsVersions()
+          }
         }
       }
+
+      def sources = [
+        'workspace/opensphere-plugin-geoint-viewer/src/**',
+        'workspace/opensphere-plugin-geoint-viewer/package.json'
+        'workspace/opensphere-plugin-planetlabs/src/**',
+        'workspace/opensphere-plugin-planetlabs/package.json'
+        'workspace/opensphere-plugin-overpass/src/**',
+        'workspace/opensphere-plugin-overpass/package.json'
+        'workspace/opensphere-plugin-gbdx/src/**',
+        'workspace/opensphere-plugin-gbdx/package.json',
+        'workspace/opensphere-plugin-analyze/src/**',
+        'workspace/opensphere-plugin-analyze/package.json'
+      ]
+
+      stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
     }
 
-    def sources = []
-
-    // closure-util can go pound sand
-    sh 'rm -rf */node_modules/closure-util || true'
-    sh 'rm -rf $(npm root -g)/../../bin/closure-util $(npm root -g)/closure-util || true'
-    sh 'npm rm -g closure-util || true'
-    dir('closure-util') {
-      sh 'rm -rf *'
-      sh 'echo \'{"version":"1.18.0","name":"closure-util","bin":{"closure-util":"closure-util.js"}}\' > package.json'
-      sh 'touch closure-util.js'
+    stage('yarn') {
+      sh 'yarn install'
     }
-
-    // get main opensphere project
-    dir('opensphere') {
-      stage('install opensphere') {
-        sh 'if [ -d ".git" ]; then git clean -ffdx; fi'
-        sh 'echo $PATH'
-        installPlugins('master', 'core-ui')
-        sh 'npm link ../closure-util'
-
-        useNpmJsVersions()
-        try {
-          npmInstall()
-        } catch (e) {
-          sh 'find node_modules/openlayers'
-          throw e
-        }
-      }
-    }
-
-    dir('opensphere-plugin-geoint-viewer') {
-      // gotta run npm to run tests and docs
-      stage('npm') {
-        sources = sources.plus([
-          'opensphere-plugin-geoint-viewer/src/**',
-          'opensphere-plugin-geoint-viewer/package.json'
-        ])
-        // except that there are currently no tests because GV is just a branding wrapper
-        //sh 'mkdir -p node_modules'
-        //sh 'ln -s ../../opensphere node_modules/opensphere'
-        //npmInstall()
-
-        // run tests
-
-        // gen docs
-        /*stage('docs')
-        sh 'npm run compile:dossier'
-
-        try {
-          deployDocs()
-        } catch (NoSuchMethodError e) {
-        }*/
-      }
-    }
-
-    // Add Planet Labs plugin
-    dir('opensphere-plugin-planetlabs') {
-      stage('install planetlabs') {
-        installPlugins('master', 'gv-plugin-planetlabs')
-        sources = sources.plus([
-          'opensphere-plugin-planetlabs/src/**',
-          'opensphere-plugin-planetlabs/package.json'
-        ])
-        // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
-        //sh 'mkdir -p node_modules'
-        //sh 'ln -s ../../opensphere node_modules/opensphere'
-        //npmInstall(true)
-      }
-    }
-
-    // Add Overpass plugin
-    dir('opensphere-plugin-overpass') {
-      stage('install overpass') {
-        installPlugins('master', 'gv-plugin-overpass')
-        sources = sources.plus([
-          'opensphere-plugin-overpass/src/**',
-          'opensphere-plugin-overpass/package.json'
-        ])
-        // Technically you should generically call npmInstall after installPlugins but this one has no dependencies
-        //sh 'mkdir -p node_modules'
-        //sh 'ln -s ../../opensphere node_modules/opensphere'
-        //npmInstall(true);
-      }
-    }
-
-    // add gbdx plugin
-    dir('opensphere-plugin-gbdx') {
-      stage('install gbdx') {
-        installPlugins('master', 'opensphere-plugin-gbdx')
-        sources = sources.plus([
-          'opensphere-plugin-gbdx/src/**',
-          'opensphere-plugin-gbdx/package.json'
-        ])
-      }
-    }
-
-    // add analyze plugin
-    stage('install analyze') {
-      dir('opensphere-plugin-analyze') {
-        installPlugins('master', 'opensphere-plugin-analyze')
-      }
-
-      // these two are dependencies for analyze that must be cloned as siblings
-      dir('bits-internal') {
-        installPlugins('master', 'bits-internal')
-
-        sh 'mkdir -p node_modules'
-        sh 'ln -fs ../../opensphere node_modules/opensphere'
-        sh 'npm link ../closure-util'
-
-        useNpmJsVersions()
-        npmInstall(true, false);
-      }
-
-      dir('mist') {
-        installPlugins('master', 'mist')
-
-        sh 'mkdir -p node_modules'
-        sh 'ln -fs ../../opensphere node_modules/opensphere'
-        sh 'ln -fs ../../bits-internal node_modules/bits-internal'
-        sh 'npm link ../closure-util'
-
-        useNpmJsVersions()
-        npmInstall(true, false);
-      }
-    }
-
-    stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
 
     stage('Build and Scans - SonarQube, Fortify, OWASP Dependecy Checker') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
-          dir('opensphere') {
-            sh 'npm run build'
+          dir('workspace/opensphere') {
+            sh 'yarn run build'
             sh 'mv dist/opensphere dist/gv'
           }
         },
@@ -252,7 +158,7 @@ node('Linux&&!gpu') {
       )
     }
 
-    dir('opensphere') {
+    dir('workspace/opensphere') {
       stage('package') {
         dir('dist') {
           sh "zip -q -r gv-${this_version}.zip gv"
@@ -278,7 +184,7 @@ node('Linux&&!gpu') {
         stage('publish') {
 	  if (env.BRANCH_NAME == 'master') {
 	    installPlugins('master', 'gv.config')
-            sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../opensphere/dist/gv-${this_version}.zip ${this_version}"
+            sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/gv-${this_version}.zip ${this_version}"
 	  }
 	}
       }
@@ -305,9 +211,7 @@ node('Linux&&!gpu') {
 }
 
 def useNpmJsVersions() {
-  // use npmjs.org build project versions
-  sh 'perl -p -i -e \'s%"(opensphere-build-[^"]*)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
-  sh 'perl -p -i -e \'s%"(eslint-(config|plugin)-opensphere)"\\s*:\\s*"[~^=\\d.]+"%"$1": "^1.0.0"%g\' package.json'
+  // clean up things that aren't on npmjs.org
   sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
   sh 'perl -ni -e \'print unless /bits-protractor/\' package.json'
 }
