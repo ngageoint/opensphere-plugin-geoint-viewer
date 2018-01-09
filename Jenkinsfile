@@ -54,11 +54,11 @@ node('Linux&&!gpu') {
 
       def sources = [
         'workspace/opensphere-plugin-geoint-viewer/src/**',
-        'workspace/opensphere-plugin-geoint-viewer/package.json'
+        'workspace/opensphere-plugin-geoint-viewer/package.json',
         'workspace/opensphere-plugin-planetlabs/src/**',
-        'workspace/opensphere-plugin-planetlabs/package.json'
+        'workspace/opensphere-plugin-planetlabs/package.json',
         'workspace/opensphere-plugin-overpass/src/**',
-        'workspace/opensphere-plugin-overpass/package.json'
+        'workspace/opensphere-plugin-overpass/package.json',
         'workspace/opensphere-plugin-gbdx/src/**',
         'workspace/opensphere-plugin-gbdx/package.json',
         'workspace/opensphere-plugin-analyze/src/**',
