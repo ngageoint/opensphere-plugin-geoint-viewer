@@ -67,6 +67,7 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
+      sh 'npm i -g yarn'
       sh 'yarn config list'
       sh 'yarn install'
     }
