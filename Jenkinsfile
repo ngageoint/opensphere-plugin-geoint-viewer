@@ -15,8 +15,6 @@ node('Linux&&!gpu') {
     } catch (NoSuchMethodError e) {
     }
 
-    sh 'npm i -g yarn'
-
     stage('scm') {
       installPlugins('master', 'opensphere-yarn-workspace')
 
@@ -69,6 +67,7 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
+      sh 'yarn config list'
       sh 'yarn install'
     }
 
