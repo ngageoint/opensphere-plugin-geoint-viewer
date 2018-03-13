@@ -69,6 +69,8 @@ node('Linux&&!gpu') {
     stage('yarn') {
       sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
       sh 'npm i -g yarn'
+      // someone went and set nexus.gs.mil as the global default registry. ugh.
+      sh 'npm config set registry https://registry.npmjs.org/'
       sh 'yarn config list'
       sh 'yarn install'
     }
