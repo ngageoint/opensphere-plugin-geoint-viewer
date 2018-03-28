@@ -38,6 +38,7 @@ node('Linux&&!gpu') {
           'opensphere-plugin-analyze',
           'opensphere-plugin-gbdx',
           'opensphere-plugin-planetlabs',
+          'opensphere-plugin-pixia',
           'opensphere-plugin-overpass',
           'bits-internal',
           'mist']
@@ -55,6 +56,8 @@ node('Linux&&!gpu') {
         'workspace/opensphere-plugin-geoint-viewer/package.json',
         'workspace/opensphere-plugin-planetlabs/src/**',
         'workspace/opensphere-plugin-planetlabs/package.json',
+        'workspace/opensphere-plugin-pixia/src/**',
+        'workspace/opensphere-plugin-pixia/package.json',
         'workspace/opensphere-plugin-overpass/src/**',
         'workspace/opensphere-plugin-overpass/package.json',
         'workspace/opensphere-plugin-gbdx/src/**',
