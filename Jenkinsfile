@@ -75,7 +75,7 @@ node('Linux&&!gpu') {
       // someone went and set nexus.gs.mil as the global default registry. ugh.
       sh 'npm config set registry https://registry.npmjs.org/'
       sh 'yarn config list'
-      sh 'yarn install'
+      sh 'yarn upgrade'
     }
 
     stage('Build and Scans - SonarQube, Fortify, OWASP Dependecy Checker') {
