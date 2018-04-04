@@ -56,8 +56,7 @@
     },
     "weather": {
       "url": "http://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
-    },
-    "xtEnabled": false
+    }
   },
   "user": {
     "baseProjection": "EPSG:4326"
