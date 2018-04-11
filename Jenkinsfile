@@ -75,6 +75,7 @@ node('Linux&&!gpu') {
       // someone went and set nexus.gs.mil as the global default registry. ugh.
       sh 'npm config set registry https://registry.npmjs.org/'
       sh 'yarn config list'
+      sh 'rm yarn.lock || true'
       sh 'yarn install'
     }
 
