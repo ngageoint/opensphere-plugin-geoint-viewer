@@ -120,24 +120,13 @@ plugin.oauth.OAuthHandler.prototype.addCrossOrigin = function() {
 
     // this URL is going to require credentials
     var regex = new RegExp('^' + url.getScheme() + '://' + url.getDomain().replace(/\./g, '\\.') + '/');
-
-    // add it for the session
-    os.net.registerCrossOrigin(regex, os.net.CrossOrigin.USE_CREDENTIALS);
-
-    // add it for next time
-    var userOrigins = os.settings.get('userCrossOrigin', []);
-
-    userOrigins.push({
-      'pattern': regex.source,
-      'crossOrigin': os.net.CrossOrigin.USE_CREDENTIALS
-    });
-
-    os.settings.set('userCrossOrigin', userOrigins);
+    os.net.saveCrossOrigin(regex.source, os.net.CrossOrigin.USE_CREDENTIALS);
     return true;
   }
 
   return false;
 };
+
 
 /**
  * Get the URI for the login frame
@@ -151,4 +140,3 @@ plugin.oauth.OAuthHandler.prototype.getLoginUri = function() {
 
   return null;
 };
-
