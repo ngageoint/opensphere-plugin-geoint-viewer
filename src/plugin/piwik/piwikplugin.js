@@ -20,11 +20,11 @@ goog.inherits(plugin.piwik.PiwikPlugin, os.plugin.AbstractPlugin);
  * @export
  */
 var _paq = _paq || [];
-  _paq.push(["setDocumentTitle", document.domain + '/' + document.title]);
-  _paq.push(["setCookieDomain", '*.' + document.domain]);
-  _paq.push(["setDomains", ['*.' + document.domain]]);
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
+_paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
+_paq.push(['setCookieDomain', '*.' + document.domain]);
+_paq.push(['setDomains', ['*.' + document.domain]]);
+_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);
 
 /**
  * @inheritDoc

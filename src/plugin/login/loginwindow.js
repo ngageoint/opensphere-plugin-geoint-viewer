@@ -1,21 +1,28 @@
-goog.provide('plugin.oauth.LoginWindowCtrl');
-goog.provide('plugin.oauth.loginDirective');
+goog.provide('plugin.login.LoginWindowCtrl');
+goog.provide('plugin.login.loginDirective');
+
+goog.require('goog.Uri');
 goog.require('gv.defines');
+goog.require('ol.obj');
 goog.require('os.ui.Module');
 goog.require('os.ui.window');
+goog.require('plugin.login.Event');
+goog.require('plugin.login.EventType');
 
 
 /**
  * The alerts directive
  * @return {angular.Directive}
  */
-plugin.oauth.loginDirective = function() {
+plugin.login.loginDirective = function() {
+  var electron = navigator.userAgent.toLowerCase().indexOf(' electron') > -1;
+
   return {
     restrict: 'AE',
     replace: true,
     scope: true,
-    templateUrl: gv.ROOT + 'views/plugin/oauth/loginwindow.html',
-    controller: plugin.oauth.LoginWindowCtrl,
+    templateUrl: gv.ROOT + 'views/plugin/login/' + (electron ? 'login' : 'link') + 'window.html',
+    controller: plugin.login.LoginWindowCtrl,
     controllerAs: 'ctrl'
   };
 };
@@ -24,7 +31,7 @@ plugin.oauth.loginDirective = function() {
 /**
  * Add the directive to the module
  */
-os.ui.Module.directive('login', [plugin.oauth.loginDirective]);
+os.ui.Module.directive('login', [plugin.login.loginDirective]);
 
 
 /**
@@ -33,7 +40,7 @@ os.ui.Module.directive('login', [plugin.oauth.loginDirective]);
  * @constructor
  * @ngInject
  */
-plugin.oauth.LoginWindowCtrl = function($scope, $element) {
+plugin.login.LoginWindowCtrl = function($scope, $element) {
   /**
    * @type {?angular.Scope}
    * @private
@@ -53,8 +60,10 @@ plugin.oauth.LoginWindowCtrl = function($scope, $element) {
   this.frameLoads_ = 0;
 
   var iframe = this.element_.find('iframe');
-  iframe.on('load', this.onFrameLoad_.bind(this));
-  iframe.attr('src', this.scope_['url']);
+  if (iframe) {
+    iframe.on('load', this.onFrameLoad_.bind(this));
+    iframe.attr('src', this.scope_['url']);
+  }
   this.scope_.$on('$destroy', this.destroy_.bind(this));
 };
 
@@ -63,14 +72,21 @@ plugin.oauth.LoginWindowCtrl = function($scope, $element) {
  * @type {string}
  * @const
  */
-plugin.oauth.LoginWindowCtrl.WINDOW_ID = 'oauth-login';
+plugin.login.LoginWindowCtrl.WINDOW_ID = 'login-login';
 
 
 /**
  * clean up
  * @private
  */
-plugin.oauth.LoginWindowCtrl.prototype.destroy_ = function() {
+plugin.login.LoginWindowCtrl.prototype.destroy_ = function() {
+  var type = this.frameLoads_ > 1 ? plugin.login.EventType.AUTH_COMPLETE :
+      plugin.login.EventType.AUTH_CANCEL;
+
+  var evt = new plugin.login.Event(type, /** @type {!string} */ (this.scope_['url']));
+  evt.target = this;
+  os.dispatcher.dispatchEvent(evt);
+
   this.scope_ = null;
   this.element_ = null;
 };
@@ -80,36 +96,62 @@ plugin.oauth.LoginWindowCtrl.prototype.destroy_ = function() {
  * Count the frame loads and retry the request
  * @private
  */
-plugin.oauth.LoginWindowCtrl.prototype.onFrameLoad_ = function() {
+plugin.login.LoginWindowCtrl.prototype.onFrameLoad_ = function() {
   this.frameLoads_++;
 
   if (this.frameLoads_ > 1) {
-    /** @type {plugin.oauth.OAuthHandler} */ (this.scope_['handler']).retry();
+    os.ui.window.close(this.element_);
   }
 };
 
 
 /**
- * @param {plugin.oauth.OAuthHandler} handler The request handler
+ * @export
  */
-plugin.oauth.LoginWindowCtrl.launch = function(handler) {
-  var url = handler.getLoginUri();
-  os.ui.window.create({
-    'id': plugin.oauth.LoginWindowCtrl.WINDOW_ID,
-    'label': 'Login to ' + url.getDomain(),
+plugin.login.LoginWindowCtrl.prototype.accept = function() {
+  this.frameLoads_ = 2;
+  os.ui.window.close(this.element_);
+};
+
+
+/**
+ * @export
+ */
+plugin.login.LoginWindowCtrl.prototype.cancel = function() {
+  this.frameLoads_ = 0;
+  os.ui.window.close(this.element_);
+};
+
+
+/**
+ * @param {!string} url
+ */
+plugin.login.LoginWindowCtrl.launch = function(url) {
+  var uri = new goog.Uri(url);
+  var options = {
+    'id': plugin.login.LoginWindowCtrl.WINDOW_ID,
+    'label': 'Login to ' + uri.getDomain(),
     'icon': 'fa fa-sign-in',
     'no-scroll': 'true',
     'x': 'center',
     'y': 'center',
-    'width': '800',
-    'height': '600',
+    'show-close': true,
+    'width': 400,
+    'height': 'auto',
     'min-width': '300',
     'max-width': '1000',
     'min-height': '300',
-    'max-height': '1000',
-    'show-close': true
-  }, '<login></login>', undefined, undefined, undefined, {
-    'url': url.toString(),
-    'handler': handler
+    'max-height': '1000'
+  };
+
+  if (navigator.userAgent.toLowerCase().indexOf(' electron') > -1) {
+    options = ol.obj.assign(options, {
+      'width': '800',
+      'height': '600'
+    });
+  }
+
+  os.ui.window.create(options, '<login></login>', undefined, undefined, undefined, {
+    'url': url
   });
 };

@@ -46,6 +46,26 @@
       "pattern": "^https?://earth.gvslabs.com/terrain/",
       "crossOrigin": "use-credentials"
     }],
+    "plugin": {
+      "login": {
+        "geoaxis": {
+          "loginUrl": "https://geoaxis.nga.mil",
+          "regexes": [
+            "<(html|body)(\\s+|>)",
+            "<title>GEOAxIS</title>",
+            "<form name=\"login\""
+          ]
+        },
+        "default": {
+          "priority": -1000,
+          "regexes": [
+            "<(html|body)(\\s+|>)",
+            "(sign|log)\\s*in)"
+          ]
+        }
+
+      }
+    },
     "providers": {
       "gs-hiperlook": {
         "type": "ogc",

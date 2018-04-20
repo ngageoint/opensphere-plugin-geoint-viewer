@@ -1,107 +1,43 @@
-goog.provide('plugin.oauth.PopupManager');
+goog.provide('plugin.login.PopupManager');
 
-goog.require('os.data.CollectionManager');
-goog.require('plugin.oauth.loginDirective');
+goog.require('plugin.login.EventType');
+goog.require('plugin.login.loginDirective');
 
 
 
 /**
- * @extends {os.data.CollectionManager<!plugin.oauth.OAuthHandler>}
  * @constructor
  */
-plugin.oauth.PopupManager = function() {
-  plugin.oauth.PopupManager.base(this, 'constructor');
+plugin.login.PopupManager = function() {
+  /**
+   * @type {Object<string, boolean>}
+   * @protected
+   */
+  this.windowsByUrl = {};
+
+  os.dispatcher.listen(plugin.login.EventType.AUTH_COMPLETE, this.onAuth, false, this);
+  os.dispatcher.listen(plugin.login.EventType.AUTH_CANCEL, this.onAuth, false, this);
 };
-goog.inherits(plugin.oauth.PopupManager, os.data.CollectionManager);
-goog.addSingletonGetter(plugin.oauth.PopupManager);
+goog.addSingletonGetter(plugin.login.PopupManager);
 
 
 /**
- * @type {number}
+ * @param {!string} url The login URL
  */
-plugin.oauth.PopupManager.nextId = 0;
-
-
-/**
- * @inheritDoc
- */
-plugin.oauth.PopupManager.prototype.addInternal = function(item) {
-  if (!this.getId(item)) {
-    item['id'] = '' + plugin.oauth.PopupManager.nextId++;
-  }
-
-  var result = plugin.oauth.PopupManager.base(this, 'addInternal', item);
-
-  if (result) {
-    this.popup(item);
-  }
-
-  return result;
-};
-
-
-/**
- * @inheritDoc
- */
-plugin.oauth.PopupManager.prototype.remove = function(idOrItem) {
-  var removed = plugin.oauth.PopupManager.base(this, 'remove', idOrItem);
-
-  if (removed) {
-    this.close(removed);
-  }
-
-  return removed;
-};
-
-
-/**
- * @param {plugin.oauth.OAuthHandler} handler The handler to resolve
- */
-plugin.oauth.PopupManager.prototype.resolve = function(handler) {
-  handler.addCrossOrigin();
-  handler.retry();
-  this.remove(handler);
-
-  // do the next one
-  var list = this.getAll();
-  if (list.length) {
-    this.popup(list[0]);
+plugin.login.PopupManager.prototype.add = function(url) {
+  if (!this.windowsByUrl[url]) {
+    this.windowsByUrl[url] = true;
+    plugin.login.LoginWindowCtrl.launch(url);
   }
 };
 
 
 /**
- * @param {plugin.oauth.OAuthHandler} handler The request handler awaiting authentication
+ * @param {plugin.login.Event} evt
+ * @protected
  */
-plugin.oauth.PopupManager.prototype.popup = function(handler) {
-  // only open a popup if one is not already open
-  if (!os.ui.window.exists(plugin.oauth.LoginWindowCtrl.WINDOW_ID)) {
-    plugin.oauth.LoginWindowCtrl.launch(handler);
-    handler.listen(goog.net.EventType.SUCCESS, this.onSuccess_, true, this);
-  }
-};
-
-
-/**
- * Handle request success
- * @param {goog.events.Event} evt The event
- */
-plugin.oauth.PopupManager.prototype.onSuccess_ = function(evt) {
-  var handler = /** @type {plugin.oauth.OAuthHandler} */ (evt.target);
-  this.resolve(handler);
-};
-
-
-/**
- * @param {plugin.oauth.OAuthHandler} handler The handler to close
- */
-plugin.oauth.PopupManager.prototype.close = function(handler) {
-  var win = os.ui.window.getById(plugin.oauth.LoginWindowCtrl.WINDOW_ID);
-  if (win) {
-    var scope = win.find('iframe').scope();
-    if (scope && scope['handler'] === handler) {
-      handler.unlisten(goog.net.EventType.SUCCESS, this.onSuccess_, true, this);
-      os.ui.window.close(win);
-    }
+plugin.login.PopupManager.prototype.onAuth = function(evt) {
+  if (evt.url in this.windowsByUrl) {
+    delete this.windowsByUrl[evt.url];
   }
 };

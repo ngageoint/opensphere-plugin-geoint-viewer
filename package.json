@@ -15,7 +15,7 @@
     "gcc": {
       "entry_point": [
         "goog:plugin.banner.BannerPlugin",
-        "goog:plugin.oauth.OAuthPlugin",
+        "goog:plugin.login.LoginPlugin",
         "goog:plugin.piwik.PiwikPlugin"
       ]
     }

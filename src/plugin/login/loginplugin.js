@@ -1,10 +1,10 @@
-goog.provide('plugin.oauth.OAuthPlugin');
+goog.provide('plugin.login.LoginPlugin');
 
 goog.require('os.net.Request');
 goog.require('os.plugin.AbstractPlugin');
 goog.require('os.plugin.PluginManager');
-goog.require('plugin.oauth.OAuthHandler');
-goog.require('plugin.oauth.PopupManager');
+goog.require('plugin.login.LoginHandler');
+goog.require('plugin.login.PopupManager');
 
 
 
@@ -13,40 +13,39 @@ goog.require('plugin.oauth.PopupManager');
  * @extends {os.plugin.AbstractPlugin}
  * @constructor
  */
-plugin.oauth.OAuthPlugin = function() {
-  plugin.oauth.OAuthPlugin.base(this, 'constructor');
-  this.id = plugin.oauth.OAuthPlugin.ID;
+plugin.login.LoginPlugin = function() {
+  plugin.login.LoginPlugin.base(this, 'constructor');
+  this.id = plugin.login.LoginPlugin.ID;
 };
-goog.inherits(plugin.oauth.OAuthPlugin, os.plugin.AbstractPlugin);
+goog.inherits(plugin.login.LoginPlugin, os.plugin.AbstractPlugin);
 
 
 /**
  * @type {string}
  * @const
  */
-plugin.oauth.OAuthPlugin.ID = 'oauth';
+plugin.login.LoginPlugin.ID = 'login';
 
 
 /**
  * @inheritDoc
  */
-plugin.oauth.OAuthPlugin.prototype.init = function() {
+plugin.login.LoginPlugin.prototype.init = function() {
   os.net.RequestHandlerFactory.removeHandler(os.net.ExtDomainHandler);
-  os.net.RequestHandlerFactory.addHandler(plugin.oauth.OAuthHandler);
-  os.dispatcher.listen(plugin.oauth.EventType.ADD_AUTH_HANDLER, this.handleAdd_);
+  os.net.RequestHandlerFactory.addHandler(plugin.login.LoginHandler);
+  os.dispatcher.listen(plugin.login.EventType.AUTH_INIT, this.handleAdd_);
 };
 
 
 /**
  * Handle auth adds
- * @param {goog.events.Event} evt The event
+ * @param {plugin.login.Event} evt The event
  */
-plugin.oauth.OAuthPlugin.prototype.handleAdd_ = function(evt) {
-  var handler = /** @type {!plugin.oauth.OAuthHandler} */ (evt.target);
-  plugin.oauth.PopupManager.getInstance().add(handler);
+plugin.login.LoginPlugin.prototype.handleAdd_ = function(evt) {
+  plugin.login.PopupManager.getInstance().add(evt.url);
 };
 
 
 (function() {
-  os.plugin.PluginManager.getInstance().addPlugin(new plugin.oauth.OAuthPlugin());
+  os.plugin.PluginManager.getInstance().addPlugin(new plugin.login.LoginPlugin());
 })();
