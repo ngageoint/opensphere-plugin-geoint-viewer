@@ -60,7 +60,7 @@
           "priority": -1000,
           "regexes": [
             "<(html|body)(\\s+|>)",
-            "(sign|log)\\s*in)"
+            "(sign|log)\\s*in"
           ]
         }
 
