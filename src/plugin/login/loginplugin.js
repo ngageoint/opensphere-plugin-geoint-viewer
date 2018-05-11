@@ -1,5 +1,7 @@
 goog.provide('plugin.login.LoginPlugin');
 
+goog.require('os.net.CredentialsHandler');
+goog.require('os.net.ExtDomainHandler');
 goog.require('os.net.Request');
 goog.require('os.plugin.AbstractPlugin');
 goog.require('os.plugin.PluginManager');
@@ -32,6 +34,7 @@ plugin.login.LoginPlugin.ID = 'login';
  */
 plugin.login.LoginPlugin.prototype.init = function() {
   os.net.RequestHandlerFactory.removeHandler(os.net.ExtDomainHandler);
+  os.net.RequestHandlerFactory.removeHandler(os.net.CredentialsHandler);
   os.net.RequestHandlerFactory.addHandler(plugin.login.LoginHandler);
   os.dispatcher.listen(plugin.login.EventType.AUTH_INIT, this.handleAdd_);
 };
