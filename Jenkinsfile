@@ -7,6 +7,8 @@ node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
+    isMeatballGrinderDeployment = env.JOB_NAME =~ /meatballgrinder/
+
     initEnvironment()
     initGV()
 
@@ -219,6 +221,10 @@ def useNpmJsVersions() {
   // clean up things that aren't on npmjs.org
   sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
   sh 'perl -ni -e \'print unless /bits-protractor/\' package.json'
+
+  if (isMeatballGrinderDeployment) {
+    sh 'perl -ni -e \'print unless /benum/\' package.json'
+  }
 }
 
 def uploadToThreadfix(file) {
