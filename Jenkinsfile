@@ -195,7 +195,7 @@ node('Linux&&!gpu') {
       }
     }
 
-    if (env.BRANCH_NAME == 'master') {
+    if (env.BRANCH_NAME == 'master' && !(env.JOB_NAME =~ /meatballgrinder/)) {
       // kick off deploy build
       build job: "${env.DEPLOY_JOB}", quietPeriod: 5, wait: false
     }
