@@ -169,14 +169,12 @@ node('Linux&&!gpu') {
           sh "zip -q -r gv-${this_version}.zip gv"
         }
 
-        if (env.BRANCH_NAME == 'master') {
-          try {
-            // newer Jenkins
-            archiveArtifacts 'dist/*.zip'
-          } catch (NoSuchMethodError e) {
-            // older Jenkins
-            archive 'dist/*.zip'
-          }
+        try {
+          // newer Jenkins
+          archiveArtifacts 'dist/*.zip'
+        } catch (NoSuchMethodError e) {
+          // older Jenkins
+          archive 'dist/*.zip'
         }
       }
     }
