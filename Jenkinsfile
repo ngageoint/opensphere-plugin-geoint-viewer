@@ -187,11 +187,11 @@ node('Linux&&!gpu') {
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
         stage('publish') {
-	  if (env.BRANCH_NAME == 'master') {
-	    installPlugins('master', 'gv.config')
+          if (env.BRANCH_NAME == 'master' && !(env.JOB_NAME =~ /meatballgrinder/)) {
+            installPlugins('master', 'gv.config')
             sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/gv-${this_version}.zip ${this_version}"
-	  }
-	}
+          }
+        }
       }
     }
 
