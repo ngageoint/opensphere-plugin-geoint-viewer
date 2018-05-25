@@ -7,8 +7,6 @@ node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
-    isMeatballGrinderDeployment = env.JOB_NAME =~ /meatballgrinder/
-
     initEnvironment()
     initGV()
 
@@ -222,7 +220,7 @@ def useNpmJsVersions() {
   sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
   sh 'perl -ni -e \'print unless /bits-protractor/\' package.json'
 
-  if (isMeatballGrinderDeployment) {
+  if (env.JOB_NAME =~ /meatballgrinder/) {
     sh 'perl -ni -e \'print unless /benum/\' package.json'
   }
 }
