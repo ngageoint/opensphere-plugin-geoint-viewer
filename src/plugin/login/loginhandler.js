@@ -1,9 +1,11 @@
 goog.provide('plugin.login.LoginHandler');
+
 goog.require('goog.Uri');
 goog.require('goog.events.Event');
 goog.require('goog.log');
 goog.require('goog.log.Logger');
 goog.require('os.arraybuf');
+goog.require('os.net');
 goog.require('os.net.ExtDomainHandler');
 goog.require('plugin.login.Event');
 goog.require('plugin.login.EventType');

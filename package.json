@@ -17,6 +17,9 @@
         "goog:plugin.banner.BannerPlugin",
         "goog:plugin.login.LoginPlugin",
         "goog:plugin.piwik.PiwikPlugin"
+      ],
+      "hide_warnings_for": [
+        "/opensphere/"
       ]
     }
   },
@@ -25,7 +28,7 @@
     "lint:css": "sass-lint -v -s scss -i 'scss/nolint/**/*.scss' 'scss/**/*.scss'",
     "lint:js": "eslint --cache 'src/**/*.js'",
     "lint": "npm run lint:js && npm run lint:css",
-    "compile:resolve": "os-resolve .build",
+    "compile:resolve": "os-resolve --outputDir .build --exclude resources",
     "compile:css": "node-sass $(cat .build/node-sass-args) > .build/test.min.css",
     "compile:gcc": "os-compile $(cat .build/gcc-java-args)",
     "compile": "npm run compile:resolve && npm run compile:gcc && npm run compile:css",
@@ -57,17 +60,17 @@
     "eslint-config-google": "^0.7.0",
     "eslint-config-opensphere": "^1.0.0",
     "eslint-plugin-google-camelcase": "^0.0.2",
-    "eslint-plugin-opensphere": "^1.0.0",
+    "eslint-plugin-opensphere": "^2.0.0",
     "google-closure-compiler": "^20171203.0.0",
     "husky": "^0.13.3",
     "mkdirp": "^0.5.1",
     "node-sass": "=4.7.2",
     "opensphere-build-closure-helper": "^1.0.0",
     "opensphere-build-index": "^1.0.0",
-    "opensphere-build-resolver": "^2.1.0",
+    "opensphere-build-resolver": "^3.0.0",
     "replace": "^0.3.0",
     "rimraf": "^2.5.4",
-    "sass-lint": "^1.9.1",
+    "sass-lint": "^1.12.1",
     "validate-commit-msg": "^2.8.2",
     "xmllint": "^0.1.1"
   },
