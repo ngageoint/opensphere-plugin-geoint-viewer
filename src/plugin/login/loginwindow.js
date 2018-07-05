@@ -138,16 +138,16 @@ plugin.login.LoginWindowCtrl.launch = function(url) {
     'show-close': true,
     'width': 400,
     'height': 'auto',
-    'min-width': '300',
-    'max-width': '1000',
-    'min-height': '300',
-    'max-height': '1000'
+    'min-width': 300,
+    'max-width': 1000,
+    'min-height': 300,
+    'max-height': 1000
   };
 
   if (navigator.userAgent.toLowerCase().indexOf(' electron') > -1) {
     options = ol.obj.assign(options, {
-      'width': '800',
-      'height': '600'
+      'width': 800,
+      'height': 600
     });
   }
 

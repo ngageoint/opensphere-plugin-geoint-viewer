@@ -1,18 +1,16 @@
-<div class="window-content-wrapper">
-  <div class="window-content">
+<div class="d-flex flex-column u-flex-grow">
+  <div class="modal-body">
     <p>This site is requesting that you log in.</p>
     <a ng-href="{{url}}" target="_blank">Click here to go to the log in page</a>
   </div>
-  <div class="window-footer">
-    <div class="pull-right">
-      <button class="btn btn-default" ng-click="ctrl.accept()">
-        <i class="fa fa-check lt-blue-icon"></i>
-        Login Finished
-      </button>
-      <button class="btn btn-default" ng-click="ctrl.cancel()">
-        <i class="fa fa-ban red-icon"></i>
-        Cancel
-      </button>
-    </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ctrl.accept()">
+      <i class="fa fa-check"></i>
+      Login Finished
+    </button>
+    <button class="btn btn-secondary" ng-click="ctrl.cancel()">
+      <i class="fa fa-ban"></i>
+      Cancel
+    </button>
   </div>
 </div>
