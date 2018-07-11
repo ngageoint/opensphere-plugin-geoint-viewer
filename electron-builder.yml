@@ -1,0 +1,29 @@
+appId: mil.gs.gv
+productName: GEOINT Viewer
+files:
+  - src/**/*.js
+  - from: ../opensphere/dist/opensphere
+    to: opensphere
+    filter:
+      - '**/*'
+extraResources:
+  - ../opensphere-plugin-geoint-viewer/config/default.json
+mac:
+  category: public.app-category.utilities
+  icon: ../opensphere-plugin-geoint-viewer/images/icon.icns
+  target:
+    - zip
+    - dmg
+linux:
+  icon: ../opensphere-plugin-geoint-viewer/images/icon1024x1024.png
+  target:
+    - target: AppImage
+      arch:
+        - x64
+win:
+  icon: ../opensphere-plugin-geoint-viewer/images/icon.ico
+  target:
+    - nsis
+    - portable
+nsis:
+  oneClick: false
