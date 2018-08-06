@@ -17,9 +17,6 @@
         "goog:plugin.banner.BannerPlugin",
         "goog:plugin.login.LoginPlugin",
         "goog:plugin.piwik.PiwikPlugin"
-      ],
-      "hide_warnings_for": [
-        "/opensphere/"
       ]
     }
   },
