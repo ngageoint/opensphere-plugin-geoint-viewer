@@ -36,7 +36,6 @@ node('Linux&&!gpu') {
           'closure-util',
           'opensphere',
           'opensphere-plugin-analyze',
-          'opensphere-plugin-gbdx',
           'opensphere-plugin-pixia',
           'opensphere-plugin-overpass',
           'bits-internal',
