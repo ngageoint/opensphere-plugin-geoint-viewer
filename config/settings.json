@@ -35,9 +35,9 @@
       ]
     },
     "banner": {
-      "before": ".navbar",
-      "after": ".navbar",
-      "markup": "<div class=\"banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
+      "before": ".js-navtop",
+      "after": ".js-navbottom",
+      "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     },
     "crossOrigin": [{
       "pattern": "^https?://pixia.geointservices.io(:\\d+)?/",
@@ -70,7 +70,7 @@
       "gs-hiperlook": {
         "type": "ogc",
         "label": "GEOINT Services Hiperlook",
-        "wms": "https://pixia.geointservices.io/wmsserver/",
+        "wms": "https://pixia.stage.gs.mil/wmsserver/",
         "wmsParams": "version=1.1.1&map=default.map"
       }
     },
