@@ -19,6 +19,7 @@ node('Linux&&!gpu') {
       installPlugins('master', 'opensphere-yarn-workspace')
 
       dir('workspace') {
+        sh 'rm -rf *'
         dir('opensphere-plugin-geoint-viewer') {
           sh "echo 'checking out scm'"
           checkout scm
@@ -68,9 +69,9 @@ node('Linux&&!gpu') {
       sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
       sh 'npm i -g yarn'
       sh 'yarn config list'
+      checkNpmConfig()
       sh 'rm yarn.lock || true'
       sh 'yarn install'
-      checkNpmConfig()
     }
 
     stage('Build and Scans - SonarQube, Fortify, OWASP Dependecy Checker') {
