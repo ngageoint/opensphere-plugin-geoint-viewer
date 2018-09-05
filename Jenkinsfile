@@ -68,8 +68,8 @@ node('Linux&&!gpu') {
     stage('yarn') {
       sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
       sh 'npm i -g yarn'
+      setNpmRegistry()
       sh 'yarn config list'
-      checkNpmConfig()
       sh 'rm yarn.lock || true'
       sh 'yarn install'
     }
