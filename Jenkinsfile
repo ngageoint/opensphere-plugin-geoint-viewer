@@ -36,8 +36,9 @@ node('Linux&&!gpu') {
           'closure-util',
           'opensphere',
           'opensphere-plugin-analyze',
-          'opensphere-plugin-pixia',
+          'opensphere-plugin-geopackage',
           'opensphere-plugin-overpass',
+          'opensphere-plugin-pixia',
           'bits-internal',
           'mist']
 
@@ -56,8 +57,6 @@ node('Linux&&!gpu') {
         'workspace/opensphere-plugin-pixia/package.json',
         'workspace/opensphere-plugin-overpass/src/**',
         'workspace/opensphere-plugin-overpass/package.json',
-        'workspace/opensphere-plugin-gbdx/src/**',
-        'workspace/opensphere-plugin-gbdx/package.json',
         'workspace/opensphere-plugin-analyze/src/**',
         'workspace/opensphere-plugin-analyze/package.json'
       ]
@@ -68,11 +67,10 @@ node('Linux&&!gpu') {
     stage('yarn') {
       sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
       sh 'npm i -g yarn'
-      // someone went and set nexus.gs.mil as the global default registry. ugh.
-      sh 'npm config set registry https://registry.npmjs.org/'
       sh 'yarn config list'
       sh 'rm yarn.lock || true'
       sh 'yarn install'
+      checkNpmConfig()
     }
 
     stage('Build and Scans - SonarQube, Fortify, OWASP Dependecy Checker') {
