@@ -55,15 +55,7 @@
             "<title>GEOAxIS</title>",
             "<form name=\"login\""
           ]
-        },
-        "default": {
-          "priority": -1000,
-          "regexes": [
-            "<(html|body)(\\s+|>)",
-            "(sign|log)\\s*in"
-          ]
         }
-
       }
     },
     "providers": {
