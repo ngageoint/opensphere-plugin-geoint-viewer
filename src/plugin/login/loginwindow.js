@@ -65,6 +65,7 @@ plugin.login.LoginWindowCtrl = function($scope, $element) {
     iframe.attr('src', this.scope_['url']);
   }
   this.scope_.$on('$destroy', this.destroy_.bind(this));
+  $scope.$emit(os.ui.WindowEventType.READY);
 };
 
 
