@@ -170,9 +170,11 @@ node('Linux&&!gpu') {
         try {
           // newer Jenkins
           archiveArtifacts 'dist/*.zip'
+          archiveArtifacts '.build/opensphere.min.map'
         } catch (NoSuchMethodError e) {
           // older Jenkins
           archive 'dist/*.zip'
+          archive '.build/opensphere.min.map'
         }
       }
     }
