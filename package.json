@@ -13,12 +13,6 @@
     "index": "index.js",
     "scss": "scss/gv.scss",
     "gcc": {
-      "define": [
-        "os.SETTINGS_DB_NAME='opensphere.settings'",
-        "os.FILE_STORE_NAME='files'",
-        "os.SHARED_DB_NAME='opensphere.shared'",
-        "os.SHARED_STORE_NAME='shared'"
-      ],
       "entry_point": [
         "goog:plugin.banner.BannerPlugin",
         "goog:plugin.login.LoginPlugin",
