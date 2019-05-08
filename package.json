@@ -64,7 +64,7 @@
     "node-sass": "=4.7.2",
     "opensphere-build-closure-helper": "^2.0.0",
     "opensphere-build-index": "^1.0.0",
-    "opensphere-build-resolver": "^3.0.0",
+    "opensphere-build-resolver": "^5.0.0",
     "replace": "^0.3.0",
     "rimraf": "^2.5.4",
     "sass-lint": "^1.12.1",
