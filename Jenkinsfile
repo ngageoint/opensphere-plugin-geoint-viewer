@@ -16,7 +16,7 @@ node('Linux&&!gpu') {
     }
 
     stage('scm') {
-      installPlugins('master', 'opensphere-yarn-workspace')
+      installPlugins('opensphere-yarn-workspace')
 
       dir('workspace') {
         sh 'rm -rf *'
@@ -183,7 +183,7 @@ node('Linux&&!gpu') {
       dir('gv.config') {
         stage('publish') {
           if (env.BRANCH_NAME == 'master' && !(env.JOB_NAME =~ /meatballgrinder/)) {
-            installPlugins('master', 'gv.config')
+            installPlugins('gv.config')
             sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/gv-${this_version}.zip ${this_version}"
           }
         }
