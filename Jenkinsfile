@@ -39,13 +39,12 @@ node('Linux&&!gpu') {
           'opensphere-plugin-analyze',
           'opensphere-plugin-geopackage',
           'opensphere-plugin-overpass',
-          'opensphere-plugin-pixia',
           'bits-internal',
           'mist']
 
         for (def project in projects) {
           dir(project) {
-            installPlugins('master', project)
+            installPlugins(project)
             useNpmJsVersions()
           }
         }
@@ -54,8 +53,6 @@ node('Linux&&!gpu') {
       def sources = [
         'workspace/opensphere-plugin-geoint-viewer/src/**',
         'workspace/opensphere-plugin-geoint-viewer/package.json',
-        'workspace/opensphere-plugin-pixia/src/**',
-        'workspace/opensphere-plugin-pixia/package.json',
         'workspace/opensphere-plugin-overpass/src/**',
         'workspace/opensphere-plugin-overpass/package.json',
         'workspace/opensphere-plugin-analyze/src/**',
