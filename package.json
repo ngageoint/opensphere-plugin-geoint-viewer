@@ -72,6 +72,6 @@
     "xmllint": "^0.1.1"
   },
   "dependencies": {
-    "opensphere": "^1.0.0"
+    "opensphere": "0.0.0-development"
   }
 }
