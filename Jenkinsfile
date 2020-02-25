@@ -71,7 +71,7 @@ node('Linux&&!gpu') {
       sh 'yarn install'
     }
 
-    stage('Build and Scans - SonarQube, Fortify, OWASP Dependecy Checker') {
+    stage('Build and Scans - SonarQube, Fortify, OWASP Dependency Checker') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
@@ -140,21 +140,23 @@ node('Linux&&!gpu') {
             }
           }
         },
-// TODO: this was disabled due to an error it was producing while trying to update the CVE database
-//        "depcheck": {
-//          if (env.BRANCH_NAME == 'master') {
-//            // the jenkins tool installation version takes forever to run because it has to download and set up its database
-//            node {
-//              dir('scans') {
-//                sh 'rm -rf *'
-//                unstash 'geoint-viewer-source'
-//                sh '/jslave/dependency-check/dependency-check/bin/dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
-//                fileExists 'dependency-check-report.xml'
-//                uploadToThreadfix('dependency-check-report.xml')
-//              }
-//            }
-//          }
-//        }
+        "depcheck": {
+          if (env.BRANCH_NAME == 'master') {
+            // the jenkins tool installation version takes forever to run because it has to download and set up its database
+            node {
+              dir('scans') {
+                sh 'rm -rf *'
+                unstash 'geoint-viewer-source'
+                def depCheckHome = tool('owasp_dependency_check')
+                withEnv(["PATH+OWASP=${depCheckHome}/bin"]){
+                  sh 'dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
+                }
+                fileExists 'dependency-check-report.xml'
+                uploadToThreadfix('dependency-check-report.xml')
+              }
+            }
+          }
+        }
       )
     }
 
@@ -182,7 +184,7 @@ node('Linux&&!gpu') {
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
         stage('publish') {
-          if (env.BRANCH_NAME == 'master' && !(env.JOB_NAME =~ /meatballgrinder/)) {
+          if (!(env.JOB_NAME =~ /meatballgrinder/)) {
             installPlugins('gv.config')
             sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/gv-${this_version}.zip ${this_version}"
           }
