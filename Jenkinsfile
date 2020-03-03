@@ -48,7 +48,10 @@ node('Linux&&!gpu') {
             useNpmJsVersions()
           }
         }
-        installPlugins('opensphere-plugin-analyze', 'develop')
+        dir ('opensphere-plugin-analyze') {
+           installPlugins('opensphere-plugin-analyze', 'develop')
+           useNpmJsVersions()
+        }
       }
 
       def sources = [
