@@ -6,6 +6,8 @@ WORKDIR /build
 
 ADD cacerts.pem /npm_cacerts.pem
 
+RUN apt-get -y update && apt-get -y install openjdk-8-jre-headless
+
 RUN git config --global --unset-all url."https://github.com/".insteadOf || true
 RUN git config --global url."https://github.com/".insteadOf git://github.com/
 RUN git config --global --add url."https://github.com/".insteadOf git@github.com:
