@@ -67,27 +67,47 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
-      sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
-      sh '''rm -rf dockertmp
-      mkdir dockertmp
-      cp workspace/opensphere-plugin-geoint-viewer/Dockerfile_build dockertmp/Dockerfile
-      pushd dockertmp
-      cp /etc/pki/tls/cert.pem ./cacerts.pem
-      docker build -t gv_build .
-      popd
-      '''
-      sh "docker run --rm -i -v ${env.WORKSPACE}:/build gv_build yarn config list"
-      sh 'rm yarn.lock || true'
-      sh "docker run --rm -i -v ${env.WORKSPACE}:/build gv_build yarn install"
+      if (false) {
+        sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
+        sh '''rm -rf dockertmp
+        mkdir dockertmp
+        cp workspace/opensphere-plugin-geoint-viewer/Dockerfile_build dockertmp/Dockerfile
+        pushd dockertmp
+        cp /etc/pki/tls/cert.pem ./cacerts.pem
+        docker build -t gv_build .
+        popd
+        '''
+        sh "docker run --rm -i -v ${env.WORKSPACE}:/build gv_build yarn config list"
+        sh 'rm yarn.lock || true'
+        sh "docker run --rm -i -v ${env.WORKSPACE}:/build gv_build yarn install"
+      }
+      else {
+        sh 'npm i -g yarn'
+        sh 'yarn config list'
+        sh 'rm yarn.lock || true'
+        sh "yarn install"
+      }
     }
 
     stage('Build and Scans - SonarQube, Fortify, OWASP Dependency Checker') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
-           sh "docker run --rm -i -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build"
-           sh 'mv dist/opensphere dist/gv'
-           sh 'docker rmi gv_build'
+          if (false) {
+            sh "docker run --rm -i -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build:nolint"
+            sh 'mv dist/opensphere dist/gv'
+            sh 'docker rmi gv_build'
+          }
+          else {
+            dir('workspace/opensphere') {
+              def jdkHome = tool name: env.JDK_TOOL
+              withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
+                node -e 'require("eslint-plugin-opensphere");'
+                sh 'yarn run build'
+                sh 'mv dist/opensphere dist/gv'
+              }
+            }
+          }
         },
 //        "sonarqube" : {
 //          if (env.BRANCH_NAME == 'master') {
