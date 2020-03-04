@@ -70,7 +70,7 @@ node('Linux&&!gpu') {
       sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
       sh '''rm -rf dockertmp
       mkdir dockertmp
-      cp workspace/opensphere/Dockerfile_build dockertmp/Dockerfile
+      cp workspace/opensphere-plugin-geoint-viewer/Dockerfile_build dockertmp/Dockerfile
       pushd dockertmp
       cp /etc/pki/tls/cert.pem ./cacerts.pem"
       docker build -t gv_build .
