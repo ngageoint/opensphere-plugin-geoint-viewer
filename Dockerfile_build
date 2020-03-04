@@ -1,0 +1,16 @@
+FROM node:10.19
+
+VOLUME /build
+
+WORKDIR /build
+
+ADD cacerts.pem /npm_cacerts.pem
+
+RUN git config --global --unset-all url."https://github.com/".insteadOf || true
+RUN git config --global url."https://github.com/".insteadOf git://github.com/
+RUN git config --global --add url."https://github.com/".insteadOf git@github.com:
+RUN git config --global --add url."https://github.com/".insteadOf ssh://git@github.com/
+
+ENV NPM_CONFIG_USERCONFIG=/build/npm_userconfig
+ENV NPM_CONFIG_CACHE=/build/npm_cache
+ENV NPM_CONFIG_CAFILE=/npm_cacerts.pem
