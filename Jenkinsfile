@@ -72,7 +72,7 @@ node('Linux&&!gpu') {
       mkdir dockertmp
       cp workspace/opensphere-plugin-geoint-viewer/Dockerfile_build dockertmp/Dockerfile
       pushd dockertmp
-      cp /etc/pki/tls/cert.pem ./cacerts.pem"
+      cp /etc/pki/tls/cert.pem ./cacerts.pem
       docker build -t gv_build .
       popd
       '''
