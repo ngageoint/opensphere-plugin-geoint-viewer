@@ -105,7 +105,7 @@ plugin.login.LoginHandler.prototype.onXhrComplete = function(opt_evt) {
     resp = os.arraybuf.toString(resp);
   }
 
-  if (goog.isString(resp)) {
+  if (typeof resp === 'string') {
     for (var i = 0, n = this.loginConfigs_.length; i < n; i++) {
       var conf = this.loginConfigs_[i];
 
