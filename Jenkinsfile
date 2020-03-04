@@ -68,7 +68,8 @@ node('Linux&&!gpu') {
 
     stage('yarn') {
       sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
-      sh '''mkdir dockertmp
+      sh '''rm -rf dockertmp
+      mkdir dockertmp
       cp workspace/opensphere/Dockerfile_build dockertmp/Dockerfile
       pushd dockertmp
       cp /etc/pki/tls/cert.pem ./cacerts.pem"
