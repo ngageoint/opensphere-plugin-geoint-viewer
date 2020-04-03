@@ -36,7 +36,7 @@ node('Linux&&!gpu') {
         def projects = [
           'closure-util',
           'opensphere',
-          //'opensphere-plugin-analyze',
+          'opensphere-plugin-analyze',
           'opensphere-plugin-geopackage',
           'opensphere-plugin-overpass',
           'bits-internal',
@@ -47,10 +47,6 @@ node('Linux&&!gpu') {
             installPlugins(project)
             useNpmJsVersions()
           }
-        }
-        dir ('opensphere-plugin-analyze') {
-           installPlugins('opensphere-plugin-analyze', 'develop')
-           useNpmJsVersions()
         }
       }
 
