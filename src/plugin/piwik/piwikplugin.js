@@ -30,11 +30,58 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var url = /** {?string} */ (os.settings.get('plugin.piwik.url'));
-  var siteId = /** {?number} */ (os.settings.get('plugin.piwik.siteId'));
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.login.userid.url', 'http://gv.dev.gs.mil/oauth2'))
+
+  if (userIdUrl != '') {
+    fetch(String(userIdUrl)).then(
+        function (response) {
+          if (response.status !== 200) {
+            console.log('Status not OK when retrieving user information. Status Code: ' + response.status);
+          }
+          var user = '';
+          var uid = '';
+
+          // Extract the user information from the header
+          for (var pair of response.headers.entries()) {
+            if (pair[0] === 'X-Forwarded-User') {
+              user = pair[1];
+              var parts = user.split(".")
+              console.log('X-Forwarded-User: ', user);
+              if (parts.length > 0) {
+                uid = parts[parts.length - 1]
+                console.log('X-Forwarded-User UID: ', uid);
+              }
+            }
+          }
+          if (user == '' || uid == '') {
+            console.log('Failed to determine user information.');
+          }
+          embedTrackingCode(user, uid);
+        })
+        .catch(function (err) {
+          console.log('Failed to retrieve user information. Encountered fetch error:' + err);
+          embedTrackingCode('unknown', '0');
+        });
+  } else {
+    console.log("Cannot discover user information. Initializing matomo w/o user information.")
+    embedTrackingCode();
+  }
+};
+
+function embedTrackingCode(user='', uid='') {
+  var url = /** {?string} */ (os.settings.get('plugin.piwik.url', 'https://gasmetrics.nga.mil/piwik/'));
+  var siteId = /** {?number} */ (os.settings.get('plugin.piwik.siteId', '195'));
 
   if (url && siteId) {
     url += /\/$/.test(url) ? '' : '/';
+
+    if (user != '') {
+      _paq.push(['setUserId', user]);
+    }
+    if (uid != '') {
+      _paq.push(['setCustomDimension', 2, uid]);
+      _paq.push(['setCustomVariable', 2, 'GxUid', uid, 'page']);
+    }
 
     _paq.push(['setTrackerUrl', url + 'piwik.php']);
     _paq.push(['setSiteId', siteId.toString()]);
@@ -45,6 +92,7 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
     script.src = url + 'piwik.js';
 
     document.body.appendChild(script);
+    console.log("Embedding tracking code, with user: " + user);
   }
 };
 
