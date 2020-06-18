@@ -67,7 +67,8 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
-      if (env.USE_DOCKER_FOR_NODE) {
+      sh "echo ${env.DOCKER_FOR_NODE}"
+      if (false) {
         sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
         sh '''rm -rf dockertmp
         mkdir dockertmp
@@ -93,7 +94,8 @@ node('Linux&&!gpu') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
-          if (env.USE_DOCKER_FOR_NODE) {
+          sh "echo ${env.DOCKER_FOR_NODE}"
+          if (false) {
             sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build"
             sh 'mv dist/opensphere dist/gv'
             sh 'docker rmi gv_build'
