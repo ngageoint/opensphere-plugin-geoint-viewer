@@ -30,7 +30,7 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/oauth2'))
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.dev.gs.mil/oauth2'))
   console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl)
 
   if (userIdUrl != '') {
@@ -93,6 +93,7 @@ function embedTrackingCode(user='', uid='') {
     script.src = url + 'piwik.js';
 
     document.body.appendChild(script);
+    console.log("Setting piwik receiver to: " + url + ", id: " + siteId)
     console.log("Embedding tracking code, with user: " + user);
   }
 };
