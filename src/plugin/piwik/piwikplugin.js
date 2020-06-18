@@ -30,7 +30,7 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.dev.gs.mil/oauth2'))
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.dev.gs.mil/oauth2/ping'))
   console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl)
 
   if (userIdUrl != '') {
@@ -68,6 +68,29 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
     embedTrackingCode();
   }
 };
+
+let remainingRetries = 5;
+function processUserIdResponse(response) {
+  var user = '';
+  var uid = '';
+
+  // Extract the user information from the header
+  for (var pair of response.headers.entries()) {
+    if (pair[0] === 'X-Forwarded-User') {
+      user = pair[1];
+      var parts = user.split(".")
+      console.log('X-Forwarded-User: ', user);
+      if (parts.length > 0) {
+        uid = parts[parts.length - 1]
+        console.log('X-Forwarded-User UID: ', uid);
+      }
+    }
+  }
+  if (user == '' || uid == '') {
+    console.log('Failed to determine user information.');
+  }
+  embedTrackingCode(user, uid);
+}
 
 function embedTrackingCode(user='', uid='') {
   var url = /** {?string} */ (os.settings.get('plugin.piwik.url', '//gasmetrics.nga.mil/piwik/'));
