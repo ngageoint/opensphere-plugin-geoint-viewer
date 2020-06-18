@@ -30,7 +30,8 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var userIdUrl = /** {?string} */ (os.settings.get('plugin.login.userid.url', 'http://gv.dev.gs.mil/oauth2'))
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/oauth2'))
+  console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl)
 
   if (userIdUrl != '') {
     fetch(String(userIdUrl)).then(
@@ -69,7 +70,7 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
 };
 
 function embedTrackingCode(user='', uid='') {
-  var url = /** {?string} */ (os.settings.get('plugin.piwik.url', 'https://gasmetrics.nga.mil/piwik/'));
+  var url = /** {?string} */ (os.settings.get('plugin.piwik.url', '//gasmetrics.nga.mil/piwik/'));
   var siteId = /** {?number} */ (os.settings.get('plugin.piwik.siteId', '195'));
 
   if (url && siteId) {
