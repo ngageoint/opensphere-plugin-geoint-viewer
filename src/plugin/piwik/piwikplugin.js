@@ -23,7 +23,6 @@ var _paq = _paq || [];
 _paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
 _paq.push(['setCookieDomain', '*.' + document.domain]);
 _paq.push(['setDomains', ['*.' + document.domain]]);
-_paq.push(['trackPageView']);
 _paq.push(['enableLinkTracking']);
 
 /**
@@ -108,9 +107,10 @@ function embedTrackingCode(user='', uid='') {
       _paq.push(['setUserId', user]);
     }
     if (uid != '') {
-      _paq.push(['setCustomDimension', 2, uid]);
-      _paq.push(['setCustomVariable', 2, 'GxUid', uid, 'page']);
+      _paq.push(['setCustomDimension', customDimensionId = 2, customDimensionValue = uid.toString()]);
+      _paq.push(['setCustomVariable', 2, 'GxUid', uid.toString(), 'page']);
     }
+    _paq.push(['trackPageView']);
 
     _paq.push(['setTrackerUrl', url + 'piwik.php']);
     _paq.push(['setSiteId', siteId.toString()]);
@@ -122,7 +122,7 @@ function embedTrackingCode(user='', uid='') {
 
     document.body.appendChild(script);
     console.log("Setting piwik receiver to: " + url + ", id: " + siteId)
-    console.log("Embedding tracking code, with user: " + user);
+    console.log("Embedding tracking code, with user: " + user + ", gxUid: " + uid);
   }
 };
 
