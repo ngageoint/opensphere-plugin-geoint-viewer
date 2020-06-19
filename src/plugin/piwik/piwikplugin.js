@@ -107,13 +107,13 @@ function embedTrackingCode(user='', uid='') {
       _paq.push(['setUserId', user]);
     }
     if (uid != '') {
-      _paq.push(['setCustomDimension', customDimensionId = 2, customDimensionValue = uid.toString()]);
-      _paq.push(['setCustomVariable', 2, 'GxUid', uid.toString(), 'page']);
+      _paq.push(['setCustomDimension', customDimensionId = 2, customDimensionValue = String(uid)]);
+      _paq.push(['setCustomVariable', 2, 'GxUid', String(uid), 'page']);
     }
     _paq.push(['trackPageView']);
 
     _paq.push(['setTrackerUrl', url + 'piwik.php']);
-    _paq.push(['setSiteId', siteId.toString()]);
+    _paq.push(['setSiteId', String(siteId)]);
 
     var script = document.createElement('script');
     script.async = true;
