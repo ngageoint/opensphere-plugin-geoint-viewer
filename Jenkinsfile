@@ -105,7 +105,7 @@ node('Linux&&!gpu') {
               def jdkHome = tool name: env.JDK_TOOL
               withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
                 sh 'node -e "console.log(require(\'eslint-plugin-opensphere\'));"'
-                sh 'yarn run build'
+                sh 'yarn run build:debug'
                 sh 'mv dist/opensphere dist/gv'
               }
             }
