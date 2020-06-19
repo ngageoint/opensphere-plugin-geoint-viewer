@@ -8,6 +8,9 @@ node('Linux&&!gpu') {
 
   try {
     initEnvironment()
+    sh "echo nexus: ${env.NEXUS_URL}"
+    sh "echo docker-for-node: ${env.USE_DOCKER_FOR_NODE}"
+
     initGV()
 
     try {
@@ -40,6 +43,7 @@ node('Linux&&!gpu') {
           'opensphere-plugin-geopackage',
           'opensphere-plugin-overpass',
           'bits-internal',
+          'bits-internal-brand-gs',
           'mist']
 
         for (def project in projects) {
@@ -63,7 +67,8 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
-      if (env.USE_DOCKER_FOR_NODE) {
+      sh "echo docker-for-node: ${env.USE_DOCKER_FOR_NODE}"
+      if (env.USE_DOCKER_FOR_NODE == 'true') {
         sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
         sh '''rm -rf dockertmp
         mkdir dockertmp
@@ -89,7 +94,8 @@ node('Linux&&!gpu') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
-          if (env.USE_DOCKER_FOR_NODE) {
+          sh "echo docker-for-node: ${env.USE_DOCKER_FOR_NODE}"
+          if (env.USE_DOCKER_FOR_NODE == 'true') {
             sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build"
             sh 'mv dist/opensphere dist/gv'
             sh 'docker rmi gv_build'
