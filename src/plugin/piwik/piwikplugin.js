@@ -107,7 +107,7 @@ function embedTrackingCode(user='', uid='') {
       _paq.push(['setUserId', user]);
     }
     if (uid != '') {
-      _paq.push(['setCustomDimension', customDimensionId = 2, customDimensionValue = String(uid)]);
+      _paq.push(['setCustomDimension', 2, String(uid)]);
       _paq.push(['setCustomVariable', 2, 'GxUid', String(uid), 'page']);
     }
     _paq.push(['trackPageView']);
