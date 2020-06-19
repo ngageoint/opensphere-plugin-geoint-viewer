@@ -30,7 +30,7 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/oauth2/ping'))
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/'))
   console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl)
 
   if (userIdUrl != '') {
