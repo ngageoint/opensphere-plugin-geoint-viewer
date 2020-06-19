@@ -48,7 +48,7 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
           // Extract the user information from the header
           for (var pair of response.headers.entries()) {
             console.log("'" + pair[0] + "': '" + pair[1] + "'")
-            if (pair[0] == 'X-Forwarded-User') {
+            if (pair[0].toLowerCase() == 'x-forwarded-user') {
               user = pair[1];
               var parts = user.split(".")
               console.log('X-Forwarded-User: ', user);
