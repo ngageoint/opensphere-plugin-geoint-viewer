@@ -34,7 +34,10 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
   console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl)
 
   if (userIdUrl != '') {
-    fetch(String(userIdUrl), { credentials: "same-origin" }).then(
+    fetch(String(userIdUrl), {
+      method: 'GET',
+      credentials: 'include'
+    }).then(
         function (response) {
           if (response.status !== 200) {
             console.log('Status not OK when retrieving user information. Status Code: ' + response.status);
