@@ -7,8 +7,11 @@ node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   try {
-    initEnvironment()
-
+    this_deploy = 'dev'
+    if (env.BRANCH_NAME == 'master') {
+      this_deploy = 'prod'
+    }
+    initEnvironment(this_deploy)
     initGV()
 
     try {
@@ -32,6 +35,7 @@ node('Linux&&!gpu') {
           } catch (e) {
             this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
           }
+          sh "echo Building: ${this_version}"
         }
 
         def projects = [
