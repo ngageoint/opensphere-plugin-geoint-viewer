@@ -8,8 +8,6 @@ node('Linux&&!gpu') {
 
   try {
     initEnvironment()
-    sh "echo nexus: ${env.NEXUS_URL}"
-    sh "echo docker-for-node: ${env.USE_DOCKER_FOR_NODE}"
 
     initGV()
 
@@ -67,7 +65,7 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
-      sh "echo docker-for-node: ${env.USE_DOCKER_FOR_NODE}"
+      // env variables are strings, so need to compare to string 'true'
       if (env.USE_DOCKER_FOR_NODE == 'true') {
         sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
         sh '''rm -rf dockertmp
@@ -94,7 +92,7 @@ node('Linux&&!gpu') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
-          sh "echo docker-for-node: ${env.USE_DOCKER_FOR_NODE}"
+          // env variables are strings, so need to compare to string 'true'
           if (env.USE_DOCKER_FOR_NODE == 'true') {
             sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build"
             sh 'mv dist/opensphere dist/gv'
