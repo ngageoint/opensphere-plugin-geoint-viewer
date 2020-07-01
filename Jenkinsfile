@@ -41,12 +41,13 @@ node('Linux&&!gpu') {
         def projects = [
           'closure-util',
           'opensphere',
+          'opensphere-nga-brand',
           'opensphere-plugin-analyze',
           'opensphere-plugin-geopackage',
           'opensphere-plugin-overpass',
           'bits-internal',
-          'bits-internal-brand-gs',
-          'mist']
+          'mist'
+        ]
 
         for (def project in projects) {
           dir(project) {

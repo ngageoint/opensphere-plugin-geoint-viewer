@@ -29,15 +29,15 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/'))
-  console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl)
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/'));
+  console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
   if (userIdUrl != '') {
     fetch(String(userIdUrl), {
       method: 'GET',
       credentials: 'include'
     }).then(
-        function (response) {
+        function(response) {
           if (response.status !== 200) {
             console.log('Status not OK when retrieving user information. Status Code: ' + response.status);
           }
@@ -49,10 +49,10 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
             // console.log("'" + pair[0] + "': '" + pair[1] + "'")
             if (pair[0].toLowerCase() == 'x-forwarded-user') {
               user = pair[1];
-              var parts = user.split(".")
+              var parts = user.split('.');
               console.log('X-Forwarded-User: ', user);
               if (parts.length > 0) {
-                uid = parts[parts.length - 1]
+                uid = parts[parts.length - 1];
                 console.log('X-Forwarded-User UID: ', uid);
               }
               break;
@@ -63,40 +63,21 @@ plugin.piwik.PiwikPlugin.prototype.init = function() {
           }
           embedTrackingCode(user, uid);
         })
-        .catch(function (err) {
+        .catch(function(err) {
           console.log('Failed to retrieve user information. Encountered fetch error:' + err);
           embedTrackingCode('unknown', '0');
         });
   } else {
-    console.log("Cannot discover user information. Initializing matomo w/o user information.")
+    console.log('Cannot discover user information. Initializing matomo w/o user information.');
     embedTrackingCode();
   }
 };
 
-let remainingRetries = 5;
-function processUserIdResponse(response) {
-  var user = '';
-  var uid = '';
-
-  // Extract the user information from the header
-  for (var pair of response.headers.entries()) {
-    if (pair[0] === 'X-Forwarded-User') {
-      user = pair[1];
-      var parts = user.split(".")
-      console.log('X-Forwarded-User: ', user);
-      if (parts.length > 0) {
-        uid = parts[parts.length - 1]
-        console.log('X-Forwarded-User UID: ', uid);
-      }
-    }
-  }
-  if (user == '' || uid == '') {
-    console.log('Failed to determine user information.');
-  }
-  embedTrackingCode(user, uid);
-}
-
-function embedTrackingCode(user='', uid='') {
+/**
+ * @param {string} user
+ * @param {string} uid
+ */
+function embedTrackingCode(user = '', uid = '') {
   var url = /** {?string} */ (os.settings.get('plugin.piwik.url', '//gasmetrics.nga.mil/piwik/'));
   var siteId = /** {?number} */ (os.settings.get('plugin.piwik.siteId', '195'));
 
@@ -121,10 +102,10 @@ function embedTrackingCode(user='', uid='') {
     script.src = url + 'piwik.js';
 
     document.body.appendChild(script);
-    console.log("Setting piwik receiver to: " + url + ", id: " + siteId)
-    console.log("Embedding tracking code, with user: " + user + ", gxUid: " + uid);
+    console.log('Setting piwik receiver to: ' + url + ', id: ' + siteId);
+    console.log('Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
   }
-};
+}
 
 (function() {
   os.plugin.PluginManager.getInstance().addPlugin(new plugin.piwik.PiwikPlugin());
