@@ -29,7 +29,7 @@ _paq.push(['enableLinkTracking']);
  * @inheritDoc
  */
 plugin.piwik.PiwikPlugin.prototype.init = function() {
-  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://gv.gs.mil/'));
+  var userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://opensphere.gs.mil/'));
   console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
   if (userIdUrl != '') {

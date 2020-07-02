@@ -6,6 +6,12 @@ def err = null
 node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
+  def osProjects = [
+    'opensphere-plugin-geoint-viewer',
+    'opensphere-plugin-overpass',
+    'opensphere-plugin-analyze'
+  ]
+
   try {
     this_deploy = 'dev'
     if (env.BRANCH_NAME == 'master') {
@@ -42,12 +48,9 @@ node('Linux&&!gpu') {
           'closure-util',
           'opensphere',
           'opensphere-nga-brand',
-          'opensphere-plugin-analyze',
-          'opensphere-plugin-geopackage',
-          'opensphere-plugin-overpass',
           'bits-internal',
           'mist'
-        ]
+        ] + osProjects
 
         for (def project in projects) {
           dir(project) {
@@ -57,19 +60,14 @@ node('Linux&&!gpu') {
         }
       }
 
-      def sources = [
-        'workspace/opensphere-plugin-geoint-viewer/src/**',
-        'workspace/opensphere-plugin-geoint-viewer/package.json',
-        'workspace/opensphere-plugin-geoint-viewer/package-lock.json',
-        'workspace/opensphere-plugin-overpass/src/**',
-        'workspace/opensphere-plugin-overpass/package.json',
-        'workspace/opensphere-plugin-overpass/package-lock.json',
-        'workspace/opensphere-plugin-analyze/src/**',
-        'workspace/opensphere-plugin-analyze/package.json',
-        'workspace/opensphere-plugin-analyze/package-lock.json'
-      ]
+      def osSources = []
+      for (def project in osProjects) {
+        osSources << "workspace/${project}/src/**"
+        osSources << "workspace/${project}/package.json"
+        osSources << "workspace/${project}/package-lock.json"
+      }
 
-      stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
+      stash name: 'geoint-viewer-source', includes: osSources.join(', '), useDefaultExcludes: false
     }
 
     stage('yarn') {
@@ -184,6 +182,13 @@ node('Linux&&!gpu') {
               dir('scans') {
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
+
+                for (def project in osProjects) {
+                  dir("workspace/${project}") {
+                    sh 'npm i'
+                  }
+                }
+
                 def depCheckHome = tool('owasp_dependency_check')
                 withEnv(["PATH+OWASP=${depCheckHome}/bin"]){
                   sh 'dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
