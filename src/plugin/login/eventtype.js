@@ -1,9 +1,10 @@
-goog.provide('plugin.login.EventType');
+goog.module('plugin.login.EventType');
+
 
 /**
  * @enum {string}
  */
-plugin.login.EventType = {
+exports = {
   AUTH_INIT: 'authInit',
   AUTH_COMPLETE: 'authComplete',
   AUTH_CANCEL: 'authCancel'

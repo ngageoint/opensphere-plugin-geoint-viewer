@@ -1,20 +1,24 @@
-goog.provide('plugin.login.Event');
+goog.module('plugin.login.Event');
 
-goog.require('goog.events.Event');
+const GoogEvent = goog.require('goog.events.Event');
 
 
 /**
- * @param {plugin.login.EventType} type The event type
- * @param {!string} url The login URL
- * @extends {goog.events.Event}
- * @constructor
  */
-plugin.login.Event = function(type, url) {
-  plugin.login.Event.base(this, 'constructor', type);
-
+class Event extends GoogEvent {
   /**
-   * @type {string}
+   * Constructor.
+   * @param {plugin.login.EventType} type The event type
+   * @param {!string} url The login URL
    */
-  this.url = url;
-};
-goog.inherits(plugin.login.Event, goog.events.Event);
+  constructor(type, url) {
+    super(type);
+
+    /**
+     * @type {string}
+     */
+    this.url = url;
+  }
+}
+
+exports = Event;

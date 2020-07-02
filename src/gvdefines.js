@@ -1,7 +1,8 @@
-goog.provide('gv.defines');
-
+goog.module('gv');
 
 /**
  * @define {string} path to this project
  */
-gv.ROOT = goog.define('gv.ROOT', '../opensphere-plugin-geoint-viewer/');
+const ROOT = goog.define('gv.ROOT', '../opensphere-plugin-geoint-viewer/');
+
+exports = {ROOT};
