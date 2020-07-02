@@ -60,10 +60,13 @@ node('Linux&&!gpu') {
       def sources = [
         'workspace/opensphere-plugin-geoint-viewer/src/**',
         'workspace/opensphere-plugin-geoint-viewer/package.json',
+        'workspace/opensphere-plugin-geoint-viewer/package-lock.json',
         'workspace/opensphere-plugin-overpass/src/**',
         'workspace/opensphere-plugin-overpass/package.json',
+        'workspace/opensphere-plugin-overpass/package-lock.json',
         'workspace/opensphere-plugin-analyze/src/**',
-        'workspace/opensphere-plugin-analyze/package.json'
+        'workspace/opensphere-plugin-analyze/package.json',
+        'workspace/opensphere-plugin-analyze/package-lock.json'
       ]
 
       stash name: 'geoint-viewer-source', includes: sources.join(', '), useDefaultExcludes: false
