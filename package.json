@@ -1,7 +1,7 @@
 {
   "name": "opensphere-plugin-geoint-viewer",
   "version": "1.0.0",
-  "description": "GEOINT Viewer",
+  "description": "OpenSphere",
   "directories": {
     "src": "src",
     "scss": "scss",
@@ -21,54 +21,34 @@
     }
   },
   "scripts": {
-    "init": "rimraf .build dist && mkdirp .build dist",
-    "lint:css": "sass-lint -v -s scss -i 'scss/nolint/**/*.scss' 'scss/**/*.scss'",
+    "lint:css": "sass-lint -v -s scss 'scss/**/*.scss'",
     "lint:js": "eslint --cache 'src/**/*.js'",
     "lint": "npm run lint:js && npm run lint:css",
-    "compile:resolve": "os-resolve --outputDir .build --exclude resources",
-    "compile:css": "node-sass $(cat .build/node-sass-args) > .build/test.min.css",
-    "compile:gcc": "os-compile $(cat .build/gcc-java-args)",
-    "compile": "npm run compile:resolve && npm run compile:gcc && npm run compile:css",
-    "build": "npm run init && npm run lint && npm run compile",
-    "perms": "chmod -R u+rwX,go+rX,go-w .",
-    "commitmsg": "validate-commit-msg"
+    "build": "npm run lint"
   },
   "keywords": [
     "gis",
     "GEOINT",
-    "GEOINT Viewer",
-    "geospatial"
+    "geospatial",
+    "opensphere"
   ],
   "author": "BIT Systems",
   "license": "ISC",
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    },
-    "validate-commit-msg": {
-      "helpMessage": "\nPlease fix your commit message (consider using 'npm i -g commitizen'). Well-formatted commit messages allow us to automate our changelog.\n\nExamples:\n\"fix(states): Fixed bug when parsing opacity from state files\"\n\"feat(timeline): Added support for an arbitrary number of ranges\"\n\nIf you have installed commitizen, try running 'git cz'."
-    }
-  },
   "devDependencies": {
-    "conventional-changelog-cli": "^1.2.0",
-    "conventional-recommended-bump": "^0.3.0",
-    "cz-conventional-changelog": "^1.2.0",
+    "@commitlint/cli": "^9.0.1",
+    "@commitlint/config-conventional": "^9.0.1",
+    "@commitlint/travis-cli": "^9.0.1",
     "eslint": "^6.0.0",
     "eslint-config-opensphere": "^4.0.0",
-    "google-closure-compiler": "^20190415.0.0",
-    "husky": "^0.13.3",
-    "mkdirp": "^0.5.1",
-    "node-sass": "^4.12.0",
-    "opensphere-build-closure-helper": "^2.0.0",
-    "opensphere-build-index": "^1.0.0",
-    "opensphere-build-resolver": "^5.0.0",
-    "replace": "^0.3.0",
-    "rimraf": "^2.5.4",
-    "sass-lint": "^1.12.1",
-    "validate-commit-msg": "^2.8.2",
-    "xmllint": "^0.1.1"
+    "husky": "^3.0.1",
+    "sass-lint": "^1.12.1"
   },
   "dependencies": {
     "opensphere": "0.0.0-development"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
