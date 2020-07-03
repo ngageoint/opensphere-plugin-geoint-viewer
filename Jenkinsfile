@@ -6,7 +6,7 @@ def err = null
 node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
-  def osProjects = [
+  def depCheckProjects = [
     'opensphere-plugin-geoint-viewer',
     'opensphere-plugin-overpass',
     'opensphere-plugin-analyze'
@@ -48,9 +48,12 @@ node('Linux&&!gpu') {
           'closure-util',
           'opensphere',
           'opensphere-nga-brand',
+          'opensphere-plugin-analyze',
+          'opensphere-plugin-geopackage',
+          'opensphere-plugin-overpass',
           'bits-internal',
           'mist'
-        ] + osProjects
+        ]
 
         for (def project in projects) {
           dir(project) {
@@ -61,7 +64,7 @@ node('Linux&&!gpu') {
       }
 
       def osSources = []
-      for (def project in osProjects) {
+      for (def project in depCheckProjects) {
         osSources << "workspace/${project}/src/**"
         osSources << "workspace/${project}/package.json"
         osSources << "workspace/${project}/package-lock.json"
@@ -181,7 +184,7 @@ node('Linux&&!gpu') {
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
 
-                for (def project in osProjects) {
+                for (def project in depCheckProjects) {
                   dir("workspace/${project}") {
                     sh 'npm i'
                   }
