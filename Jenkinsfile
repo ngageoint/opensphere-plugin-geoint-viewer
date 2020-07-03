@@ -101,7 +101,6 @@ node('Linux&&!gpu') {
           // env variables are strings, so need to compare to string 'true'
           if (env.USE_DOCKER_FOR_NODE == 'true') {
             sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build"
-            sh 'mv dist/opensphere dist/gv'
             sh 'docker rmi gv_build'
           }
           else {
@@ -110,7 +109,6 @@ node('Linux&&!gpu') {
               withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
                 sh 'node -e "console.log(require(\'eslint-plugin-opensphere\'));"'
                 sh 'yarn run build'
-                sh 'mv dist/opensphere dist/gv'
               }
             }
           }
@@ -140,8 +138,8 @@ node('Linux&&!gpu') {
 //                    -Dsonar.host.url=${env.SONAR_URL} \\
 //                    -Dsonar.login=${sonar_login} \\
 //                    -Dsonar.projectBaseDir=. \\
-//                    -Dsonar.projectKey=fade:gv \\
-//                    -Dsonar.projectName=gv \\
+//                    -Dsonar.projectKey=fade:opensphere \\
+//                    -Dsonar.projectName=opensphere \\
 //                    -Dsonar.projectVersion=${this_version}\\
 //                    -Dsonar.sources=.\\
 //                    -Dsonar.tests=''\\
@@ -205,7 +203,7 @@ node('Linux&&!gpu') {
     dir('workspace/opensphere') {
       stage('package') {
         dir('dist') {
-          sh "zip -q -r gv-${this_version}.zip gv"
+          sh "zip -q -r opensphere-${this_version}.zip opensphere"
         }
 
         try {
@@ -228,7 +226,7 @@ node('Linux&&!gpu') {
         stage('publish') {
           if (!(env.JOB_NAME =~ /meatballgrinder/)) {
             installPlugins('gv.config')
-            sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/gv-${this_version}.zip ${this_version}"
+            sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version}"
           }
         }
       }
