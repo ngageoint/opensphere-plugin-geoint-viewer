@@ -16,7 +16,8 @@
       "entry_point": [
         "goog:plugin.banner.BannerPlugin",
         "goog:plugin.login.LoginPlugin",
-        "goog:plugin.piwik.PiwikPlugin"
+        "goog:plugin.piwik.PiwikPlugin",
+        "goog:plugin.geopackage.GeoPackagePlugin"
       ]
     }
   },
@@ -44,7 +45,8 @@
     "sass-lint": "^1.12.1"
   },
   "dependencies": {
-    "opensphere": "0.0.0-development"
+    "opensphere": "0.0.0-development",
+    "opensphere-plugin-geopackage": "^1.0.0"
   },
   "husky": {
     "hooks": {
