@@ -13,11 +13,7 @@ node('Linux&&!gpu') {
   ]
 
   try {
-    this_deploy = 'dev'
-    if (env.BRANCH_NAME == 'master') {
-      this_deploy = 'prod'
-    }
-    initEnvironment(this_deploy)
+    initEnvironment()
     initGV()
 
     try {
@@ -115,7 +111,7 @@ node('Linux&&!gpu') {
           }
         },
 //        "sonarqube" : {
-//          if (env.BRANCH_NAME == 'master') {
+//          if (isRelease()) {
 //            node {
 //              dir('scans') {
 //                sh "rm -rf *"
@@ -154,7 +150,7 @@ node('Linux&&!gpu') {
 //          }
 //        },
         "fortify" : {
-          if (env.BRANCH_NAME == 'master') {
+          if (isRelease()) {
             node {
               // ---------------------------------------------
               // Perform Static Security Scans
@@ -175,7 +171,7 @@ node('Linux&&!gpu') {
           }
         },
         "depcheck": {
-          if (env.BRANCH_NAME == 'master') {
+          if (isRelease()) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
             node {
               dir('scans') {
@@ -233,7 +229,7 @@ node('Linux&&!gpu') {
       }
     }
 
-    if (env.BRANCH_NAME == 'master' && !(env.JOB_NAME =~ /meatballgrinder/)) {
+    if (!isRelease() && !(env.JOB_NAME =~ /meatballgrinder/)) {
       // kick off deploy build
       build job: "${env.DEPLOY_JOB}", quietPeriod: 5, wait: false
     }
@@ -254,10 +250,6 @@ node('Linux&&!gpu') {
 }
 
 def useNpmJsVersions() {
-  // clean up things that aren't on npmjs.org
-  sh 'perl -ni -e \'print unless /opensphere-state/\' package.json'
-  sh 'perl -ni -e \'print unless /bits-protractor/\' package.json'
-
   if (env.JOB_NAME =~ /meatballgrinder/) {
     sh 'perl -ni -e \'print unless /benum/\' package.json'
   }
