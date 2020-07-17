@@ -5,13 +5,6 @@
       "after": ".js-navbottom",
       "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
     },
-    "crossOrigin": [{
-      "pattern": "^https?://pixia.geointservices.io(:\\d+)?/",
-      "crossOrigin": "use-credentials"
-    }, {
-      "pattern": "^https?://earth.gvslabs.com/terrain/",
-      "crossOrigin": "use-credentials"
-    }],
     "plugin": {
       "login": {
         "geoaxis": {
