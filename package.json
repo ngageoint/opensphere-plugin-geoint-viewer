@@ -17,7 +17,9 @@
         "goog:plugin.banner.BannerPlugin",
         "goog:plugin.login.LoginPlugin",
         "goog:plugin.piwik.PiwikPlugin",
-        "goog:plugin.geopackage.GeoPackagePlugin"
+        "goog:plugin.geopackage.GeoPackagePlugin",
+        "goog:plugin.ispy.ISpyPlugin",
+        "goog:plugin.overpass.OverpassPlugin"
       ]
     }
   },
@@ -46,6 +48,7 @@
   },
   "dependencies": {
     "opensphere": "0.0.0-development",
+    "opensphere-nga-lib": "^1.0.0",
     "opensphere-plugin-geopackage": "^1.0.0"
   },
   "husky": {

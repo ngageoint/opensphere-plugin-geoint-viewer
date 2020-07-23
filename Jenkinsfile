@@ -7,8 +7,8 @@ node('Linux&&!gpu') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   def depCheckProjects = [
+    'opensphere-nga-lib',
     'opensphere-plugin-geoint-viewer',
-    'opensphere-plugin-overpass',
     'opensphere-plugin-analyze'
   ]
 
@@ -43,8 +43,8 @@ node('Linux&&!gpu') {
         def projects = [
           'opensphere',
           'opensphere-nga-brand',
+          'opensphere-nga-lib',
           'opensphere-plugin-analyze',
-          'opensphere-plugin-overpass',
           'bits-internal',
           'mist'
         ]
