@@ -1,9 +1,14 @@
 goog.module('plugin.piwik.PiwikPlugin');
 
-goog.require('goog.log');
-
+const log = goog.require('goog.log');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
+
+/**
+ * Logger for imagery PiwikPlugin.
+ * @type {log.Logger}
+ */
+const logger = log.getLogger('plugin.piwik.PiwikPlugin');
 
 /**
  */
@@ -15,14 +20,6 @@ class PiwikPlugin extends AbstractPlugin {
     super();
     this.id = 'piwik';
     this.errorMessage = null;
-
-    /**
-     * Logger for plugin.piwik.PiwikPlugin
-     * @type {goog.log.Logger}
-     * @private
-     * @const
-     */
-    this.LOGGER_ = goog.log.getLogger('plugin.piwik.PiwikPlugin');
   }
 
   /**
@@ -53,7 +50,7 @@ class PiwikPlugin extends AbstractPlugin {
    */
   loadScript() {
     const userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://opensphere.gs.mil/'));
-    goog.log.fine(this.LOGGER_, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
+    log.fine(logger, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
     if (userIdUrl != '') {
       fetch(String(userIdUrl), {
@@ -62,36 +59,36 @@ class PiwikPlugin extends AbstractPlugin {
       }).then(
           (response) => {
             if (response.status !== 200) {
-              goog.log.fine(this.LOGGER_, 'Status not OK when retrieving user information. Status Code: ' + response.status);
+              log.fine(logger, 'Status not OK when retrieving user information. Status Code: ' + response.status);
             }
             var user = '';
             var uid = '';
 
             // Extract the user information from the header
             for (var pair of response.headers.entries()) {
-              // goog.log.fine(this.LOGGER_, "'" + pair[0] + "': '" + pair[1] + "'")
+              // log.fine(logger, "'" + pair[0] + "': '" + pair[1] + "'")
               if (pair[0].toLowerCase() == 'x-forwarded-user') {
                 user = pair[1];
                 var parts = user.split('.');
-                goog.log.fine(this.LOGGER_, 'X-Forwarded-User: ', user);
+                log.fine(logger, 'X-Forwarded-User: ', user);
                 if (parts.length > 0) {
                   uid = parts[parts.length - 1];
-                  goog.log.fine(this.LOGGER_, 'X-Forwarded-User UID: ', uid);
+                  log.fine(logger, 'X-Forwarded-User UID: ', uid);
                 }
                 break;
               }
             }
             if (user == '' || uid == '') {
-              goog.log.fine(this.LOGGER_, 'Failed to determine user information.');
+              log.fine(logger, 'Failed to determine user information.');
             }
             this.embedTrackingCode(user, uid);
           })
           .catch((err) => {
-            goog.log.fine(this.LOGGER_, 'Failed to retrieve user information. Encountered fetch error:' + err);
+            log.fine(logger, 'Failed to retrieve user information. Encountered fetch error:' + err);
             this.embedTrackingCode('unknown', '0');
           });
     } else {
-      goog.log.fine(this.LOGGER_, 'Cannot discover user information. Initializing matomo w/o user information.');
+      log.fine(logger, 'Cannot discover user information. Initializing matomo w/o user information.');
       this.embedTrackingCode();
     }
   }
@@ -127,8 +124,8 @@ class PiwikPlugin extends AbstractPlugin {
       script.src = url + 'piwik.js';
 
       document.body.appendChild(script);
-      goog.log.fine(this.LOGGER_, 'Setting piwik receiver to: ' + url + ', id: ' + siteId);
-      goog.log.fine(this.LOGGER_, 'Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
+      log.fine(logger, 'Setting piwik receiver to: ' + url + ', id: ' + siteId);
+      log.fine(logger, 'Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
     }
   }
 }
