@@ -1,6 +1,7 @@
 goog.module('plugin.piwik.PiwikPlugin');
 
 const log = goog.require('goog.log');
+const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
 
@@ -20,14 +21,45 @@ class PiwikPlugin extends AbstractPlugin {
     super();
     this.id = 'piwik';
     this.errorMessage = null;
+
+    /**
+     * The Piwik site ID.
+     * @type {number|undefined}
+     * @private
+     */
+    this.siteId_ = undefined;
+
+    /**
+     * The Piwik URL.
+     * @type {string|undefined}
+     * @private
+     */
+    this.url_ = undefined;
+
+    /**
+     * The Piwik user ID URL.
+     * @type {string}
+     * @private
+     */
+    this.userIdUrl_ = '';
   }
 
   /**
    * @inheritDoc
    */
   init() {
-    this.initPaq();
-    this.loadScript();
+    const settings = Settings.getInstance();
+
+    this.siteId_ = /** @type {number|undefined} */ (settings.get('plugin.piwik.siteId'));
+    this.url_ = /** @type {string|undefined} */ (settings.get('plugin.piwik.url'));
+    this.userIdUrl_ = /** @type {string} */ (settings.get('plugin.piwik.userIdUrl', ''));
+
+    if (this.siteId_ != null && this.url_) {
+      this.initPaq();
+      this.loadScript();
+    } else {
+      log.warning(logger, 'Piwik plugin is not configured and will not be initialized.');
+    }
   }
 
   /**
@@ -49,7 +81,7 @@ class PiwikPlugin extends AbstractPlugin {
    * Load the piwik.js script to the page.
    */
   loadScript() {
-    const userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://opensphere.gs.mil/'));
+    const userIdUrl = this.userIdUrl_;
     log.fine(logger, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
     if (userIdUrl != '') {
@@ -100,10 +132,10 @@ class PiwikPlugin extends AbstractPlugin {
   embedTrackingCode(user = '', uid = '') {
     const _paq = window._paq;
 
-    const siteId = /** {?number} */ (os.settings.get('plugin.piwik.siteId', '195'));
-    let url = /** {?string} */ (os.settings.get('plugin.piwik.url', '//gasmetrics.nga.mil/piwik/'));
+    const siteId = this.siteId_;
+    let url = this.url_;
 
-    if (url && siteId) {
+    if (url && siteId != null) {
       url += /\/$/.test(url) ? '' : '/';
 
       if (user != '') {
