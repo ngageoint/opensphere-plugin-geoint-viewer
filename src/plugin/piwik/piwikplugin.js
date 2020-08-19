@@ -1,8 +1,14 @@
 goog.module('plugin.piwik.PiwikPlugin');
 
+const log = goog.require('goog.log');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
 
+/**
+ * Logger for imagery PiwikPlugin.
+ * @type {log.Logger}
+ */
+const logger = log.getLogger('plugin.piwik.PiwikPlugin');
 
 /**
  */
@@ -44,7 +50,7 @@ class PiwikPlugin extends AbstractPlugin {
    */
   loadScript() {
     const userIdUrl = /** {?string} */ (os.settings.get('plugin.piwik.userIdUrl', 'https://opensphere.gs.mil/'));
-    console.log('Using plugin.piwik.userIdUrl: ' + userIdUrl);
+    log.fine(logger, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
     if (userIdUrl != '') {
       fetch(String(userIdUrl), {
@@ -53,36 +59,36 @@ class PiwikPlugin extends AbstractPlugin {
       }).then(
           (response) => {
             if (response.status !== 200) {
-              console.log('Status not OK when retrieving user information. Status Code: ' + response.status);
+              log.fine(logger, 'Status not OK when retrieving user information. Status Code: ' + response.status);
             }
             var user = '';
             var uid = '';
 
             // Extract the user information from the header
             for (var pair of response.headers.entries()) {
-              // console.log("'" + pair[0] + "': '" + pair[1] + "'")
+              // log.fine(logger, "'" + pair[0] + "': '" + pair[1] + "'")
               if (pair[0].toLowerCase() == 'x-forwarded-user') {
                 user = pair[1];
                 var parts = user.split('.');
-                console.log('X-Forwarded-User: ', user);
+                log.fine(logger, 'X-Forwarded-User: ' + user);
                 if (parts.length > 0) {
                   uid = parts[parts.length - 1];
-                  console.log('X-Forwarded-User UID: ', uid);
+                  log.fine(logger, 'X-Forwarded-User UID: ' + uid);
                 }
                 break;
               }
             }
             if (user == '' || uid == '') {
-              console.log('Failed to determine user information.');
+              log.fine(logger, 'Failed to determine user information.');
             }
             this.embedTrackingCode(user, uid);
           })
           .catch((err) => {
-            console.log('Failed to retrieve user information. Encountered fetch error:' + err);
+            log.fine(logger, 'Failed to retrieve user information. Encountered fetch error:' + err);
             this.embedTrackingCode('unknown', '0');
           });
     } else {
-      console.log('Cannot discover user information. Initializing matomo w/o user information.');
+      log.fine(logger, 'Cannot discover user information. Initializing matomo w/o user information.');
       this.embedTrackingCode();
     }
   }
@@ -118,8 +124,8 @@ class PiwikPlugin extends AbstractPlugin {
       script.src = url + 'piwik.js';
 
       document.body.appendChild(script);
-      console.log('Setting piwik receiver to: ' + url + ', id: ' + siteId);
-      console.log('Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
+      log.fine(logger, 'Setting piwik receiver to: ' + url + ', id: ' + siteId);
+      log.fine(logger, 'Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
     }
   }
 }
