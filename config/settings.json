@@ -17,6 +17,9 @@
         }
       }
     },
+    "plugins": {
+      "piwik": false
+    },
     "providers": {
       "gs-hiperlook": {
         "type": "ogc",
