@@ -70,10 +70,10 @@ class PiwikPlugin extends AbstractPlugin {
               if (pair[0].toLowerCase() == 'x-forwarded-user') {
                 user = pair[1];
                 var parts = user.split('.');
-                log.fine(logger, 'X-Forwarded-User: ', user);
+                log.fine(logger, 'X-Forwarded-User: ' + user);
                 if (parts.length > 0) {
                   uid = parts[parts.length - 1];
-                  log.fine(logger, 'X-Forwarded-User UID: ', uid);
+                  log.fine(logger, 'X-Forwarded-User UID: ' + uid);
                 }
                 break;
               }
