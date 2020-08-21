@@ -15,12 +15,7 @@
     "scss": "scss/gv.scss",
     "gcc": {
       "entry_point": [
-        "goog:plugin.banner.BannerPlugin",
-        "goog:plugin.login.LoginPlugin",
-        "goog:plugin.piwik.PiwikPlugin",
-        "goog:plugin.geopackage.GeoPackagePlugin",
-        "goog:plugin.ispy.ISpyPlugin",
-        "goog:plugin.overpass.OverpassPlugin"
+        "goog:osngaimports"
       ]
     }
   },
