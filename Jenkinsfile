@@ -215,8 +215,9 @@ node('Linux&&!gpu') {
       }
     }
 
-    sh 'mkdir -p .m2'
-    sh "cat ${originalHome}/.m2/settings.xml > .m2/settings.xml"
+    def mavenSettings = generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
+    sh "mkdir -p .m2"
+    sh "cp ${mavenSettings} .m2/settings.xml"
 
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
