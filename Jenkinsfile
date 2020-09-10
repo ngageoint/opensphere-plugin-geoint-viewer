@@ -215,7 +215,8 @@ node('Linux&&!gpu') {
       }
     }
 
-    def mavenSettings = generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
+    def mavenUrl = "${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}/"
+    def mavenSettings = maven.generateMavenSettingsXmlFile(mavenUrl, env.NEXUS_CREDENTIAL)
     sh "mkdir -p .m2"
     sh "cp ${mavenSettings} .m2/settings.xml"
 
