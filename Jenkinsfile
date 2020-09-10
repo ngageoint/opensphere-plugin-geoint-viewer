@@ -215,10 +215,10 @@ node('Linux&&!gpu') {
       }
     }
 
-    def mavenUrl = "${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}/"
-    def mavenSettings = maven.generateMavenSettingsXmlFile(mavenUrl, env.NEXUS_CREDENTIAL)
+    def mavenSettings = maven.generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
+    sh "cat ${mavenSettings}"
     sh "mkdir -p .m2"
-    sh "cp ${mavenSettings} .m2/settings.xml"
+    sh "mv ${mavenSettings} .m2/settings.xml"
 
     withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
       dir('gv.config') {
