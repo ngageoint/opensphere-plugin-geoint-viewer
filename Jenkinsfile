@@ -225,7 +225,7 @@ node('Linux&&!gpu') {
         stage('publish') {
           if (!(env.JOB_NAME =~ /meatballgrinder/)) {
             installPlugins('gv.config')
-            sh "./publish.sh '${env.NEXUS_URL}/content/repositories/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version}"
+            sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version}"
           }
         }
       }
