@@ -76,12 +76,12 @@ node('Linux&&!gpu') {
         cp workspace/opensphere-plugin-geoint-viewer/Dockerfile_build dockertmp/Dockerfile
         pushd dockertmp
         cp /etc/pki/tls/cert.pem ./cacerts.pem
-        docker build -t gv_build .
+        docker build -t opensphere_build .
         popd
         '''
-        sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build gv_build yarn config list"
+        sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build opensphere_build yarn config list"
         sh 'rm yarn.lock || true'
-        sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build gv_build yarn install"
+        sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build opensphere_build yarn install"
       }
       else {
         sh 'npm i -g yarn'
@@ -97,8 +97,8 @@ node('Linux&&!gpu') {
         "build": {
           // env variables are strings, so need to compare to string 'true'
           if (env.USE_DOCKER_FOR_NODE == 'true') {
-            sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere gv_build yarn run build"
-            sh 'docker rmi gv_build'
+            sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere opensphere_build yarn run build"
+            sh 'docker rmi opensphere_build'
           }
           else {
             dir('workspace/opensphere') {
