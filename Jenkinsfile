@@ -197,8 +197,8 @@ node('Linux&&!gpu') {
       )
     }
 
-    dir('workspace/opensphere') {
-      stage('package') {
+    stage('package') {
+      dir('workspace/opensphere') {
         dir('dist') {
           sh "zip -q -r opensphere-${this_version}.zip opensphere"
         }
@@ -215,14 +215,14 @@ node('Linux&&!gpu') {
       }
     }
 
-    def mavenSettings = maven.generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
-    sh "cat ${mavenSettings}"
-    sh "mkdir -p .m2"
-    sh "mv ${mavenSettings} .m2/settings.xml"
+    stage('publish') {
+      def mavenSettings = maven.generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
+      sh "cat ${mavenSettings}"
+      sh "mkdir -p .m2"
+      sh "mv ${mavenSettings} .m2/settings.xml"
 
-    withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
-      dir('gv.config') {
-        stage('publish') {
+      withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
+        dir('gv.config') {
           if (!(env.JOB_NAME =~ /meatballgrinder/)) {
             installPlugins('gv.config')
             sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
