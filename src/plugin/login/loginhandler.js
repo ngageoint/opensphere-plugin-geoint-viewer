@@ -2,12 +2,13 @@ goog.module('plugin.login.LoginHandler');
 
 const Uri = goog.require('goog.Uri');
 const log = goog.require('goog.log');
-const arraybuf = goog.require('os.arraybuf');
+const Logger = goog.requireType('goog.log.Logger');
+
+const {getText} = goog.require('os.file.mime.text');
 const net = goog.require('os.net');
 const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
 const Event = goog.require('plugin.login.Event');
 const EventType = goog.require('plugin.login.EventType');
-const Logger = goog.requireType('goog.log.Logger');
 
 
 /**
@@ -93,8 +94,8 @@ class LoginHandler extends ExtDomainHandler {
     var resp = this.getResponse();
 
     // the response could be binary, so check for text first
-    if (resp instanceof ArrayBuffer && arraybuf.isText(resp)) {
-      resp = arraybuf.toString(resp);
+    if (resp instanceof ArrayBuffer) {
+      resp = getText(resp);
     }
 
     if (typeof resp === 'string') {
