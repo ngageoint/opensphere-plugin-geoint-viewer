@@ -30,9 +30,9 @@ class BannerPlugin extends AbstractPlugin {
             var banner = $(conf['markup']);
             if (banner) {
               if (i === 0) {
-                target.first().before(banner);
+                target.first().prepend(banner);
               } else {
-                target.last().after(banner);
+                target.last().append(banner);
               }
             }
           }
