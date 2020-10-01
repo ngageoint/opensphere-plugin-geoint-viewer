@@ -206,11 +206,11 @@ node('Linux&&!gpu') {
         try {
           // newer Jenkins
           archiveArtifacts 'dist/*.zip'
-          archiveArtifacts '.build/opensphere.min.map'
+          archiveArtifacts '.build/opensphere.min.js.map'
         } catch (NoSuchMethodError e) {
           // older Jenkins
           archive 'dist/*.zip'
-          archive '.build/opensphere.min.map'
+          archive '.build/opensphere.min.js.map'
         }
       }
     }
