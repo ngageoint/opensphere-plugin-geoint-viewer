@@ -125,7 +125,7 @@ node('Linux&&!gpu') {
             node {
               // ---------------------------------------------
               // Perform Static Security Scans
-              dir('scans') {
+              dir('fortify') {
                 sh "rm -rf *"
                 unstash 'geoint-viewer-source'
                 // Fortify Scan
@@ -145,17 +145,20 @@ node('Linux&&!gpu') {
           if (isRelease()) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
             node {
-              dir('scans') {
+              dir('depcheck') {
+                for (def project in depCheckProjects) {
+                  sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} rm -rf node_modules"
+                }
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
 
                 for (def project in depCheckProjects) {
-                  sh "docker run ${docker_run_args} -w /build/scans/workspace/${project} ${docker_img} npm i"
+                  sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm i"
                 }
 
                 def depCheckHome = tool('owasp_dependency_check')
                 withEnv(["PATH+OWASP=${depCheckHome}/bin"]){
-                  sh 'dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit'
+                  sh 'dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit --disableOssIndex'
                 }
                 fileExists 'dependency-check-report.xml'
                 uploadToThreadfix('dependency-check-report.xml')
