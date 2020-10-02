@@ -12,6 +12,14 @@ node('Linux&&!gpu') {
     'opensphere-plugin-analyze'
   ]
 
+  def project_dir = 'opensphere-plugin-geoint-viewer'
+
+  def user_id = sh(script: 'id -u', returnStdout: true).trim()
+  def group_id = sh(script: 'id -g', returnStdout: true).trim()
+
+  def docker_img = "${project_dir}-build"
+  def docker_run_args = "--rm -i --userns=host --user ${user_id}:${group_id} -v ${env.WORKSPACE}:/build"
+
   try {
     initEnvironment()
     initGV()
@@ -26,7 +34,7 @@ node('Linux&&!gpu') {
 
       dir('workspace') {
         sh 'rm -rf *'
-        dir('opensphere-plugin-geoint-viewer') {
+        dir(project_dir) {
           sh "echo 'checking out scm'"
           checkout scm
 
@@ -68,26 +76,28 @@ node('Linux&&!gpu') {
     }
 
     stage('yarn') {
-      // env variables are strings, so need to compare to string 'true'
-      if (env.USE_DOCKER_FOR_NODE == 'true') {
-        sh 'rm -rf node_modules/opensphere/node_modules/closure-util || true'
-        sh '''rm -rf dockertmp
-        mkdir dockertmp
-        cp workspace/opensphere-plugin-geoint-viewer/Dockerfile_build dockertmp/Dockerfile
-        pushd dockertmp
-        cp /etc/pki/tls/cert.pem ./cacerts.pem
-        docker build -t opensphere_build .
-        popd
-        '''
-        sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build opensphere_build yarn config list"
-        sh 'rm yarn.lock || true'
-        sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build opensphere_build yarn install"
-      }
-      else {
-        sh 'npm i -g yarn'
-        sh 'yarn config list'
-        sh 'rm yarn.lock || true'
-        sh "yarn install"
+      sh 'npm i -g yarn'
+      sh 'yarn config list'
+      sh 'rm yarn.lock || true'
+      sh "yarn install"
+    }
+
+    if (isRelease()) {
+      // Set up docker for fortify npm install
+      stage('docker') {
+        withCredentials([string(credentialsId: 'jenkins-gitlab-registry', variable: 'GITLAB_API_TOKEN')]) {
+          sh "docker login -u jenkins-gitlab-registry -p ${GITLAB_API_TOKEN} gitlab-registry.devops.geointservices.io"
+        }
+
+        sh """
+          rm -rf dockertmp
+          mkdir dockertmp
+          cp workspace/${project_dir}/Dockerfile_build dockertmp/Dockerfile
+          pushd dockertmp
+          cp /etc/pki/tls/cert.pem ./cacerts.pem
+          docker build -t ${docker_img} .
+          popd
+        """
       }
     }
 
@@ -110,45 +120,6 @@ node('Linux&&!gpu') {
             }
           }
         },
-//        "sonarqube" : {
-//          if (isRelease()) {
-//            node {
-//              dir('scans') {
-//                sh "rm -rf *"
-//                unstash 'geoint-viewer-source'
-//                //sh "pwd && ls -al *"
-//                sh """#!/bin/bash
-//                if [[ ! -e pom.xml ]] ; then
-//                cat > pom.xml <<'EOF'
-//<project>
-//<modelVersion>4.0.0</modelVersion>
-//<groupId>groupId</groupId>
-//<artifactId>GV</artifactId>
-//<version>${this_version}</version>
-//</project>
-//EOF
-//ls -lrt
-//                fi
-//                """
-//                withCredentials([string(credentialsId: "${env.SONAR_CREDENTIAL}", variable: 'sonar_login')]) {
-//                  sh """mvn sonar:sonar \\
-//                    -Dsonar.host.url=${env.SONAR_URL} \\
-//                    -Dsonar.login=${sonar_login} \\
-//                    -Dsonar.projectBaseDir=. \\
-//                    -Dsonar.projectKey=fade:opensphere \\
-//                    -Dsonar.projectName=opensphere \\
-//                    -Dsonar.projectVersion=${this_version}\\
-//                    -Dsonar.sources=.\\
-//                    -Dsonar.tests=''\\
-//                    -Dsonar.exclusions=node_modules/**/*\\
-//                    -Dsonar.test.exclusions=node_modules/**/*\\
-//                    -Dsonar.sourceEncoding=UTF-8\\
-//                    """
-//                }
-//              }
-//            }
-//          }
-//        },
         "fortify" : {
           if (isRelease()) {
             node {
@@ -179,9 +150,7 @@ node('Linux&&!gpu') {
                 unstash 'geoint-viewer-source'
 
                 for (def project in depCheckProjects) {
-                  dir("workspace/${project}") {
-                    sh 'npm i'
-                  }
+                  sh "docker run ${docker_run_args} -w /build/scans/workspace/${project} ${docker_img} npm i"
                 }
 
                 def depCheckHome = tool('owasp_dependency_check')
@@ -228,6 +197,12 @@ node('Linux&&!gpu') {
             sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
           }
         }
+      }
+    }
+
+    if (isRelease()) {
+      stage('cleanup') {
+        sh "docker rmi ${docker_img}"
       }
     }
 
