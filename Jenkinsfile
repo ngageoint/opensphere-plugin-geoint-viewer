@@ -82,41 +82,15 @@ node('Linux&&!gpu') {
       sh "yarn install"
     }
 
-    if (isRelease()) {
-      // Set up docker for fortify npm install
-      stage('docker') {
-        withCredentials([string(credentialsId: 'jenkins-gitlab-registry', variable: 'GITLAB_API_TOKEN')]) {
-          sh "docker login -u jenkins-gitlab-registry -p ${GITLAB_API_TOKEN} gitlab-registry.devops.geointservices.io"
-        }
-
-        sh """
-          rm -rf dockertmp
-          mkdir dockertmp
-          cp workspace/${project_dir}/Dockerfile_build dockertmp/Dockerfile
-          pushd dockertmp
-          cp /etc/pki/tls/cert.pem ./cacerts.pem
-          docker build -t ${docker_img} .
-          popd
-        """
-      }
-    }
-
     stage('Build and Scans - SonarQube, Fortify, OWASP Dependency Checker') {
       // note that the ZAP scan is run post-deploy by the deploy jobs
       parallel (
         "build": {
-          // env variables are strings, so need to compare to string 'true'
-          if (env.USE_DOCKER_FOR_NODE == 'true') {
-            sh "docker run --rm -i --user \$(id -u):\$(id -g) -v ${env.WORKSPACE}:/build -w /build/workspace/opensphere opensphere_build yarn run build"
-            sh 'docker rmi opensphere_build'
-          }
-          else {
-            dir('workspace/opensphere') {
-              def jdkHome = tool name: env.JDK_TOOL
-              withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
-                sh 'node -e "console.log(require(\'eslint-plugin-opensphere\'));"'
-                sh 'yarn run build'
-              }
+          dir('workspace/opensphere') {
+            def jdkHome = tool name: env.JDK_TOOL
+            withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
+              sh 'node -e "console.log(require(\'eslint-plugin-opensphere\'));"'
+              sh 'yarn run build'
             }
           }
         },
@@ -145,6 +119,21 @@ node('Linux&&!gpu') {
           if (isRelease()) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
             node {
+              // Set up docker for npm install
+              withCredentials([string(credentialsId: 'jenkins-gitlab-registry', variable: 'GITLAB_API_TOKEN')]) {
+                sh "docker login -u jenkins-gitlab-registry -p ${GITLAB_API_TOKEN} gitlab-registry.devops.geointservices.io"
+              }
+
+              sh """
+                rm -rf dockertmp
+                mkdir dockertmp
+                cp workspace/${project_dir}/Dockerfile_build dockertmp/Dockerfile
+                pushd dockertmp
+                cp /etc/pki/tls/cert.pem ./cacerts.pem
+                docker build -t ${docker_img} .
+                popd
+              """
+
               dir('depcheck') {
                 for (def project in depCheckProjects) {
                   sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} rm -rf node_modules"
@@ -163,6 +152,8 @@ node('Linux&&!gpu') {
                 fileExists 'dependency-check-report.xml'
                 uploadToThreadfix('dependency-check-report.xml')
               }
+
+              sh "docker rmi ${docker_img}"
             }
           }
         }
@@ -200,12 +191,6 @@ node('Linux&&!gpu') {
             sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
           }
         }
-      }
-    }
-
-    if (isRelease()) {
-      stage('cleanup') {
-        sh "docker rmi ${docker_img}"
       }
     }
 
