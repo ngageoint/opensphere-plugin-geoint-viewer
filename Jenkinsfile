@@ -66,11 +66,15 @@ node('Linux&&!gpu') {
       }
 
       def osSources = []
+
+      // Add source files, package, and package lock for each scanned project.
       for (def project in depCheckProjects) {
         osSources << "workspace/${project}/src/**"
         osSources << "workspace/${project}/package.json"
         osSources << "workspace/${project}/package-lock.json"
       }
+      // Add the Dockerfile used to create the build image
+      osSources << "workspace/opensphere-plugin-geoint-viewer/Dockerfile_build"
 
       stash name: 'geoint-viewer-source', includes: osSources.join(', '), useDefaultExcludes: false
     }
