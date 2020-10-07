@@ -123,27 +123,24 @@ node('Linux&&!gpu') {
           if (isRelease()) {
             // the jenkins tool installation version takes forever to run because it has to download and set up its database
             node {
-              // Set up docker for npm install
-              withCredentials([string(credentialsId: 'jenkins-gitlab-registry', variable: 'GITLAB_API_TOKEN')]) {
-                sh "docker login -u jenkins-gitlab-registry -p ${GITLAB_API_TOKEN} gitlab-registry.devops.geointservices.io"
-              }
-
-              sh """
-                rm -rf dockertmp
-                mkdir dockertmp
-                cp workspace/${project_dir}/Dockerfile_build dockertmp/Dockerfile
-                pushd dockertmp
-                cp /etc/pki/tls/cert.pem ./cacerts.pem
-                docker build -t ${docker_img} .
-                popd
-              """
-
               dir('depcheck') {
-                for (def project in depCheckProjects) {
-                  sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} rm -rf node_modules"
-                }
                 sh 'rm -rf *'
                 unstash 'geoint-viewer-source'
+
+                // Set up docker for npm install
+                withCredentials([string(credentialsId: 'jenkins-gitlab-registry', variable: 'GITLAB_API_TOKEN')]) {
+                  sh "docker login -u jenkins-gitlab-registry -p ${GITLAB_API_TOKEN} gitlab-registry.devops.geointservices.io"
+                }
+
+                sh """
+                  rm -rf dockertmp
+                  mkdir dockertmp
+                  cp workspace/${project_dir}/Dockerfile_build dockertmp/Dockerfile
+                  pushd dockertmp
+                  cp /etc/pki/tls/cert.pem ./cacerts.pem
+                  docker build -t ${docker_img} .
+                  popd
+                """
 
                 for (def project in depCheckProjects) {
                   sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm i"
