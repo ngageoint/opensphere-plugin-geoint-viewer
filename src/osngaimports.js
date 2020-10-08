@@ -3,8 +3,6 @@
  */
 goog.module('osngaimports');
 
-goog.require('coreui.search.detailedSearchBoxDirective');
-goog.require('mist.ui.search.searchPageFlyoutDirective');
 goog.require('plugin.banner.BannerPlugin');
 goog.require('plugin.geopackage.GeoPackagePlugin');
 goog.require('plugin.ispy.ISpyPlugin');
