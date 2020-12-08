@@ -4,6 +4,7 @@
 goog.module('osngaimports');
 
 goog.require('plugin.banner.BannerPlugin');
+goog.require('plugin.gegd.GEGDPlugin');
 goog.require('plugin.geopackage.GeoPackagePlugin');
 goog.require('plugin.ispy.ISpyPlugin');
 goog.require('plugin.login.LoginPlugin');
