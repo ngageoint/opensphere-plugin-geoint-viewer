@@ -3,7 +3,7 @@
 this_version = '0.0.0' // reset below
 def err = null
 
-node('Linux&&!gpu') {
+node('Linux&&Standard') {
   def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
 
   def depCheckProjects = [
@@ -141,6 +141,9 @@ node('Linux&&!gpu') {
                   docker build -t ${docker_img} .
                   popd
                 """
+
+                // Verify npm config was loaded to the container
+                sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm config list"
 
                 for (def project in depCheckProjects) {
                   sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm i"
