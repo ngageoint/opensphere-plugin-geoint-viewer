@@ -21,7 +21,7 @@ class BannerPlugin extends AbstractPlugin {
    */
   init() {
     var conf = os.settings.get('banner');
-    const iconHtmlText = '<i class="fa fa-fw fa-question-circle" title="Warning: This content may not be used as a ' +
+    const iconHtmlText = '<i class="fa fa-fw fa-question-circle mt-1 float-right" title="Warning: This content may not be used as a ' +
     'source of derivative classification. Refer instead to the pertinent classification guide."></i>';
     if (conf && conf['markup']) {
       var targets = ['before', 'after'];
