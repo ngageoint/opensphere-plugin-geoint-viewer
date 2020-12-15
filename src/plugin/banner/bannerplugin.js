@@ -21,6 +21,8 @@ class BannerPlugin extends AbstractPlugin {
    */
   init() {
     var conf = os.settings.get('banner');
+    const iconHtmlText = '<i class="fa fa-fw fa-question-circle mt-1 float-right" title="Warning: This content may not be used as a ' +
+    'source of derivative classification. Refer instead to the pertinent classification guide."></i>';
     if (conf && conf['markup']) {
       var targets = ['before', 'after'];
       targets.forEach((key, i) => {
@@ -28,6 +30,7 @@ class BannerPlugin extends AbstractPlugin {
           var target = $(conf[key]);
           if (target.length) {
             var banner = $(conf['markup']);
+            banner.append($(iconHtmlText));
             if (banner) {
               if (i === 0) {
                 target.first().prepend(banner);
