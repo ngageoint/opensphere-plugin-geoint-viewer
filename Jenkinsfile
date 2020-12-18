@@ -142,10 +142,9 @@ node('Linux&&Standard') {
                   popd
                 """
 
-                // Verify npm config was loaded to the container
-                sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm config list"
-
                 for (def project in depCheckProjects) {
+                  // Verify npm config was loaded to the container
+                  sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm config list"
                   sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm i"
                 }
 
