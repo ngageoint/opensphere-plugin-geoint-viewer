@@ -20,14 +20,20 @@ class BannerPlugin extends AbstractPlugin {
    * @inheritDoc
    */
   init() {
-    var conf = os.settings.get('banner');
+    const conf = os.settings.get('banner');
     if (conf && conf['markup']) {
-      var targets = ['before', 'after'];
+      const targets = ['before', 'after'];
       targets.forEach((key, i) => {
         if (conf[key]) {
-          var target = $(conf[key]);
+          const target = $(conf[key]);
           if (target.length) {
-            var banner = $(conf['markup']);
+            const banner = $(conf['markup']);
+            if (conf['tooltip']) {
+              const tooltip = /** @type {string} */ (conf['tooltip']);
+              const iconEl = $(`<i class="fa fa-fw fa-question-circle ml-1" title="${tooltip}"></i>`);
+              banner.append(iconEl);
+              iconEl.tooltip();
+            }
             if (banner) {
               if (i === 0) {
                 target.first().prepend(banner);

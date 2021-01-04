@@ -3,7 +3,7 @@
     "banner": {
       "before": ".js-navtop",
       "after": ".js-navbottom",
-      "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\"><div>UNCLASSIFIED</div></div>"
+      "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\">UNCLASSIFIED</div>"
     },
     "plugin": {
       "login": {
