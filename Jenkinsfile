@@ -4,21 +4,7 @@ this_version = '0.0.0' // reset below
 def err = null
 
 node('Linux&&Standard') {
-  def originalHome = sh(script: 'echo $HOME', returnStdout: true).trim();
-
-  def depCheckProjects = [
-    'opensphere-nga-lib',
-    'opensphere-plugin-geoint-viewer',
-    'opensphere-plugin-analyze'
-  ]
-
   def project_dir = 'opensphere-plugin-geoint-viewer'
-
-  def user_id = sh(script: 'id -u', returnStdout: true).trim()
-  def group_id = sh(script: 'id -g', returnStdout: true).trim()
-
-  def docker_img = "${project_dir}-build"
-  def docker_run_args = "--rm -i --userns=host --user ${user_id}:${group_id} -v ${env.WORKSPACE}:/build"
 
   try {
     initEnvironment()
@@ -60,23 +46,9 @@ node('Linux&&Standard') {
         for (def project in projects) {
           dir(project) {
             installPlugins(project)
-            useNpmJsVersions()
           }
         }
       }
-
-      def osSources = []
-
-      // Add source files, package, and package lock for each scanned project.
-      for (def project in depCheckProjects) {
-        osSources << "workspace/${project}/src/**"
-        osSources << "workspace/${project}/package.json"
-        osSources << "workspace/${project}/package-lock.json"
-      }
-      // Add the Dockerfile used to create the build image
-      osSources << "workspace/opensphere-plugin-geoint-viewer/Dockerfile_build"
-
-      stash name: 'geoint-viewer-source', includes: osSources.join(', '), useDefaultExcludes: false
     }
 
     stage('yarn') {
@@ -86,82 +58,13 @@ node('Linux&&Standard') {
       sh "yarn install"
     }
 
-    stage('Build and Scans - SonarQube, Fortify, OWASP Dependency Checker') {
-      // note that the ZAP scan is run post-deploy by the deploy jobs
-      parallel (
-        "build": {
-          dir('workspace/opensphere') {
-            def jdkHome = tool name: env.JDK_TOOL
-            withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
-              sh 'node -e "console.log(require(\'eslint-plugin-opensphere\'));"'
-              sh 'yarn run build'
-            }
-          }
-        },
-        "fortify" : {
-          if (isRelease()) {
-            node {
-              // ---------------------------------------------
-              // Perform Static Security Scans
-              dir('fortify') {
-                sh "rm -rf *"
-                unstash 'geoint-viewer-source'
-                // Fortify Scan
-                // Clean up Fortify residue:
-                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b '${env.JOB_NAME}' -clean"
-                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b '${env.JOB_NAME}' '.'"
-                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b '${env.JOB_NAME}' -scan -f fortifyResults-${this_version}.fpr"
-                // archive includes: '*.fpr'
-                uploadToThreadfix("fortifyResults-${this_version}.fpr")
-                // Clean up Fortify residue:
-                sh "/opt/hp_fortify_sca/bin/sourceanalyzer -64 -b '${env.JOB_NAME}' -clean"
-              }
-            }
-          }
-        },
-        "depcheck": {
-          if (isRelease()) {
-            // the jenkins tool installation version takes forever to run because it has to download and set up its database
-            node {
-              dir('depcheck') {
-                sh 'rm -rf *'
-                unstash 'geoint-viewer-source'
-
-                // Set up docker for npm install
-                withCredentials([string(credentialsId: 'jenkins-gitlab-registry', variable: 'GITLAB_API_TOKEN')]) {
-                  sh "docker login -u jenkins-gitlab-registry -p ${GITLAB_API_TOKEN} gitlab-registry.devops.geointservices.io"
-                }
-
-                sh """
-                  rm -rf dockertmp
-                  mkdir dockertmp
-                  cp workspace/${project_dir}/Dockerfile_build dockertmp/Dockerfile
-                  pushd dockertmp
-                  cp /etc/pki/tls/cert.pem ./cacerts.pem
-                  docker build -t ${docker_img} .
-                  popd
-                """
-
-                // Verify npm config was loaded to the container
-                sh "docker run ${docker_run_args} -w /build/depcheck/workspace ${docker_img} npm config list"
-
-                for (def project in depCheckProjects) {
-                  sh "docker run ${docker_run_args} -w /build/depcheck/workspace/${project} ${docker_img} npm i"
-                }
-
-                def depCheckHome = tool('owasp_dependency_check')
-                withEnv(["PATH+OWASP=${depCheckHome}/bin"]){
-                  sh 'dependency-check.sh --project "GV" --scan "./" --format "ALL" --enableExperimental --disableBundleAudit --disableOssIndex'
-                }
-                fileExists 'dependency-check-report.xml'
-                uploadToThreadfix('dependency-check-report.xml')
-              }
-
-              sh "docker rmi ${docker_img}"
-            }
-          }
+    stage('build') {
+      dir('workspace/opensphere') {
+        def jdkHome = tool name: env.JDK_TOOL
+        withEnv(["PATH+JDK=${jdkHome}/bin", "JAVA_HOME=${jdkHome}"]) {
+          sh 'yarn run build'
         }
-      )
+      }
     }
 
     stage('package') {
@@ -190,15 +93,13 @@ node('Linux&&Standard') {
 
       withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
         dir('gv.config') {
-          if (!(env.JOB_NAME =~ /meatballgrinder/)) {
-            installPlugins('gv.config')
-            sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
-          }
+          installPlugins('gv.config')
+          sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../workspace/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
         }
       }
     }
 
-    if (!isRelease() && !(env.JOB_NAME =~ /meatballgrinder/)) {
+    if (!isRelease()) {
       // kick off deploy build
       build job: "${env.DEPLOY_JOB}", quietPeriod: 5, wait: false
     }
@@ -215,18 +116,5 @@ node('Linux&&Standard') {
     if (err) {
       throw err
     }
-  }
-}
-
-def useNpmJsVersions() {
-  if (env.JOB_NAME =~ /meatballgrinder/) {
-    sh 'perl -ni -e \'print unless /benum/\' package.json'
-  }
-}
-
-def uploadToThreadfix(file) {
-  fileExists file
-  withCredentials([string(credentialsId: 'threadfix-full-url', variable: 'THREADFIX_URL')]) {
-    sh "/bin/curl -v -H 'Accept: application/json' -X POST --form file=@${file} ${THREADFIX_URL}"
   }
 }
