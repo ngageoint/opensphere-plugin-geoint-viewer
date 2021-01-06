@@ -45,10 +45,6 @@ module.exports = {
     id: 'index',
     skip: true,
     resources: [{
-      source: resolver.resolveModulePath('opensphere-plugin-mist/views'),
-      target: 'views',
-      files: ['search']
-    }, {
       source: resolver.resolveModulePath('@bits/bits-internal-brand', __dirname),
       target: '',
       files: ['images', 'views']
