@@ -23,21 +23,28 @@ class PiwikPlugin extends AbstractPlugin {
     this.errorMessage = null;
 
     /**
-     * The Piwik site ID.
+     * The metrics site ID.
      * @type {number|undefined}
      * @private
      */
     this.siteId_ = undefined;
 
     /**
-     * The Piwik URL.
+     * The tracker script. This will be appended to the base URL.
+     * @type {string}
+     * @private
+     */
+    this.trackerScript_ = '';
+
+    /**
+     * The base metrics URL.
      * @type {string|undefined}
      * @private
      */
     this.url_ = undefined;
 
     /**
-     * The Piwik user ID URL.
+     * The metrics user ID URL.
      * @type {string}
      * @private
      */
@@ -51,6 +58,8 @@ class PiwikPlugin extends AbstractPlugin {
     const settings = Settings.getInstance();
 
     this.siteId_ = /** @type {number|undefined} */ (settings.get('plugin.piwik.siteId'));
+    // Tracker script defaults to piwik.php for legacy support.
+    this.trackerScript_ = /** @type {string} */ (settings.get('plugin.piwik.trackerScript', 'piwik.php'));
     this.url_ = /** @type {string|undefined} */ (settings.get('plugin.piwik.url'));
     this.userIdUrl_ = /** @type {string} */ (settings.get('plugin.piwik.userIdUrl', ''));
 
@@ -147,7 +156,7 @@ class PiwikPlugin extends AbstractPlugin {
       }
       _paq.push(['trackPageView']);
 
-      _paq.push(['setTrackerUrl', url + 'piwik.php']);
+      _paq.push(['setTrackerUrl', url + this.trackerScript_]);
       _paq.push(['setSiteId', String(siteId)]);
 
       const script = document.createElement('script');
