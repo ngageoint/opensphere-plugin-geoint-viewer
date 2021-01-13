@@ -26,7 +26,7 @@ node('Linux&&Standard') {
 
           GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
 
-          this_version = getAppVersion()
+          this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
           echo "Building: ${this_version}"
         }
 
