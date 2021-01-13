@@ -26,12 +26,8 @@ node('Linux&&Standard') {
 
           GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
 
-          try {
-            this_version = sh(script: 'git describe --exact-match HEAD', returnStdout: true).trim()
-          } catch (e) {
-            this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-          }
-          sh "echo Building: ${this_version}"
+          this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+          echo "Building: ${this_version}"
         }
 
         def projects = [
