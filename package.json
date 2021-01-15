@@ -21,10 +21,11 @@
     }
   },
   "scripts": {
+    "build": "npm run lint",
+    "lint": "run-p lint:css lint:html lint:js",
     "lint:css": "sass-lint -v -s scss 'scss/**/*.scss'",
-    "lint:js": "eslint --cache 'src/**/*.js'",
-    "lint": "npm run lint:js && npm run lint:css",
-    "build": "npm run lint"
+    "lint:html": "html-validate 'views/**/*.html'",
+    "lint:js": "eslint --cache 'src/**/*.js'"
   },
   "keywords": [
     "gis",
@@ -40,7 +41,10 @@
     "@commitlint/travis-cli": "^9.0.1",
     "eslint": "^6.0.0",
     "eslint-config-opensphere": "^4.0.0",
+    "html-validate": "^4.2.0",
+    "html-validate-angular": "^2.9.0",
     "husky": "^3.0.1",
+    "npm-run-all": "^4.1.5",
     "sass-lint": "^1.12.1"
   },
   "dependencies": {
