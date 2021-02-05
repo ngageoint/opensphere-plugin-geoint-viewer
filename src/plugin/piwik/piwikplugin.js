@@ -96,10 +96,16 @@ class PiwikPlugin extends AbstractPlugin {
 
       _paq.push(['setCustomUrl', customUrl]);
 
-      // Include electron in the reported title.
-      _paq.push(['setDocumentTitle', 'Electron/' + document.title]);
+      // Identify this is the desktop app in the reported title and a custom variable.
+      _paq.push(['setDocumentTitle', 'Desktop/' + document.title]);
+      _paq.push(['setCustomVariable', 1, 'Platform', 'Desktop', 'page']);
     } else {
+      // Include the domain in the page title to differentiate between stage/prod/etc.
       _paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
+      // Identify this is the web app in a custom variable.
+      _paq.push(['setCustomVariable', 1, 'Platform', 'Web', 'page']);
+
+      // Track clicks to sub-domains instead of treating them as an outlink.
       _paq.push(['setCookieDomain', '*.' + document.domain]);
       _paq.push(['setDomains', ['*.' + document.domain]]);
     }
