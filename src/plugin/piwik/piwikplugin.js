@@ -4,6 +4,8 @@ const log = goog.require('goog.log');
 const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
+const {DOWNLOAD_CLASS} = goog.require('osnga.matomo');
+const {isElectron} = goog.require('plugin.electron');
 
 /**
  * Logger for imagery PiwikPlugin.
@@ -80,10 +82,38 @@ class PiwikPlugin extends AbstractPlugin {
     }
 
     const _paq = window._paq;
-    _paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
-    _paq.push(['setCookieDomain', '*.' + document.domain]);
-    _paq.push(['setDomains', ['*.' + document.domain]]);
+
+    if (isElectron()) {
+      // Override the tracked URL so it doesn't expose file system path.
+      let customUrl;
+
+      const osIndex = location.href.lastIndexOf('/opensphere/');
+      if (osIndex > -1) {
+        customUrl = `file://${location.href.substring(osIndex)}`;
+      } else {
+        customUrl = 'file:///opensphere';
+      }
+
+      _paq.push(['setCustomUrl', customUrl]);
+
+      // Identify this is the desktop app in the reported title and a custom variable.
+      _paq.push(['setDocumentTitle', 'Desktop/' + document.title]);
+      _paq.push(['setCustomVariable', 1, 'Platform', 'Desktop', 'page']);
+    } else {
+      // Include the domain in the page title to differentiate between stage/prod/etc.
+      _paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
+      // Identify this is the web app in a custom variable.
+      _paq.push(['setCustomVariable', 1, 'Platform', 'Web', 'page']);
+
+      // Track clicks to sub-domains instead of treating them as an outlink.
+      _paq.push(['setCookieDomain', '*.' + document.domain]);
+      _paq.push(['setDomains', ['*.' + document.domain]]);
+    }
+
     _paq.push(['enableLinkTracking']);
+
+    // Set the class used to track link clicks for downloads.
+    _paq.push(['setDownloadClasses', DOWNLOAD_CLASS]);
   }
 
   /**
