@@ -1,11 +1,12 @@
 goog.module('plugin.piwik.PiwikPlugin');
 
 const log = goog.require('goog.log');
+const Dispatcher = goog.require('os.Dispatcher');
 const {getAppVersion} = goog.require('os.config');
 const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
-const {DOWNLOAD_CLASS} = goog.require('osnga.matomo');
+const {DOWNLOAD_CLASS, EventType: MatomoEventType} = goog.require('osnga.matomo');
 const {isElectron} = goog.require('plugin.electron');
 
 /**
@@ -52,6 +53,15 @@ class PiwikPlugin extends AbstractPlugin {
      * @private
      */
     this.userIdUrl_ = '';
+  }
+
+  /**
+   * @inheritDoc
+   */
+  disposeInternal() {
+    super.disposeInternal();
+
+    Dispatcher.getInstance().unlisten(MatomoEventType.LINKS_CHANGED, this.onLinksChanged, false, this);
   }
 
   /**
@@ -112,10 +122,23 @@ class PiwikPlugin extends AbstractPlugin {
       _paq.push(['setDomains', ['*.' + document.domain]]);
     }
 
-    _paq.push(['enableLinkTracking']);
-
     // Set the class used to track link clicks for downloads.
     _paq.push(['setDownloadClasses', DOWNLOAD_CLASS]);
+    _paq.push(['enableLinkTracking']);
+
+    Dispatcher.getInstance().listen(MatomoEventType.LINKS_CHANGED, this.onLinksChanged, false, this);
+  }
+
+  /**
+   * Handle links changed event.
+   * @protected
+   */
+  onLinksChanged() {
+    const _paq = window._paq;
+    if (_paq) {
+      // Enable link tracking so click handlers will be added to new links on the page.
+      _paq.push(['enableLinkTracking']);
+    }
   }
 
   /**
