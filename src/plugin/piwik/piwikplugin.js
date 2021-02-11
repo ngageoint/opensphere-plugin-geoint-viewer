@@ -1,6 +1,7 @@
 goog.module('plugin.piwik.PiwikPlugin');
 
 const log = goog.require('goog.log');
+const {getAppVersion} = goog.require('os.config');
 const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
@@ -82,6 +83,7 @@ class PiwikPlugin extends AbstractPlugin {
     }
 
     const _paq = window._paq;
+    const appVersion = getAppVersion();
 
     if (isElectron()) {
       // Override the tracked URL so it doesn't expose file system path.
@@ -98,12 +100,12 @@ class PiwikPlugin extends AbstractPlugin {
 
       // Identify this is the desktop app in the reported title and a custom variable.
       _paq.push(['setDocumentTitle', 'Desktop/' + document.title]);
-      _paq.push(['setCustomVariable', 1, 'Platform', 'Desktop', 'page']);
+      _paq.push(['setCustomDimension', 1, `Desktop/${appVersion}`]);
     } else {
       // Include the domain in the page title to differentiate between stage/prod/etc.
       _paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
       // Identify this is the web app in a custom variable.
-      _paq.push(['setCustomVariable', 1, 'Platform', 'Web', 'page']);
+      _paq.push(['setCustomDimension', 1, `Web/${appVersion}`]);
 
       // Track clicks to sub-domains instead of treating them as an outlink.
       _paq.push(['setCookieDomain', '*.' + document.domain]);
