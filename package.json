@@ -12,7 +12,6 @@
   "build": {
     "type": "plugin",
     "config": "config/settings.json",
-    "index": "index.js",
     "scss": "scss/gv.scss",
     "gcc": {
       "entry_point": [

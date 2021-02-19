@@ -1,9 +1,46 @@
 {
   "admin": {
+    "about": {
+      "application": "OpenSphere",
+      "logoPath": "images/brand/logo/opensphere.svg",
+      "appVendors": [
+        {
+          "logoPath": "images/vendor/opensphere.png",
+          "name": "OpenSphere"
+        },
+        {
+          "logoPath": "images/vendor/openlayers.png",
+          "name": "OpenLayers"
+        },
+        {
+          "logoPath": "images/vendor/cesium.png",
+          "name": "Cesium"
+        },
+        {
+          "name": "AngularJS",
+          "logoPath": "images/vendor/angular.png"
+        },
+        {
+          "name": "Closure",
+          "logoPath": "images/vendor/closure.png"
+        },
+        {
+          "name": "Bootstrap",
+          "logoPath": "images/vendor/bootstrap.png"
+        },
+        {
+          "name": "jQuery",
+          "logoPath": "images/vendor/jquery.png"
+        }
+      ]
+    },
     "banner": {
       "before": ".js-navtop",
       "after": ".js-navbottom",
       "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\">UNCLASSIFIED</div>"
+    },
+    "metrics": {
+      "enabled": false
     },
     "plugin": {
       "login": {
@@ -15,12 +52,21 @@
             "<form name=\"login\""
           ]
         }
+      },
+      "storage": {
+        "persistenceHelp": "https://web.dev/persistent-storage/"
       }
     },
     "plugins": {
       "piwik": false
     },
     "providers": {
+      "basemap": {
+        "type": "basemap",
+        "maps": {
+          "bmng": "__delete__"
+        }
+      },
       "gs-hiperlook": {
         "type": "ogc",
         "label": "GEOINT Services Hiperlook",
