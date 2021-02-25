@@ -11,7 +11,7 @@
   },
   "build": {
     "type": "plugin",
-    "config": "config/settings.json",
+    "config": ["config/settings.json", "config/bits-internal-override.json"],
     "index": "index.js",
     "scss": "scss/gv.scss",
     "gcc": {

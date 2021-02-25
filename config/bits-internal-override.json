@@ -1,0 +1,23 @@
+{
+  "admin": {
+    "areadata": "__delete__",
+    "metrics": {
+      "enabled": false
+    },
+    "ogc": "__delete__",
+    "plugin": {
+      "storage": {
+        "persistenceHelp": "https://web.dev/persistent-storage/"
+      }
+    },
+    "providers": {
+      "basemap": {
+        "type": "basemap",
+        "maps": {
+          "bmng": "__delete__"
+        }
+      }
+    },
+    "tools": "__delete__"
+  }
+}
