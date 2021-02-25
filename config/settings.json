@@ -39,9 +39,6 @@
       "after": ".js-navbottom",
       "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\">UNCLASSIFIED</div>"
     },
-    "metrics": {
-      "enabled": false
-    },
     "plugin": {
       "login": {
         "geoaxis": {
@@ -52,21 +49,12 @@
             "<form name=\"login\""
           ]
         }
-      },
-      "storage": {
-        "persistenceHelp": "https://web.dev/persistent-storage/"
       }
     },
     "plugins": {
       "piwik": false
     },
     "providers": {
-      "basemap": {
-        "type": "basemap",
-        "maps": {
-          "bmng": "__delete__"
-        }
-      },
       "gs-hiperlook": {
         "type": "ogc",
         "label": "GEOINT Services Hiperlook",
