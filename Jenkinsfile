@@ -30,7 +30,7 @@ node {
           } catch (NoSuchMethodError e) {
           }
 
-          installPlugins(workspace_project)
+          cloneProject(workspace_project)
 
           dir(workspace_dir) {
             def projects = [
@@ -44,7 +44,7 @@ node {
             ]
 
             for (def project in projects) {
-              installPlugins(project)
+              cloneProject(project)
             }
 
             dir(project_dir) {
@@ -96,7 +96,7 @@ node {
               sh "mkdir -p .m2"
               sh "mv ${mavenSettings} .m2/settings.xml"
 
-              installPlugins('gv.config')
+              cloneProject('gv.config')
               dir('gv.config') {
                 sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../${workspace_dir}/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
               }
