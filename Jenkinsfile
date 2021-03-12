@@ -78,7 +78,7 @@ node {
           def archiveName = "opensphere-${appVersion}.zip"
 
           stage('package') {
-            dir("${workspace_dir}/opensphere") {
+            dir('opensphere') {
               dir('dist') {
                 sh "zip -q -r ${archiveName} opensphere"
               }
