@@ -120,7 +120,7 @@ node {
     if (deployEnv.isDev() && env.DEPLOY_JOB) {
       // Deploy the artifact when building on dev.
       build job: "${env.DEPLOY_JOB}",
-          parameters: [string(name: 'ARTIFACT_VERSION', value: artifactVersion)]
+          parameters: [string(name: 'ARTIFACT_VERSION', value: artifactVersion)],
           quietPeriod: 5,
           wait: false
     }
