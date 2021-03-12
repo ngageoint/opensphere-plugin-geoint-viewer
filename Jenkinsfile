@@ -1,9 +1,11 @@
 #!/usr/bin/env groovy
 
-this_version = '0.0.0' // reset below
-def err = null
-
 node {
+  def err = null
+
+  def appVersion = '0.0.0'
+  def artifactVersion = '0.0.0'
+
   def project_dir = 'opensphere-plugin-geoint-viewer'
   def workspace_project = 'opensphere-yarn-workspace'
   def workspace_dir = "${workspace_project}/workspace"
@@ -40,6 +42,7 @@ node {
               'opensphere-plugin-analyze',
               'bits-internal',
               'mist',
+              'gv.config',
               project_dir
             ]
 
@@ -48,10 +51,11 @@ node {
             }
 
             dir(project_dir) {
-              GIT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+              appVersion = version.getAppVersion()
+              artifactVersion = version.getArtifactVersion()
 
-              this_version = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-              echo "Building: ${this_version}"
+              echo "App version: ${appVersion}"
+              echo "Artifact version: ${artifactVersion}"
             }
           }
         }
@@ -70,47 +74,55 @@ node {
           }
         }
 
-        stage('package') {
-          dir("${workspace_dir}/opensphere") {
-            dir('dist') {
-              sh "zip -q -r opensphere-${this_version}.zip opensphere"
-            }
+        dir(workspace_dir) {
+          def archiveName = "opensphere-${appVersion}.zip"
 
-            try {
-              // newer Jenkins
-              archiveArtifacts 'dist/*.zip'
-              archiveArtifacts '.build/opensphere.min.js.map'
-            } catch (NoSuchMethodError e) {
-              // older Jenkins
-              archive 'dist/*.zip'
-              archive '.build/opensphere.min.js.map'
-            }
-          }
-        }
+          stage('package') {
+            dir("${workspace_dir}/opensphere") {
+              dir('dist') {
+                sh "zip -q -r ${archiveName} opensphere"
+              }
 
-        stage('publish') {
-          if (env.NEXUS_CREDENTIAL && env.NEXUS_SNAPSHOTS && env.NEXUS_URL) {
-            withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
-              def mavenSettings = maven.generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
-              sh "cat ${mavenSettings}"
-              sh "mkdir -p .m2"
-              sh "mv ${mavenSettings} .m2/settings.xml"
-
-              cloneProject('gv.config')
-              dir('gv.config') {
-                sh "./publish.sh '${env.NEXUS_URL}/repository/${env.NEXUS_SNAPSHOTS}' ../${workspace_dir}/opensphere/dist/opensphere-${this_version}.zip ${this_version} opensphere"
+              try {
+                // newer Jenkins
+                archiveArtifacts 'dist/*.zip'
+                archiveArtifacts '.build/opensphere.min.js.map'
+              } catch (NoSuchMethodError e) {
+                // older Jenkins
+                archive 'dist/*.zip'
+                archive '.build/opensphere.min.js.map'
               }
             }
-          } else {
-            echo 'Publish not configured, skipping.'
+          }
+
+          stage('publish') {
+            if (env.NEXUS_CREDENTIAL && env.NEXUS_REPO && env.NEXUS_URL) {
+              withEnv(["HOME=${pwd()}", "_JAVA_OPTIONS=-Duser.home=${pwd()}"]) {
+                def mavenSettings = maven.generateMavenSettingsXmlFile(env.NEXUS_CREDENTIAL)
+                sh "cat ${mavenSettings}"
+                sh "mkdir -p .m2"
+                sh "mv ${mavenSettings} .m2/settings.xml"
+
+                dir('gv.config') {
+                  def archivePath = "../opensphere/dist/${archiveName}"
+                  def nexusUrl = "${env.NEXUS_URL}/repository/${env.NEXUS_REPO}"
+                  sh "./publish.sh '${nexusUrl}' '${archivePath}' ${artifactVersion} opensphere"
+                }
+              }
+            } else {
+              echo 'Publish not configured, skipping.'
+            }
           }
         }
       }
     }
 
-    if (!isRelease() && env.DEPLOY_JOB) {
-      // kick off deploy build
-      build job: "${env.DEPLOY_JOB}", quietPeriod: 5, wait: false
+    if (deployEnv.isDev() && env.DEPLOY_JOB) {
+      // Deploy the artifact when building on dev.
+      build job: "${env.DEPLOY_JOB}",
+          parameters: [string(name: 'ARTIFACT_VERSION', value: artifactVersion)]
+          quietPeriod: 5,
+          wait: false
     }
   } catch (e) {
     currentBuild.result = 'FAILURE'
