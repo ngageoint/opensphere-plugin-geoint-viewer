@@ -5,6 +5,7 @@ node {
 
   def appVersion = '0.0.0'
   def artifactVersion = '0.0.0'
+  def archiveName = 'opensphere.zip'
 
   def project_dir = 'opensphere-plugin-geoint-viewer'
   def workspace_project = 'opensphere-yarn-workspace'
@@ -53,6 +54,7 @@ node {
             dir(project_dir) {
               appVersion = version.getAppVersion()
               artifactVersion = version.getArtifactVersion()
+              archiveName = "opensphere-${appVersion}.zip"
 
               echo "App version: ${appVersion}"
               echo "Artifact version: ${artifactVersion}"
@@ -60,22 +62,18 @@ node {
           }
         }
 
-        stage('yarn') {
-          dir(workspace_project) {
+        dir(workspace_dir) {
+          stage('yarn') {
             sh 'yarn config list'
             sh "rm yarn.lock || true"
             sh "yarn"
           }
-        }
 
-        stage('build') {
-          dir("${workspace_dir}/opensphere") {
-            sh 'yarn build'
+          stage('build') {
+            dir('opensphere') {
+              sh 'yarn build'
+            }
           }
-        }
-
-        dir(workspace_dir) {
-          def archiveName = "opensphere-${appVersion}.zip"
 
           stage('package') {
             dir('opensphere') {
