@@ -22,7 +22,7 @@ node {
 
       //
       // - Disable user namespace for the container so permissions will map properly with the host
-      // - Set HOME to the workspace for .yarn and .cache cache directories
+      // - Set HOME to the workspace for cache/config directories (npm/yarn, mvn, etc)
       //
       dockerImage.inside("--userns=host -e HOME=${env.WORKSPACE}") {
         stage('scm') {
