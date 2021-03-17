@@ -1,5 +1,9 @@
 #!/usr/bin/env groovy
 
+properties([
+  buildDiscarder(logRotator(numToKeepStr: '20'))
+])
+
 node {
   def err = null
 
