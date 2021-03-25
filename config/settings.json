@@ -62,6 +62,25 @@
         "wmsParams": "version=1.1.1&map=default.map"
       }
     },
+    "themes": {
+      "Default": "nga-dark",
+      "Light": "nga-light",
+      "Dark": "nga-dark"
+    },
+    "accessible_themes": {
+      "Default": {
+        "Red & Green Deficiency (Protanomaly & Deuteranomaly)": "nga-dark-cb_rg",
+        "Blue Deficiency (Tritanopia)": "nga-dark-cb_b"
+      },
+      "Light": {
+        "Red & Green Deficiency (Protanomaly & Deuteranomaly)": "nga-light-cb_rg",
+        "Blue Deficiency (Tritanopia)": "nga-light-cb_b"
+      },
+      "Dark": {
+        "Red & Green Deficiency (Protanomaly & Deuteranomaly)": "nga-dark-cb_rg",
+        "Blue Deficiency (Tritanopia)": "nga-dark-cb_b"
+      }
+    },
     "weather": {
       "url": "http://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
     }

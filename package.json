@@ -17,7 +17,15 @@
       "entry_point": [
         "goog:osngaimports"
       ]
-    }
+    },
+    "themes": [
+      "nga-dark",
+      "nga-dark-cb_b",
+      "nga-dark-cb_rg",
+      "nga-light",
+      "nga-light-cb_b",
+      "nga-light-cb_rg"
+    ]
   },
   "scripts": {
     "build": "npm run lint",
