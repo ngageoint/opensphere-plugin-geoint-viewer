@@ -4,6 +4,7 @@ const Uri = goog.require('goog.Uri');
 const log = goog.require('goog.log');
 const Logger = goog.requireType('goog.log.Logger');
 
+const {getText} = goog.require('os.file.mime.text');
 const net = goog.require('os.net');
 const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
 const Event = goog.require('plugin.login.Event');
@@ -91,6 +92,13 @@ class LoginHandler extends ExtDomainHandler {
   onXhrComplete(opt_evt) {
     // see if we got redirected to something authy
     var resp = this.getResponse();
+    var headers = this.getResponseHeaders();
+    var contentType = /** @type {string|undefined} */ (headers['content-type']) || '';
+
+    // If the response is an ArrayBuffer, convert to text if the content type supports that we're dealing with text.
+    if (resp instanceof ArrayBuffer && contentType.indexOf('text/') > -1) {
+      resp = getText(resp);
+    }
 
     if (typeof resp === 'string') {
       for (var i = 0, n = this.loginConfigs_.length; i < n; i++) {
