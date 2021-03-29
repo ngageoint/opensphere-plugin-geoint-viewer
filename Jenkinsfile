@@ -4,7 +4,7 @@ properties([
   buildDiscarder(logRotator(numToKeepStr: '20'))
 ])
 
-node {
+node('Linux&&Standard') {
   def err = null
 
   def appVersion = '0.0.0'
