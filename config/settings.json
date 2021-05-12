@@ -86,6 +86,11 @@
     }
   },
   "user": {
-    "baseProjection": "EPSG:4326"
+    "baseProjection": "EPSG:4326",
+    "os": {
+      "map": {
+        "cameraMode": "last"
+      }
+    }
   }
 }
