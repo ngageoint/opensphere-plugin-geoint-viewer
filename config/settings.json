@@ -39,6 +39,26 @@
       "after": ".js-navbottom",
       "markup": "<div class=\"c-banner\" style=\"background:#060;color:#FFF;\">UNCLASSIFIED</div>"
     },
+    "crossOrigin": {
+      "assume-anon-ssl": {
+        "pattern": "^https://",
+        "value": "anonymous",
+        "priority": -999
+      },
+      "mil": {
+        "pattern": "^https://[^/]*\\.mil(:\\d+)?/",
+        "value": "use-credentials",
+        "priority": -900
+      },
+      "nominatim": {
+        "pattern": "^https://osm-nominatim\\.gs\\.mil/",
+        "value": "anonymous"
+      },
+      "osm-ogc": {
+        "pattern": "^https://osm\\.gs\\.mil/(ows|tiles|wmts)",
+        "value": "anonymous"
+      }
+    },
     "plugin": {
       "login": {
         "geoaxis": {
