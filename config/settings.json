@@ -59,6 +59,7 @@
         "value": "anonymous"
       }
     },
+
     "plugin": {
       "login": {
         "geoaxis": {
@@ -103,6 +104,24 @@
     },
     "weather": {
       "url": "http://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
+    },
+    "os": {
+      "auth": {
+        "sage": {
+          "title": "NORTHCOM SAGE ArcGIS",
+          "tooltip": "The NORTHCOM Sage ArcGIS Server provides additional data layers when accessed from an SBU machine and authenticated. Click here to go to the login page.",
+          "message": "The NORTHCOM Sage ArcGIS Server provides additional data layers when accessed from an SBU machine.",
+          "pattern": "https://sageearth.northcom.mil",
+          "link": "https://sageearth.northcom.mil/UserManagement/aeiss/newAeissUser.do/"
+        },
+        "ngaEnterprise": {
+          "title": "NGA ACES ArcGIS",
+          "tooltip": "The NGA ACES ArcGIS Server requires PKI approval before layers are accessible. Click here to go to the login page.",
+          "message": "Layers provided by the NGA ACES ArcGIS Server require authentication before use.",
+          "pattern": "(NGA Aces|https://aerodata.nga.mil)",
+          "link": "https://pki.geo.nga.mil/"
+        }
+      }
     }
   },
   "user": {
