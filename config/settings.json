@@ -121,6 +121,11 @@
           "pattern": "(NGA Aces|https://aerodata.nga.mil)",
           "link": "https://pki.geo.nga.mil/"
         }
+      },
+      "layers": {
+        "defaults": {
+          "y": 74
+        }
       }
     }
   },
