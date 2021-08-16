@@ -1,5 +1,6 @@
 goog.module('plugin.login.PopupManager');
 
+const os = goog.require('os');
 const EventType = goog.require('plugin.login.EventType');
 const {Controller} = goog.require('plugin.login.LoginWindowUI');
 

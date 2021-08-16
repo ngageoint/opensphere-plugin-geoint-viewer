@@ -1,6 +1,8 @@
 goog.module('plugin.login.LoginPlugin');
 
+const os = goog.require('os');
 const CredentialsHandler = goog.require('os.net.CredentialsHandler');
+const RequestHandlerFactory = goog.require('os.net.RequestHandlerFactory');
 const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
@@ -25,9 +27,9 @@ class LoginPlugin extends AbstractPlugin {
    * @inheritDoc
    */
   init() {
-    os.net.RequestHandlerFactory.removeHandler(ExtDomainHandler);
-    os.net.RequestHandlerFactory.removeHandler(CredentialsHandler);
-    os.net.RequestHandlerFactory.addHandler(LoginHandler);
+    RequestHandlerFactory.removeHandler(ExtDomainHandler);
+    RequestHandlerFactory.removeHandler(CredentialsHandler);
+    RequestHandlerFactory.addHandler(LoginHandler);
     os.dispatcher.listen(EventType.AUTH_INIT, this.handleAdd_);
   }
 
