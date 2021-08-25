@@ -4,6 +4,8 @@ const Uri = goog.require('goog.Uri');
 const log = goog.require('goog.log');
 const Logger = goog.requireType('goog.log.Logger');
 
+const os = goog.require('os');
+const Settings = goog.require('os.config.Settings');
 const {getText} = goog.require('os.file.mime.text');
 const net = goog.require('os.net');
 const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
@@ -68,7 +70,7 @@ class LoginHandler extends ExtDomainHandler {
    */
   loadLoginConfigs() {
     var configs = [];
-    var logins = /** @type {Object<string, *>} */ (os.settings.get('plugin.login', {}));
+    var logins = /** @type {Object<string, *>} */ (Settings.getInstance().get('plugin.login', {}));
     for (var key in logins) {
       configs.push({
         loginUrl: logins[key]['loginUrl'],

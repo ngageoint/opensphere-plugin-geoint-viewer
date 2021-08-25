@@ -2,6 +2,7 @@ goog.module('plugin.login.LoginWindowUI');
 
 const Uri = goog.require('goog.Uri');
 const obj = goog.require('ol.obj');
+const os = goog.require('os');
 const Module = goog.require('os.ui.Module');
 const WindowEventType = goog.require('os.ui.WindowEventType');
 const {close: closeWindow, create: createWindow} = goog.require('os.ui.window');

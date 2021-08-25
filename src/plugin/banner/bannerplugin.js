@@ -1,5 +1,6 @@
 goog.module('plugin.banner.BannerPlugin');
 
+const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
 
@@ -20,7 +21,7 @@ class BannerPlugin extends AbstractPlugin {
    * @inheritDoc
    */
   init() {
-    const conf = os.settings.get('banner');
+    const conf = Settings.getInstance().get('banner');
     if (conf && conf['markup']) {
       const targets = ['before', 'after'];
       targets.forEach((key, i) => {
