@@ -1,23 +1,27 @@
-goog.module('plugin.piwik.PiwikPlugin');
+goog.declareModuleId('plugin.piwik.PiwikPlugin');
+
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
+import {MATOMO_DOWNLOAD_CLASS, MatomoEventType} from 'opensphere-nga-lib/src/osnga/matomo/index.js';
 
 const log = goog.require('goog.log');
-const Dispatcher = goog.require('os.Dispatcher');
 const {getAppVersion} = goog.require('os.config');
 const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
-const {DOWNLOAD_CLASS, EventType: MatomoEventType} = goog.require('osnga.matomo');
 const {isElectron} = goog.require('plugin.electron');
+
+const Logger = goog.requireType('goog.log.Logger');
+
 
 /**
  * Logger for imagery PiwikPlugin.
- * @type {log.Logger}
+ * @type {Logger}
  */
 const logger = log.getLogger('plugin.piwik.PiwikPlugin');
 
 /**
  */
-class PiwikPlugin extends AbstractPlugin {
+export class PiwikPlugin extends AbstractPlugin {
   /**
    * Constructor.
    */
@@ -61,7 +65,7 @@ class PiwikPlugin extends AbstractPlugin {
   disposeInternal() {
     super.disposeInternal();
 
-    Dispatcher.getInstance().unlisten(MatomoEventType.LINKS_CHANGED, this.onLinksChanged, false, this);
+    dispatcher.getInstance().unlisten(MatomoEventType.LINKS_CHANGED, this.onLinksChanged, false, this);
   }
 
   /**
@@ -123,10 +127,10 @@ class PiwikPlugin extends AbstractPlugin {
     }
 
     // Set the class used to track link clicks for downloads.
-    _paq.push(['setDownloadClasses', DOWNLOAD_CLASS]);
+    _paq.push(['setDownloadClasses', MATOMO_DOWNLOAD_CLASS]);
     _paq.push(['enableLinkTracking']);
 
-    Dispatcher.getInstance().listen(MatomoEventType.LINKS_CHANGED, this.onLinksChanged, false, this);
+    dispatcher.getInstance().listen(MatomoEventType.LINKS_CHANGED, this.onLinksChanged, false, this);
   }
 
   /**
@@ -226,9 +230,4 @@ class PiwikPlugin extends AbstractPlugin {
   }
 }
 
-
-(function() {
-  PluginManager.getInstance().addPlugin(new PiwikPlugin());
-})();
-
-exports = PiwikPlugin;
+PluginManager.getInstance().addPlugin(new PiwikPlugin());

@@ -1,16 +1,20 @@
-goog.module('plugin.login.LoginHandler');
+goog.declareModuleId('plugin.login.LoginHandler');
+
+import {LoginEvent} from './event.js';
+import {LoginEventType} from './eventtype.js';
+
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 
 const Uri = goog.require('goog.Uri');
 const log = goog.require('goog.log');
 const Logger = goog.requireType('goog.log.Logger');
+const NetEventType = goog.require('goog.net.EventType');
 
-const os = goog.require('os');
 const Settings = goog.require('os.config.Settings');
 const {getText} = goog.require('os.file.mime.text');
-const net = goog.require('os.net');
+const {saveCrossOrigin} = goog.require('os.net');
+const CrossOrigin = goog.require('os.net.CrossOrigin');
 const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
-const Event = goog.require('plugin.login.Event');
-const EventType = goog.require('plugin.login.EventType');
 
 
 /**
@@ -19,10 +23,9 @@ const EventType = goog.require('plugin.login.EventType');
  */
 const LOGGER = log.getLogger('plugin.login.LoginHandler');
 
-
 /**
  */
-class LoginHandler extends ExtDomainHandler {
+export class LoginHandler extends ExtDomainHandler {
   /**
    * Constructor.
    */
@@ -124,10 +127,10 @@ class LoginHandler extends ExtDomainHandler {
         } else {
           var url = this.getLoginUri();
           if (url) {
-            var evt = new Event(EventType.AUTH_INIT, url);
+            var evt = new LoginEvent(LoginEventType.AUTH_INIT, url);
             evt.target = this;
             this.addLoginListeners();
-            os.dispatcher.dispatchEvent(evt);
+            dispatcher.getInstance().dispatchEvent(evt);
           }
         }
 
@@ -143,16 +146,16 @@ class LoginHandler extends ExtDomainHandler {
    * @protected
    */
   addLoginListeners() {
-    os.dispatcher.listen(EventType.AUTH_COMPLETE, this.onAuth, false, this);
-    os.dispatcher.listen(EventType.AUTH_CANCEL, this.onAuth, false, this);
+    dispatcher.getInstance().listen(LoginEventType.AUTH_COMPLETE, this.onAuth, false, this);
+    dispatcher.getInstance().listen(LoginEventType.AUTH_CANCEL, this.onAuth, false, this);
   }
 
   /**
    * @protected
    */
   removeLoginListeners() {
-    os.dispatcher.unlisten(EventType.AUTH_COMPLETE, this.onAuth, false, this);
-    os.dispatcher.unlisten(EventType.AUTH_CANCEL, this.onAuth, false, this);
+    dispatcher.getInstance().unlisten(LoginEventType.AUTH_COMPLETE, this.onAuth, false, this);
+    dispatcher.getInstance().unlisten(LoginEventType.AUTH_CANCEL, this.onAuth, false, this);
   }
 
   /**
@@ -163,12 +166,12 @@ class LoginHandler extends ExtDomainHandler {
     this.removeLoginListeners();
 
     if (evt.url === this.getLoginUri()) {
-      if (evt.type === EventType.AUTH_COMPLETE) {
+      if (evt.type === LoginEventType.AUTH_COMPLETE) {
         this.addCrossOrigin();
         this.retry();
       } else {
         this.errors = ['Unauthorized. Login failed or was canceled.'];
-        this.dispatchEvent(goog.net.EventType.ERROR);
+        this.dispatchEvent(NetEventType.ERROR);
       }
     }
   }
@@ -202,7 +205,7 @@ class LoginHandler extends ExtDomainHandler {
 
         // this URL is going to require credentials
         var regex = new RegExp('^' + uri.getScheme() + '://' + uri.getDomain().replace(/\./g, '\\.') + '/');
-        net.saveCrossOrigin(regex.source, net.CrossOrigin.USE_CREDENTIALS);
+        saveCrossOrigin(regex.source, CrossOrigin.USE_CREDENTIALS);
         return true;
       }
     }
@@ -228,6 +231,3 @@ class LoginHandler extends ExtDomainHandler {
     return null;
   }
 }
-
-
-exports = LoginHandler;

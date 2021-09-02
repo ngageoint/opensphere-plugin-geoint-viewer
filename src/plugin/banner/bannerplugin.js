@@ -1,4 +1,4 @@
-goog.module('plugin.banner.BannerPlugin');
+goog.declareModuleId('plugin.banner.BannerPlugin');
 
 const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
@@ -7,7 +7,7 @@ const PluginManager = goog.require('os.plugin.PluginManager');
 
 /**
  */
-class BannerPlugin extends AbstractPlugin {
+export class BannerPlugin extends AbstractPlugin {
   /**
    * Constructor.
    */
@@ -50,5 +50,3 @@ class BannerPlugin extends AbstractPlugin {
 }
 
 PluginManager.getInstance().addPlugin(new BannerPlugin());
-
-exports = BannerPlugin;
