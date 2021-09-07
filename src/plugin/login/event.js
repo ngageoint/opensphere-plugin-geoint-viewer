@@ -1,14 +1,16 @@
-goog.module('plugin.login.Event');
+goog.declareModuleId('plugin.login.Event');
 
 const GoogEvent = goog.require('goog.events.Event');
+
+const {LoginEventType} = goog.requireType('plugin.login.EventType');
 
 
 /**
  */
-class Event extends GoogEvent {
+export class LoginEvent extends GoogEvent {
   /**
    * Constructor.
-   * @param {plugin.login.EventType} type The event type
+   * @param {LoginEventType} type The event type
    * @param {!string} url The login URL
    */
   constructor(type, url) {
@@ -20,5 +22,3 @@ class Event extends GoogEvent {
     this.url = url;
   }
 }
-
-exports = Event;

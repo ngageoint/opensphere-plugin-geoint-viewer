@@ -1,13 +1,16 @@
 /**
  * @fileoverview Plugins and other source added to the NGA OpenSphere application.
  */
-goog.module('osngaimports');
+goog.declareModuleId('osngaimports');
 
-goog.require('plugin.banner.BannerPlugin');
-goog.require('plugin.gegd.GEGDPlugin');
-goog.require('plugin.geopackage.GeoPackagePlugin');
-goog.require('plugin.ispy.ISpyPlugin');
-goog.require('plugin.login.LoginPlugin');
-goog.require('plugin.osnga.AppPlugin');
-goog.require('plugin.overpass.OverpassPlugin');
-goog.require('plugin.piwik.PiwikPlugin');
+/* eslint-disable opensphere/no-unused-vars */
+import {BannerPlugin} from './plugin/banner/bannerplugin.js';
+import {LoginPlugin} from './plugin/login/loginplugin.js';
+import {PiwikPlugin} from './plugin/piwik/piwikplugin.js';
+
+import {GEGDPlugin} from 'opensphere-nga-lib/src/plugin/gegd/gegdplugin.js';
+import {ISpyPlugin} from 'opensphere-nga-lib/src/plugin/ispy/ispyplugin.js';
+import {AppPlugin} from 'opensphere-nga-lib/src/plugin/osnga/appplugin.js';
+import {OverpassPlugin} from 'opensphere-nga-lib/src/plugin/overpass/overpassplugin.js';
+
+import {GeoPackagePlugin} from 'opensphere-plugin-geopackage/src/plugin/geopackage/geopackageplugin.js';

@@ -1,13 +1,14 @@
-goog.module('plugin.login.PopupManager');
+goog.declareModuleId('plugin.login.PopupManager');
 
-const os = goog.require('os');
-const EventType = goog.require('plugin.login.EventType');
-const {Controller} = goog.require('plugin.login.LoginWindowUI');
+import {LoginEventType} from './eventtype.js';
+import {launchLoginWindow} from './loginwindow.js';
+
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 
 
 /**
  */
-class PopupManager {
+export class PopupManager {
   /**
    * Constructor.
    */
@@ -18,8 +19,8 @@ class PopupManager {
      */
     this.windowsByUrl = {};
 
-    os.dispatcher.listen(EventType.AUTH_COMPLETE, this.onAuth, false, this);
-    os.dispatcher.listen(EventType.AUTH_CANCEL, this.onAuth, false, this);
+    dispatcher.getInstance().listen(LoginEventType.AUTH_COMPLETE, this.onAuth, false, this);
+    dispatcher.getInstance().listen(LoginEventType.AUTH_CANCEL, this.onAuth, false, this);
   }
 
   /**
@@ -28,7 +29,7 @@ class PopupManager {
   add(url) {
     if (!this.windowsByUrl[url]) {
       this.windowsByUrl[url] = true;
-      Controller.launch(url);
+      launchLoginWindow(url);
     }
   }
 
@@ -60,5 +61,3 @@ class PopupManager {
  * @type {PopupManager|undefined}
  */
 let instance;
-
-exports = PopupManager;

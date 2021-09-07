@@ -1,20 +1,22 @@
-goog.module('plugin.login.LoginPlugin');
+goog.declareModuleId('plugin.login.LoginPlugin');
 
-const os = goog.require('os');
+import {LoginEventType} from './eventtype.js';
+import {LoginHandler} from './loginhandler.js';
+import {PopupManager} from './popupmanager.js';
+
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
+
 const CredentialsHandler = goog.require('os.net.CredentialsHandler');
 const RequestHandlerFactory = goog.require('os.net.RequestHandlerFactory');
 const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
-const EventType = goog.require('plugin.login.EventType');
-const LoginHandler = goog.require('plugin.login.LoginHandler');
-const PopupManager = goog.require('plugin.login.PopupManager');
 
 
 /**
  * Provides map layer support
  */
-class LoginPlugin extends AbstractPlugin {
+export class LoginPlugin extends AbstractPlugin {
   /**
    * Constructor.
    */
@@ -30,7 +32,7 @@ class LoginPlugin extends AbstractPlugin {
     RequestHandlerFactory.removeHandler(ExtDomainHandler);
     RequestHandlerFactory.removeHandler(CredentialsHandler);
     RequestHandlerFactory.addHandler(LoginHandler);
-    os.dispatcher.listen(EventType.AUTH_INIT, this.handleAdd_);
+    dispatcher.getInstance().listen(LoginEventType.AUTH_INIT, this.handleAdd_);
   }
 
   /**
@@ -42,16 +44,11 @@ class LoginPlugin extends AbstractPlugin {
   }
 }
 
-
 /**
  * @type {string}
  * @const
  */
 LoginPlugin.ID = 'login';
 
-
 // Add the plugin to the plugin manager.
 PluginManager.getInstance().addPlugin(new LoginPlugin());
-
-
-exports = LoginPlugin;
