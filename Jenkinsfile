@@ -42,11 +42,8 @@ node('linux') {
           dir(workspace_dir) {
             def projects = [
               'opensphere',
-              'opensphere-nga-brand',
               'opensphere-nga-lib',
               'opensphere-plugin-analyze',
-              'bits-internal',
-              'mist',
               'gv.config',
               project_dir
             ]
