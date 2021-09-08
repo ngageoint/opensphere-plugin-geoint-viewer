@@ -44,6 +44,7 @@ node('linux') {
               'opensphere',
               'opensphere-nga-lib',
               'opensphere-plugin-analyze',
+              'opensphere-plugin-geopackage',
               'gv.config',
               project_dir
             ]
