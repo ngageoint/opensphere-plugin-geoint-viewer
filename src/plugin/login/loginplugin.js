@@ -1,10 +1,9 @@
 goog.declareModuleId('plugin.login.LoginPlugin');
 
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 import {LoginEventType} from './eventtype.js';
 import {LoginHandler} from './loginhandler.js';
 import {PopupManager} from './popupmanager.js';
-
-import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 
 const CredentialsHandler = goog.require('os.net.CredentialsHandler');
 const RequestHandlerFactory = goog.require('os.net.RequestHandlerFactory');

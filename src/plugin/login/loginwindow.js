@@ -1,11 +1,10 @@
 goog.declareModuleId('plugin.login.LoginWindowUI');
 
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
+import Module from 'opensphere/src/os/module.js';
 import {ROOT} from '../../gv.js';
 import {LoginEvent} from './event.js';
 import {LoginEventType} from './eventtype.js';
-
-import * as dispatcher from 'opensphere/src/os/dispatcher.js';
-import Module from 'opensphere/src/os/module.js';
 
 const Uri = goog.require('goog.Uri');
 const WindowEventType = goog.require('os.ui.WindowEventType');
