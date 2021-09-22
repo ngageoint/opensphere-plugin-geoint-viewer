@@ -1,9 +1,8 @@
 goog.declareModuleId('plugin.login.LoginHandler');
 
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 import {LoginEvent} from './event.js';
 import {LoginEventType} from './eventtype.js';
-
-import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 
 const Uri = goog.require('goog.Uri');
 const log = goog.require('goog.log');

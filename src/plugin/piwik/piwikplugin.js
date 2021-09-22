@@ -1,7 +1,7 @@
 goog.declareModuleId('plugin.piwik.PiwikPlugin');
 
-import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 import {MATOMO_DOWNLOAD_CLASS, MatomoEventType} from 'opensphere-nga-lib/src/osnga/matomo/index.js';
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 
 const log = goog.require('goog.log');
 const {getAppVersion} = goog.require('os.config');

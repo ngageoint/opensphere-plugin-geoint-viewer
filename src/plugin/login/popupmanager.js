@@ -1,9 +1,8 @@
 goog.declareModuleId('plugin.login.PopupManager');
 
+import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 import {LoginEventType} from './eventtype.js';
 import {launchLoginWindow} from './loginwindow.js';
-
-import * as dispatcher from 'opensphere/src/os/dispatcher.js';
 
 
 /**
