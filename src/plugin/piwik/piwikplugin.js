@@ -2,13 +2,13 @@ goog.declareModuleId('plugin.piwik.PiwikPlugin');
 
 import {MATOMO_DOWNLOAD_CLASS, MatomoEventType} from 'opensphere-nga-lib/src/osnga/matomo/index.js';
 import * as dispatcher from 'opensphere/src/os/dispatcher.js';
+import {isElectron} from 'opensphere/src/plugin/electron/electron.js';
 
 const log = goog.require('goog.log');
 const {getAppVersion} = goog.require('os.config');
 const Settings = goog.require('os.config.Settings');
 const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
 const PluginManager = goog.require('os.plugin.PluginManager');
-const {isElectron} = goog.require('plugin.electron');
 
 const Logger = goog.requireType('goog.log.Logger');
 
