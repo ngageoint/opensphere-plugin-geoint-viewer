@@ -1,15 +1,14 @@
 goog.declareModuleId('plugin.login.LoginPlugin');
 
 import * as dispatcher from 'opensphere/src/os/dispatcher.js';
+import CredentialsHandler from 'opensphere/src/os/net/credentialshandler.js';
+import ExtDomainHandler from 'opensphere/src/os/net/extdomainhandler.js';
+import * as RequestHandlerFactory from 'opensphere/src/os/net/requesthandlerfactory.js';
+import AbstractPlugin from 'opensphere/src/os/plugin/abstractplugin.js';
+import PluginManager from 'opensphere/src/os/plugin/pluginmanager.js';
 import {LoginEventType} from './eventtype.js';
 import {LoginHandler} from './loginhandler.js';
 import {PopupManager} from './popupmanager.js';
-
-const CredentialsHandler = goog.require('os.net.CredentialsHandler');
-const RequestHandlerFactory = goog.require('os.net.RequestHandlerFactory');
-const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
-const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
-const PluginManager = goog.require('os.plugin.PluginManager');
 
 
 /**

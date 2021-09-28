@@ -1,8 +1,8 @@
 goog.declareModuleId('plugin.banner.BannerPlugin');
 
-const Settings = goog.require('os.config.Settings');
-const AbstractPlugin = goog.require('os.plugin.AbstractPlugin');
-const PluginManager = goog.require('os.plugin.PluginManager');
+import Settings from 'opensphere/src/os/config/settings.js';
+import AbstractPlugin from 'opensphere/src/os/plugin/abstractplugin.js';
+import PluginManager from 'opensphere/src/os/plugin/pluginmanager.js';
 
 
 /**
