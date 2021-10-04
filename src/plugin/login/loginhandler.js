@@ -1,19 +1,19 @@
 goog.declareModuleId('plugin.login.LoginHandler');
 
+import Settings from 'opensphere/src/os/config/settings.js';
 import * as dispatcher from 'opensphere/src/os/dispatcher.js';
+import {getText} from 'opensphere/src/os/file/mime/text.js';
+import CrossOrigin from 'opensphere/src/os/net/crossorigin.js';
+import ExtDomainHandler from 'opensphere/src/os/net/extdomainhandler.js';
+import {saveCrossOrigin} from 'opensphere/src/os/net/net.js';
 import {LoginEvent} from './event.js';
 import {LoginEventType} from './eventtype.js';
 
 const Uri = goog.require('goog.Uri');
 const log = goog.require('goog.log');
-const Logger = goog.requireType('goog.log.Logger');
 const NetEventType = goog.require('goog.net.EventType');
 
-const Settings = goog.require('os.config.Settings');
-const {getText} = goog.require('os.file.mime.text');
-const {saveCrossOrigin} = goog.require('os.net');
-const CrossOrigin = goog.require('os.net.CrossOrigin');
-const ExtDomainHandler = goog.require('os.net.ExtDomainHandler');
+const Logger = goog.requireType('goog.log.Logger');
 
 
 /**
