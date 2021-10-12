@@ -1,2 +1,14 @@
 @import 'overrides_slate/bootswatch';
 @import 'compact/bootswatch';
+
+// Nav tabs within a modal/window/search flyout
+.modal-content,
+.u-bg-flyout {
+  .nav-tabs {
+    .nav-link.active,
+    .nav-item.show .nav-link {
+      background: $indigo;
+      border-bottom-color: $indigo;
+    }
+  }
+}
