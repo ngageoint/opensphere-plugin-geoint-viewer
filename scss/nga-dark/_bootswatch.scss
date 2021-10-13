@@ -1,14 +1,27 @@
+// Bootswatch Slate uses this Bootstrap mixin for buttons and nav tabs, even when gradients are disabled. We do not
+// want these gradients, so replace the mixin prior to loading the Slate theme.
+@mixin gradient-y-three-colors($start-color: $blue, $mid-color: $purple, $color-stop: 50%, $end-color: $red) {
+  background-color: $mid-color;
+}
+
+// Load the Slate theme from OpenSphere.
 @import 'overrides_slate/bootswatch';
+
+// Load the Compact theme from OpenSphere.
 @import 'compact/bootswatch';
 
-// Nav tabs within a modal/window/search flyout
+// Nav tabs within a modal/window/search flyout.
 .modal-content,
 .u-bg-flyout {
   .nav-tabs {
     .nav-link.active,
     .nav-item.show .nav-link {
-      background: $indigo;
-      border-bottom-color: $indigo;
+      // Make sure we win the specificity battle over Bootswatch's Slate theme.
+      &:not([disabled]):not(.disabled),
+      &:not([disabled]):not(.disabled) {
+        background-color: $indigo;
+        border-bottom-color: $indigo;
+      }
     }
   }
 }
