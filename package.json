@@ -48,7 +48,7 @@
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.1",
-    "eslint": "^7.26.0",
+    "eslint": "^8.0.1",
     "eslint-config-opensphere": "^6.0.2",
     "html-validate": "4.13.1",
     "html-validate-angular": "^2.9.0",
