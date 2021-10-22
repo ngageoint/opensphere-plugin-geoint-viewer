@@ -3,6 +3,11 @@
   line-height: 1rem;
   text-align: center;
 
+  &.c-banner-dev {
+    background: #25b;
+    color: #fff;
+  }
+
   &.c-banner-u {
     background: #060;
     color: #fff;
