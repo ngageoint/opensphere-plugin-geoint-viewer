@@ -17,7 +17,6 @@
     .nav-link.active,
     .nav-item.show .nav-link {
       // Make sure we win the specificity battle over Bootswatch's Slate theme.
-      &:not([disabled]):not(.disabled),
       &:not([disabled]):not(.disabled) {
         background-color: $indigo;
         border-bottom-color: $indigo;
