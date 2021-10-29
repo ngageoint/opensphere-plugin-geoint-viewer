@@ -127,6 +127,9 @@
           "y": 74
         }
       }
+    },
+    "osnga": {
+      "usePrefetch": true
     }
   },
   "user": {
