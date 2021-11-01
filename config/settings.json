@@ -126,6 +126,11 @@
         "defaults": {
           "y": 74
         }
+      },
+      "ui": {
+        "datePanel": {
+          "showTimeSlicer": false
+        }
       }
     }
   },
