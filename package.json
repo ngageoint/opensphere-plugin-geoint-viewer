@@ -48,8 +48,8 @@
   "author": "BIT Systems",
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "^12.1.1",
-    "@commitlint/config-conventional": "^12.1.1",
+    "@commitlint/cli": "^14.1.0",
+    "@commitlint/config-conventional": "^14.1.0",
     "eslint": "^8.0.1",
     "eslint-config-opensphere": "^6.0.2",
     "html-validate": "6.1.0",
