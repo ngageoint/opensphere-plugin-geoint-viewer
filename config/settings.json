@@ -75,14 +75,6 @@
     "plugins": {
       "piwik": false
     },
-    "providers": {
-      "gs-hiperlook": {
-        "type": "ogc",
-        "label": "GEOINT Services Hiperlook",
-        "wms": "https://pixia.stage.gs.mil/wmsserver/",
-        "wmsParams": "version=1.1.1&map=default.map"
-      }
-    },
     "themes": {
       "Default": "nga-dark",
       "Light": "nga-light",
