@@ -150,7 +150,7 @@ export class PiwikPlugin extends AbstractPlugin {
    */
   loadScript() {
     const userIdUrl = this.userIdUrl_;
-    log.fine(logger, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
+    log.info(logger, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
     if (userIdUrl != '') {
       fetch(String(userIdUrl), {
@@ -159,36 +159,36 @@ export class PiwikPlugin extends AbstractPlugin {
       }).then(
           (response) => {
             if (response.status !== 200) {
-              log.fine(logger, 'Status not OK when retrieving user information. Status Code: ' + response.status);
+              log.info(logger, 'Status not OK when retrieving user information. Status Code: ' + response.status);
             }
             var user = '';
             var uid = '';
 
             // Extract the user information from the header
             for (var pair of response.headers.entries()) {
-              // log.fine(logger, "'" + pair[0] + "': '" + pair[1] + "'")
+              // log.info(logger, "'" + pair[0] + "': '" + pair[1] + "'")
               if (pair[0].toLowerCase() == 'x-forwarded-user') {
                 user = pair[1];
                 var parts = user.split('.');
-                log.fine(logger, 'X-Forwarded-User: ' + user);
+                log.info(logger, 'X-Forwarded-User: ' + user);
                 if (parts.length > 0) {
                   uid = parts[parts.length - 1];
-                  log.fine(logger, 'X-Forwarded-User UID: ' + uid);
+                  log.info(logger, 'X-Forwarded-User UID: ' + uid);
                 }
                 break;
               }
             }
             if (user == '' || uid == '') {
-              log.fine(logger, 'Failed to determine user information.');
+              log.info(logger, 'Failed to determine user information.');
             }
             this.embedTrackingCode(user, uid);
           })
           .catch((err) => {
-            log.fine(logger, 'Failed to retrieve user information. Encountered fetch error:' + err);
+            log.info(logger, 'Failed to retrieve user information. Encountered fetch error:' + err);
             this.embedTrackingCode('unknown', '0');
           });
     } else {
-      log.fine(logger, 'Cannot discover user information. Initializing matomo w/o user information.');
+      log.info(logger, 'Cannot discover user information. Initializing matomo w/o user information.');
       this.embedTrackingCode();
     }
   }
@@ -224,8 +224,8 @@ export class PiwikPlugin extends AbstractPlugin {
       script.src = url + 'piwik.js';
 
       document.body.appendChild(script);
-      log.fine(logger, 'Setting piwik receiver to: ' + url + ', id: ' + siteId);
-      log.fine(logger, 'Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
+      log.info(logger, 'Setting piwik receiver to: ' + url + ', id: ' + siteId);
+      log.info(logger, 'Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
     }
   }
 }
