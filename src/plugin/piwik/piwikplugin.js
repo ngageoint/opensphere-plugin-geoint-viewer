@@ -150,9 +150,9 @@ export class PiwikPlugin extends AbstractPlugin {
    */
   loadScript() {
     const userIdUrl = this.userIdUrl_;
-    log.info(logger, 'Using plugin.piwik.userIdUrl: ' + userIdUrl);
+    log.info(logger, 'Log Check; Using plugin.piwik.userIdUrl: ' + userIdUrl);
 
-    if (userIdUrl != '') {
+    if (userIdUrl !== '') {
       fetch(String(userIdUrl), {
         method: 'GET',
         credentials: 'include'
@@ -161,31 +161,21 @@ export class PiwikPlugin extends AbstractPlugin {
             if (response.status !== 200) {
               log.info(logger, 'Status not OK when retrieving user information. Status Code: ' + response.status);
             }
-            var user = '';
-            var uid = '';
-
-            // Extract the user information from the header
-            for (var pair of response.headers.entries()) {
-              // log.info(logger, "'" + pair[0] + "': '" + pair[1] + "'")
-              if (pair[0].toLowerCase() == 'x-forwarded-user') {
-                user = pair[1];
-                var parts = user.split('.');
-                log.info(logger, 'X-Forwarded-User: ' + user);
-                if (parts.length > 0) {
-                  uid = parts[parts.length - 1];
-                  log.info(logger, 'X-Forwarded-User UID: ' + uid);
-                }
-                break;
-              }
-            }
-            if (user == '' || uid == '') {
+            return response.json();
+          }).then(responseObject => {
+            log.info(logger, 'Matomo response: ' + JSON.stringify(responseObject));
+            // Extract the user email from the body
+            
+            var email = responseObject.email || 'unknown';
+            
+            if (email == 'unknown') {
               log.info(logger, 'Failed to determine user information.');
             }
-            this.embedTrackingCode(user, uid);
+            this.embedTrackingCode(email);
           })
           .catch((err) => {
             log.info(logger, 'Failed to retrieve user information. Encountered fetch error:' + err);
-            this.embedTrackingCode('unknown', '0');
+            this.embedTrackingCode('unknown');
           });
     } else {
       log.info(logger, 'Cannot discover user information. Initializing matomo w/o user information.');
@@ -194,10 +184,9 @@ export class PiwikPlugin extends AbstractPlugin {
   }
 
   /**
-   * @param {string} user
-   * @param {string} uid
+   * @param {string} email
    */
-  embedTrackingCode(user = '', uid = '') {
+  embedTrackingCode(email = '') {
     const _paq = window._paq;
 
     const siteId = this.siteId_;
@@ -206,13 +195,13 @@ export class PiwikPlugin extends AbstractPlugin {
     if (url && siteId != null) {
       url += /\/$/.test(url) ? '' : '/';
 
-      if (user != '') {
-        _paq.push(['setUserId', user]);
+      if (email != '') {
+        _paq.push(['setUserId', email]);
       }
-      if (uid != '') {
-        _paq.push(['setCustomDimension', 2, String(uid)]);
-        _paq.push(['setCustomVariable', 2, 'GxUid', String(uid), 'page']);
-      }
+      // if (uid != '') {
+      //   _paq.push(['setCustomDimension', 2, String(uid)]);
+      //   _paq.push(['setCustomVariable', 2, 'GxUid', String(uid), 'page']);
+      // }
       _paq.push(['trackPageView']);
 
       _paq.push(['setTrackerUrl', url + this.trackerScript_]);
@@ -225,7 +214,7 @@ export class PiwikPlugin extends AbstractPlugin {
 
       document.body.appendChild(script);
       log.info(logger, 'Setting piwik receiver to: ' + url + ', id: ' + siteId);
-      log.info(logger, 'Embedding tracking code, with user: ' + user + ', gxUid: ' + uid);
+      log.info(logger, 'Embedding tracking code, with user: ' + email);
     }
   }
 }

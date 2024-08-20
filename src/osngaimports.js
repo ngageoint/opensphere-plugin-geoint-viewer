@@ -6,6 +6,7 @@ goog.declareModuleId('osngaimports');
 import 'opensphere-nga-lib/src/plugin/gegd/gegdplugin.js';
 import 'opensphere-nga-lib/src/plugin/ispy/ispyplugin.js';
 import 'opensphere-nga-lib/src/plugin/osnga/appplugin.js';
+import 'opensphere-nga-lib/src/plugin/benum/beplugin.js';
 import 'opensphere-nga-lib/src/plugin/overpass/overpassplugin.js';
 import 'opensphere-plugin-geopackage/src/plugin/geopackage/geopackageplugin.js';
 

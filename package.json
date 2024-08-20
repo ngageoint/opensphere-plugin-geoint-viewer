@@ -1,7 +1,7 @@
 {
   "name": "opensphere-plugin-geoint-viewer",
-  "version": "1.6.0",
-  "overrideVersion": "1.6.0",
+  "version": "1.6.3",
+  "overrideVersion": "1.6.3",
   "description": "OpenSphere",
   "directories": {
     "externs": "externs",
