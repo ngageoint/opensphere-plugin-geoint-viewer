@@ -99,13 +99,6 @@
     },
     "os": {
       "auth": {
-        "sage": {
-          "title": "NORTHCOM SAGE ArcGIS",
-          "tooltip": "Click here to go to the NORTHCOM SAGE ArcGIS login page.",
-          "message": "The NORTHCOM Sage ArcGIS Server provides additional data layers when accessed from an SBU machine and authenticated with their services. Click the links below to create your account and go to the login page.<br><br><a href=\"https://sageearth.northcom.mil/UserManagement/aeiss/newAeissUser.do/\" target=\"_blank\">Click here to go to the New User Account Request page</a>",
-          "pattern": "https://sageearth.northcom.mil",
-          "link": "https://sageearth.northcom.mil/hosting/login"
-        },
         "ngaEnterprise": {
           "title": "NGA ACES Geoserver",
           "tooltip": "Click here to go to the NGA ACES Geoserver PKI approval request page.",

@@ -13,6 +13,7 @@ node('linux') {
 
   def project_dir = 'opensphere-plugin-geoint-viewer'
   def workspace_project = 'opensphere-yarn-workspace'
+  def workspace_project_branch = 'nga-workspace'
   def workspace_dir = "${workspace_project}/workspace"
 
   try {
@@ -37,7 +38,7 @@ node('linux') {
           } catch (NoSuchMethodError e) {
           }
 
-          cloneProject(workspace_project)
+          cloneProject(workspace_project, null, false, workspace_project_branch)
 
           dir(workspace_dir) {
             def projects = [
@@ -68,7 +69,7 @@ node('linux') {
           stage('yarn') {
             sh 'yarn config list'
             sh "rm yarn.lock || true"
-            sh "yarn"
+            sh "closure_library_url=http://github.com/google/closure-library/archive/v20220803.zip closure_compiler_url=http://github.com/google/closure-compiler/archive/v20220803.zip yarn"
           }
 
           stage('build') {
